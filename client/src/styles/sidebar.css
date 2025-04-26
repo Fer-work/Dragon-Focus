@@ -1,0 +1,61 @@
+/* Sidebar container */
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between; /* Push logout button to bottom */
+  padding: 20px;
+  background-color: var(--neutral-color);
+  border-radius: 10px;
+}
+
+/* Header for app title */
+.sidebar-header {
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 1.3rem;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+/* Navigation links */
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar-links a {
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: var(--background-color);
+  padding: 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar-links a:hover {
+  background-color: var(--flames-color-base);
+  color: var(--neutral-color);
+}
+
+/* Footer with logout button */
+.sidebar-footer {
+  margin-top: auto;
+}
+
+.logout-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  background-color: var(--flames-color-base);
+  color: var(--neutral-color);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #cc4e00; /* A slightly lighter orange */
+  transform: scale(1.05);
+}

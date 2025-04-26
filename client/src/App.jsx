@@ -3,7 +3,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import Topbar from "./components/Topbar.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import Home from "./pages/Home.jsx";
-import Timer from "./pages/Timer.jsx";
+import "./styles/timer.css";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -19,7 +19,6 @@ function App() {
           <main className="content">
             <Topbar></Topbar>
             <Home />
-            <Timer />
           </main>
         </div>
       </ThemeProvider>

@@ -1,6 +1,6 @@
 import { createContext, useState, useMemo } from "react";
 import { createTheme } from "@mui/material/styles";
-import { typography } from "@mui/material";
+import { Typography } from "@mui/material";
 
 // Color design tokens
 export const tokens = (mode) => ({
@@ -161,7 +161,7 @@ export const themeSettings = (mode) => {
             },
           }),
     },
-    typography: {
+    Typography: {
       fontFamily: ["Jacquard 12", "sans-serif"].join(","),
       fontSize: 12,
       h1: {

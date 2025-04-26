@@ -1,22 +1,21 @@
+import "../styles/sidebar.css";
+
 const Sidebar = () => {
   return (
-    <div>
-      <div className="">
+    <div className="sidebar-content">
+      <div className="sidebar-header">
         <h2>Dragon Focus</h2>
       </div>
 
-      <a href="#" className="">
-        Home
-      </a>
-      <a href="#" className="">
-        Timer
-      </a>
-      <a href="#" className="">
-        Stats
-      </a>
-      <a href="#" className="">
-        Settings
-      </a>
+      <nav className="sidebar-links">
+        <a href="#">Home</a>
+        <a href="#">Stats</a>
+        <a href="#">Settings</a>
+      </nav>
+
+      <div className="sidebar-footer">
+        <button className="logout-button">Logout</button>
+      </div>
     </div>
   );
 };

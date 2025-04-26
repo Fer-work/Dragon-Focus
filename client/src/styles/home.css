@@ -1,0 +1,9 @@
+/* Home Page Styles (adjust according to your content) */
+.home {
+  flex-grow: 1;
+  background-color: var(--background-color);
+  color: var(--neutral-color);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
