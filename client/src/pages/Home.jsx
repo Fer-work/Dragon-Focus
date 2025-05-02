@@ -1,7 +1,7 @@
 import "../styles/home.css";
 import TrackingPage from "./Tracking";
 
-const Home = () => {
+const HomePage = () => {
   return (
     <div className="home">
       <TrackingPage />
@@ -9,4 +9,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomePage;

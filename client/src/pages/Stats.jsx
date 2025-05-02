@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/index.css";
 
-const Stats = () => {
+export default function StatsPage() {
   // Dummy data for now - later you fetch this from backend
   const [todayStats, setTodayStats] = useState({
     sessionsCompleted: 0,
@@ -50,6 +50,9 @@ const Stats = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Stats;
+export async function statsLoader({ params }) {
+  const response = await axios.get("/stats" + params.name);
+  return response;
+}

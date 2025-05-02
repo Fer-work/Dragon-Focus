@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 import "../styles/sidebar.css";
 
-const Sidebar = () => {
+export default function Sidebar() {
   return (
     <div className="sidebar-content">
       <div className="sidebar-header">
@@ -8,9 +9,9 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-links">
-        <a href="#">Home</a>
-        <a href="#">Stats</a>
-        <a href="#">Settings</a>
+        <Link to={"/"}>Home</Link>
+        <Link to={"/stats"}>Stats</Link>
+        <Link to={"/settings"}>Settings</Link>
       </nav>
 
       <div className="sidebar-footer">
@@ -18,6 +19,4 @@ const Sidebar = () => {
       </div>
     </div>
   );
-};
-
-export default Sidebar;
+}
