@@ -12,7 +12,7 @@ export default function LoginPage() {
   async function logIn() {
     try {
       await signInWithEmailAndPassword(getAuth(), email, password);
-      navigate("/articles");
+      navigate("/home");
     } catch (error) {
       setError(error.message);
     }

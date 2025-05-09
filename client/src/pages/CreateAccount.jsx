@@ -19,7 +19,7 @@ export default function CreateAccountPage() {
 
     try {
       await createUserWithEmailAndPassword(getAuth(), email, password);
-      navigate("/articles");
+      navigate("/home");
     } catch (error) {
       setError(error.message);
     }

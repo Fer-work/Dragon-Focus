@@ -1,24 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import "../styles/index.css";
 
-const sessionOptions = {
-  work: 25 * 60,
-  shortBreak: 5 * 60,
-  longBreak: 15 * 60,
-};
-
-const Timer = () => {
-  const [secondsLeft, setSecondsLeft] = useState(sessionOptions.work);
+const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
+  // Convert minutes to seconds based on incoming sessionDuration
+  const [secondsLeft, setSecondsLeft] = useState(sessionDuration * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [currentSession, setCurrentSession] = useState("work");
   const intervalRef = useRef(null);
 
+  // Update timer if the parent passes a new sessionDuration
+  useEffect(() => {
+    setSecondsLeft(sessionDuration * 60);
+  }, [sessionDuration]);
+
+  // Run the timer logic
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
+            setIsRunning(false);
+            onTimerComplete?.(sessionDuration * 60); // Send duration back to parent
             return 0;
           }
           return prev - 1;
@@ -26,10 +29,11 @@ const Timer = () => {
       }, 1000);
     }
 
+    // Cleanup when component unmounts or isRunning changes
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [isRunning]);
+  }, [isRunning, sessionDuration]);
 
   const toggleTimer = () => {
     setIsRunning((prev) => !prev);
@@ -37,14 +41,14 @@ const Timer = () => {
 
   const resetTimer = () => {
     clearInterval(intervalRef.current);
-    setSecondsLeft(sessionOptions[currentSession]);
+    setSecondsLeft(sessionDuration * 60);
     setIsRunning(false);
   };
 
   const changeSession = (sessionType) => {
     clearInterval(intervalRef.current);
     setCurrentSession(sessionType);
-    setSecondsLeft(sessionOptions[sessionType]);
+    setSecondsLeft(sessionDuration * 60);
     setIsRunning(false);
   };
 
