@@ -2,6 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -11,7 +14,7 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDKd0eFyzHT-3TvNNZs2lg6X5u8YPf7n9c",
+  apiKey: dotenv.API_KEY,
   authDomain: "dragon-focus.firebaseapp.com",
   projectId: "dragon-focus",
   storageBucket: "dragon-focus.firebasestorage.app",
