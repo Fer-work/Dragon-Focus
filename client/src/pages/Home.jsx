@@ -1,11 +1,183 @@
-import "../styles/home.css";
-import TrackingPage from "./Tracking";
+import { useState } from "react";
+import Timer from "./Timer";
+import axios from "axios";
+import useUser from "../utils/useUser";
+import {
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Box,
+  Typography,
+  Grid,
+} from "@mui/material";
+import "../styles/tracking.css";
 
 const HomePage = () => {
+  const [projects, setProjects] = useState([]);
+  const [newProject, setNewProject] = useState("");
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState(null);
+  const [newTask, setNewTask] = useState("");
+  const [sessionMinutes, setSessionMinutes] = useState(25);
+  const [sessionLogs, setSessionLogs] = useState([]);
+
+  // Check if user is logged in
+  const { user } = useUser();
+
+  const handleAddProject = () => {
+    if (newProject.trim()) {
+      setProjects([...projects, { name: newProject, tasks: [] }]);
+      setNewProject("");
+    }
+  };
+
+  const handleAddTask = () => {
+    if (newTask.trim() && selectedProjectIndex !== null) {
+      const updatedProjects = projects.map((project, index) =>
+        index === selectedProjectIndex
+          ? { ...project, tasks: [...project.tasks, newTask] }
+          : project
+      );
+      setProjects(updatedProjects);
+      setNewTask("");
+    }
+  };
+
+  const handleTimerComplete = async (durationInSeconds) => {
+    const durationInMinutes = durationInSeconds / 60;
+    const timestamp = new Date().toISOString();
+
+    const token = user && (await user.getIdToken());
+    const headers = token ? { authtoken: token } : {};
+
+    const selectedProject =
+      selectedProjectIndex !== null
+        ? projects[selectedProjectIndex]
+        : { name: "Other", tasks: [] };
+
+    const lastTask =
+      selectedProject.tasks.length > 0
+        ? selectedProject.tasks[selectedProject.tasks.length - 1]
+        : "Other";
+
+    const sessionData = {
+      timestamp,
+      duration: durationInMinutes,
+      project: selectedProject.name || "Unamed Project",
+      task: lastTask,
+      userId: user?.uid || null,
+    };
+
+    console.log("Session Completed:", sessionData);
+
+    // Save to local state (optional visual feedback or debugging)
+    setSessionLogs((prev) => [...prev, sessionData]);
+
+    // Placeholder: Post to API or Firebase
+    try {
+      const res = await axios.post("/api/sessions", sessionData, { headers });
+      console.log("Session saved:", res.data);
+    } catch (error) {
+      console.error("Failed to save session:", error);
+    }
+  };
+
   return (
-    <div className="home">
-      <TrackingPage />
-    </div>
+    <Box sx={{ padding: 2, maxHeight: "100%" }}>
+      <Grid container spacing={3}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          sx={{ display: "flex", justifyContent: "center" }}
+        >
+          <Timer
+            sessionDuration={sessionMinutes}
+            onTimerComplete={handleTimerComplete}
+          />
+        </Grid>
+      </Grid>
+
+      <Box mt={4}>
+        <Typography variant="h6">Add a New Project</Typography>
+        <TextField
+          label="New Project Name"
+          value={newProject}
+          onChange={(e) => setNewProject(e.target.value)}
+          fullWidth
+          margin="normal"
+        />
+        <Button variant="contained" onClick={handleAddProject}>
+          Add Project
+        </Button>
+      </Box>
+
+      {projects.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6">Select a Project</Typography>
+          <FormControl fullWidth>
+            <InputLabel>Project</InputLabel>
+            <Select
+              value={selectedProjectIndex ?? ""}
+              onChange={(e) =>
+                setSelectedProjectIndex(
+                  e.target.value !== "" ? Number(e.target.value) : null
+                )
+              }
+            >
+              <MenuItem value="">Select a Project</MenuItem>
+              {projects.map((project, index) => (
+                <MenuItem key={index} value={index}>
+                  {project.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+      )}
+
+      {selectedProjectIndex !== null && (
+        <Box mt={4}>
+          <Typography variant="h6">Add a New Task</Typography>
+          <TextField
+            label="New Task Name"
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button variant="contained" onClick={handleAddTask}>
+            Add Task
+          </Button>
+
+          <Box mt={2}>
+            <Typography variant="h6">Tasks:</Typography>
+            <ul>
+              {projects[selectedProjectIndex].tasks.map((task, taskIndex) => (
+                <li key={taskIndex}>{task}</li>
+              ))}
+            </ul>
+          </Box>
+        </Box>
+      )}
+
+      {/* Optional: Display session log */}
+      {sessionLogs.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h6">Session History</Typography>
+          <ul>
+            {sessionLogs.map((log, index) => (
+              <li key={index}>
+                {log.project} → {log.task} — {log.duration} min @{" "}
+                {new Date(log.timestamp).toLocaleTimeString()}
+              </li>
+            ))}
+          </ul>
+        </Box>
+      )}
+    </Box>
   );
 };
 

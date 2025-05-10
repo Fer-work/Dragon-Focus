@@ -2,9 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 
-import dotenv from "dotenv";
-dotenv.config();
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -14,14 +11,16 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: dotenv.API_KEY,
-  authDomain: "dragon-focus.firebaseapp.com",
-  projectId: "dragon-focus",
-  storageBucket: "dragon-focus.firebasestorage.app",
-  messagingSenderId: "375375444745",
-  appId: "1:375375444745:web:6ee18d56439e813a1ff1d8",
-  measurementId: "G-ET1BTJTHHG",
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
+
+console.log("Firebase Key:", import.meta.env.VITE_API_KEY);
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import "../styles/index.css";
+import { Box, Button, Typography, TextField } from "@mui/material";
 
 const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
-  // Convert minutes to seconds based on incoming sessionDuration
   const [secondsLeft, setSecondsLeft] = useState(sessionDuration * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [currentSession, setCurrentSession] = useState("work");
+  const [customDuration, setCustomDuration] = useState(sessionDuration); // For custom duration input
   const intervalRef = useRef(null);
 
   // Update timer if the parent passes a new sessionDuration
   useEffect(() => {
     setSecondsLeft(sessionDuration * 60);
+    setCustomDuration(sessionDuration);
   }, [sessionDuration]);
 
   // Run the timer logic
@@ -41,15 +42,23 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
 
   const resetTimer = () => {
     clearInterval(intervalRef.current);
-    setSecondsLeft(sessionDuration * 60);
+    setSecondsLeft(customDuration * 60);
     setIsRunning(false);
   };
 
-  const changeSession = (sessionType) => {
+  const changeSession = (sessionType, durationInMinutes) => {
     clearInterval(intervalRef.current);
     setCurrentSession(sessionType);
-    setSecondsLeft(sessionDuration * 60);
+    setSecondsLeft(durationInMinutes * 60);
     setIsRunning(false);
+  };
+
+  const handleCustomDurationChange = (e) => {
+    const newDuration = parseInt(e.target.value);
+    if (newDuration > 0) {
+      setCustomDuration(newDuration);
+      setSecondsLeft(newDuration * 60);
+    }
   };
 
   const formatTime = (seconds) => {
@@ -61,47 +70,94 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
   };
 
   return (
-    <div className="timer">
-      <h2 className="timer-title">🔥 Dragon Timer 🔥</h2>
+    <Box
+      className="timer"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        maxHeight: "80vh", // Max height of 80% of viewport height
+        overflowY: "auto", // Allow scrolling if the content overflows
+      }}
+    >
+      <Typography variant="h4" sx={{ marginBottom: 2 }}>
+        🔥 Dragon Timer 🔥
+      </Typography>
 
-      <div className="session-buttons">
-        <button
-          onClick={() => changeSession("work")}
-          className={`session-button ${
-            currentSession === "work" ? "active" : ""
-          }`}
-        >
-          Work
-        </button>
-        <button
-          onClick={() => changeSession("shortBreak")}
-          className={`session-button ${
-            currentSession === "shortBreak" ? "active" : ""
-          }`}
-        >
-          Short Break
-        </button>
-        <button
-          onClick={() => changeSession("longBreak")}
-          className={`session-button ${
-            currentSession === "longBreak" ? "active" : ""
-          }`}
-        >
-          Long Break
-        </button>
-      </div>
+      {/* Custom Duration Input */}
+      <TextField
+        label="Custom Time (min)"
+        type="number"
+        value={customDuration}
+        onChange={handleCustomDurationChange}
+        variant="outlined"
+        sx={{ marginBottom: 2 }}
+      />
 
-      <div className="timer-display">{formatTime(secondsLeft)}</div>
+      {/* Session Buttons */}
+      <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
+        <Button
+          variant="contained"
+          color={currentSession === "work" ? "primary" : "default"}
+          onClick={() => changeSession("work", 25)}
+        >
+          Pomodoro (25 min)
+        </Button>
+        <Button
+          variant="contained"
+          color={currentSession === "shortBreak" ? "primary" : "default"}
+          onClick={() => changeSession("shortBreak", 5)}
+        >
+          Short Break (5 min)
+        </Button>
+        <Button
+          variant="contained"
+          color={currentSession === "longBreak" ? "primary" : "default"}
+          onClick={() => changeSession("longBreak", 15)}
+        >
+          Long Break (15 min)
+        </Button>
+        <Button
+          variant="contained"
+          color={currentSession === "focusCycle" ? "primary" : "default"}
+          onClick={() => changeSession("focusCycle", 90)}
+        >
+          Focus Cycle (90 min)
+        </Button>
+        <Button
+          variant="contained"
+          color={currentSession === "focusCycleBreak" ? "primary" : "default"}
+          onClick={() => changeSession("focusCycleBreak", 20)}
+        >
+          Focus Break (20 min)
+        </Button>
+      </Box>
 
-      <div className="timer-buttons">
-        <button onClick={toggleTimer} className="timer-button">
+      {/* Timer Display */}
+      <Typography variant="h2" sx={{ marginBottom: 2 }}>
+        {formatTime(secondsLeft)}
+      </Typography>
+
+      {/* Timer Buttons */}
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Button
+          variant="contained"
+          color={isRunning ? "error" : "success"}
+          onClick={toggleTimer}
+          sx={{ padding: "1rem 2rem" }}
+        >
           {isRunning ? "Pause" : "Start"}
-        </button>
-        <button onClick={resetTimer} className="timer-button secondary">
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={resetTimer}
+          sx={{ padding: "1rem 2rem" }}
+        >
           Reset
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

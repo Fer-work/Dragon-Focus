@@ -1,11 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import useUser from "../utils/useUser";
-import "../styles/sidebar.css";
+import { Box, Typography, Button, Stack, Divider } from "@mui/material";
 
 export default function Sidebar() {
   const { isLoading, user } = useUser();
-
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,41 +14,85 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="sidebar-content">
-      <div className="sidebar-header">
-        <h2>Dragon Focus</h2>
-      </div>
+    <Box
+      sx={{
+        width: { xs: "100%", md: "30%" },
+        height: "100%",
+        p: 3,
+        bgcolor: "background.paper",
+        color: "text.primary",
+        borderRadius: 2,
+        boxShadow: 4,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      {/* Header */}
+      <Typography variant="h5" align="center" gutterBottom>
+        Dragon Focus
+      </Typography>
 
-      <nav className="sidebar-links">
-        <Link to="/">Home</Link>
+      {/* Navigation */}
+      <Stack spacing={2} flexGrow={1}>
+        <Button
+          component={Link}
+          to="/"
+          variant="text"
+          color="primary"
+          sx={{ justifyContent: "flex-start" }}
+        >
+          Home
+        </Button>
 
         {isLoading ? (
-          <li>Loading...</li>
+          <Typography variant="body2">Loading...</Typography>
         ) : user ? (
           <>
-            <li>
-              <p>Logged in as {user.email}</p>
-            </li>
-            <Link to="/stats">Stats</Link>
-            <Link to="/settings">Settings</Link>
-            <li>
-              <button onClick={handleLogout}>Sign Out</button>
-            </li>
+            <Button
+              component={Link}
+              to="/stats"
+              variant="text"
+              color="primary"
+              sx={{ justifyContent: "flex-start" }}
+            >
+              Stats
+            </Button>
+            <Button
+              component={Link}
+              to="/settings"
+              variant="text"
+              color="primary"
+              sx={{ justifyContent: "flex-start" }}
+            >
+              Settings
+            </Button>
           </>
         ) : (
-          <li>
-            <button onClick={() => navigate("/login")}>Sign In</button>
-          </li>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/login")}
+          >
+            Sign In
+          </Button>
         )}
-      </nav>
+      </Stack>
 
-      <div className="sidebar-footer">
-        {user && (
-          <button className="logout-button" onClick={handleLogout}>
+      {/* Footer */}
+      {user && (
+        <>
+          <Divider sx={{ my: 2 }} />
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleLogout}
+            fullWidth
+          >
             Logout
-          </button>
-        )}
-      </div>
-    </div>
+          </Button>
+        </>
+      )}
+    </Box>
   );
 }

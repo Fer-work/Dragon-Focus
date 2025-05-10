@@ -1,14 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Jacquard+12&family=Press+Start+2P&display=swap");
-
+/* === Root Variables for Theming === */
 :root {
-  --background-color: #1a1a1a; /* Slightly deeper black */
-  --flames-color-base: #b22222; /* Firebrick - strong red */
-  --primary-color: #ff7043; /* Soft orange */
-  --secondary-color: #4b0082; /* Deep purple */
-  --accent-color: #ffd700; /* Gold */
-  --neutral-color: #f2efe6; /* Very light gray for better contrast */
-  --border-radius: 12px;
-
   --flame-gradient: linear-gradient(
     to top,
     #000000,
@@ -23,71 +14,23 @@
   );
 }
 
+/* === Global Resets === */
 html,
 body,
 #root {
   height: 100%;
   width: 100%;
-  font-family: "Jacquard 12", sans-serif;
   margin: 0;
   padding: 0;
+  font-family: "Jacquard 12", sans-serif;
+  box-sizing: border-box;
 }
 
-/* Background */
+/* === Body Background === */
 body {
   background-image: var(--flame-gradient);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-}
-
-/* Layout containers */
-.app {
-  display: flex;
-  justify-content: space-evenly;
-  width: 90%;
-  height: 100vh;
-  margin: auto;
-  padding: 10px;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 20%;
-  background-color: var(--neutral-color);
-  color: var(--background-color);
-  border-radius: var(--border-radius);
-  padding: 20px;
-  margin: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-/* Main content */
-.content {
-  flex-grow: 1;
-  background-color: var(--background-color);
-  color: var(--neutral-color);
-  border-radius: var(--border-radius);
-  padding: 20px;
-  margin: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
-  overflow-y: auto;
-}
-
-/* Scrollbar Styles */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #2e2e2e;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  color: #f2efe6; /* Neutral color */
 }

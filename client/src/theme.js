@@ -7,116 +7,94 @@ export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
         base: {
-          100: "#d6cccc",
-          200: "#ad9999",
-          300: "#856666",
-          400: "#5c3333",
-          500: "#330000",
-          600: "#290000",
-          700: "#1f0000",
-          800: "#140000",
-          900: "#0a0000",
+          100: "#f2efe6", // light neutral (text)
+          200: "#b22222", // firebrick
+          300: "#ff7043", // primary orange
+          400: "#ffd700", // accent (gold)
+          500: "#1a1a1a", // background
+          600: "#121212", // deeper background
+          700: "#0d0d0d", // darker background
+          800: "#080808", // very dark
+          900: "#000000", // black
         },
         primary: {
-          100: "#ead3d3",
-          200: "#d5a7a7",
-          300: "#c17c7c",
-          400: "#ac5050",
-          500: "#972424",
-          600: "#791d1d",
-          700: "#5b1616",
-          800: "#3c0e0e",
-          900: "#1e0707",
-        },
-        primary_accent: {
-          100: "#f5dccc",
-          200: "#ebb899",
-          300: "#e09566",
-          400: "#d67133",
-          500: "#cc4e00",
-          600: "#a33e00",
-          700: "#7a2f00",
-          800: "#521f00",
-          900: "#291000",
+          100: "#fff0e6",
+          200: "#ffcbb3",
+          300: "#ffad80",
+          400: "#ff9066",
+          500: "#ff7043", // match --primary-color
+          600: "#cc5936",
+          700: "#994329",
+          800: "#662c1b",
+          900: "#33160e",
         },
         secondary: {
-          100: "#ffe8cc",
-          200: "#ffd199",
-          300: "#ffba66",
-          400: "#ffa333",
-          500: "#ff8c00",
-          600: "#cc7000",
-          700: "#995400",
-          800: "#663800",
-          900: "#331c00",
+          100: "#e0d1f2",
+          200: "#c1a3e6",
+          300: "#a375d9",
+          400: "#8447cc",
+          500: "#4b0082", // match --secondary-color
+          600: "#3a0068",
+          700: "#2a004e",
+          800: "#190034",
+          900: "#0a001a",
         },
-        secondary_accent: {
-          100: "#fff7cc",
-          200: "#ffef99",
-          300: "#ffe766",
-          400: "#ffdf33",
-          500: "#ffd700",
-          600: "#ccac00",
-          700: "#998100",
-          800: "#665600",
-          900: "#332b00",
+        accent: {
+          100: "#fff8cc",
+          200: "#fff099",
+          300: "#ffe866",
+          400: "#ffe033",
+          500: "#ffd700", // match --accent-color
+          600: "#cca900",
+          700: "#997c00",
+          800: "#665200",
+          900: "#332600",
         },
       }
     : {
         base: {
-          900: "#d6cccc",
-          800: "#ad9999",
-          700: "#856666",
-          600: "#5c3333",
-          500: "#330000",
-          400: "#290000",
-          300: "#1f0000",
-          200: "#140000",
-          100: "#0a0000",
+          900: "#f2efe6",
+          800: "#b22222",
+          700: "#ff7043",
+          600: "#ffd700",
+          500: "#ffffff",
+          400: "#eeeeee",
+          300: "#cccccc",
+          200: "#999999",
+          100: "#666666",
         },
         primary: {
-          900: "#ead3d3",
-          800: "#d5a7a7",
-          700: "#c17c7c",
-          600: "#ac5050",
-          500: "#972424",
-          400: "#791d1d",
-          300: "#5b1616",
-          200: "#3c0e0e",
-          100: "#1e0707",
-        },
-        primary_accent: {
-          900: "#f5dccc",
-          800: "#ebb899",
-          700: "#e09566",
-          600: "#d67133",
-          500: "#cc4e00",
-          400: "#a33e00",
-          300: "#7a2f00",
-          200: "#521f00",
-          100: "#291000",
+          900: "#ff7043",
+          800: "#cc5936",
+          700: "#994329",
+          600: "#662c1b",
+          500: "#33160e",
+          400: "#1a0b07",
+          300: "#0d0604",
+          200: "#070302",
+          100: "#000000",
         },
         secondary: {
-          900: "#ffe8cc",
-          800: "#ffd199",
-          700: "#ffba66",
-          600: "#ffa333",
-          500: "#ff8c00",
-          400: "#cc7000",
-          300: "#995400",
-          200: "#663800",
-          100: "#331c00",
+          900: "#4b0082",
+          800: "#3a0068",
+          700: "#2a004e",
+          600: "#190034",
+          500: "#0a001a",
+          400: "#06000f",
+          300: "#030008",
+          200: "#010004",
+          100: "#000000",
         },
-        secondary_accent: {
-          900: "#fff7cc",
-          800: "#ffef99",
-          700: "#ffe766",
-          600: "#ffdf33",
-          500: "#ffd700",
-          400: "#ccac00",
-          300: "#998100",
-          200: "#665600",
-          100: "#332b00",
+        accent: {
+          900: "#ffd700",
+          800: "#cca900",
+          700: "#997c00",
+          600: "#665200",
+          500: "#332600",
+          400: "#1a1300",
+          300: "#0d0900",
+          200: "#070400",
+          100: "#000000",
         },
       }),
 });
@@ -126,67 +104,56 @@ export const themeSettings = (mode) => {
 
   return {
     palette: {
-      mode: mode,
-      ...(mode === "dark"
-        ? {
-            primary: {
-              main: colors.primary[500],
-            },
-            secondary: {
-              main: colors.secondary[500],
-            },
-            neutral: {
-              dark: colors.base[700],
-              main: colors.base[500],
-              light: colors.base[100],
-            },
-            background: {
-              default: colors.primary[500],
-            },
-          }
-        : {
-            primary: {
-              main: colors.primary[100],
-            },
-            secondary: {
-              main: colors.secondary[500],
-            },
-            neutral: {
-              dark: colors.base[700],
-              main: colors.base[500],
-              light: colors.base[100],
-            },
-            background: {
-              default: colors.base[100],
-            },
-          }),
+      mode,
+      primary: {
+        main: colors.primary[500],
+      },
+      secondary: {
+        main: colors.secondary[500],
+      },
+      background: {
+        default: colors.base[500],
+        paper: colors.base[600],
+      },
+      text: {
+        primary: colors.base[100],
+        secondary: colors.accent[300],
+      },
+      accent: {
+        main: colors.accent[500],
+      },
     },
-    Typography: {
-      fontFamily: ["Jacquard 12", "sans-serif"].join(","),
-      fontSize: 12,
+    typography: {
+      fontFamily: "Roboto, sans-serif",
+      fontSize: 14,
       h1: {
-        fontFamily: ["Jacquard 12", "sans-serif"].join(","),
         fontSize: 40,
       },
       h2: {
-        fontFamily: ["Jacquard 12", "sans-serif"].join(","),
         fontSize: 32,
       },
       h3: {
-        fontFamily: ["Jacquard 12", "sans-serif"].join(","),
         fontSize: 24,
       },
       h4: {
-        fontFamily: ["Jacquard 12", "sans-serif"].join(","),
         fontSize: 20,
       },
       h5: {
-        fontFamily: ["Jacquard 12", "sans-serif"].join(","),
         fontSize: 16,
       },
       h6: {
-        fontFamily: ["Jacquard 12", "sans-serif"].join(","),
         fontSize: 14,
+      },
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: "8px",
+            textTransform: "none",
+            fontWeight: 600,
+          },
+        },
       },
     },
   };
@@ -198,17 +165,19 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = () => {
-  const [mode, setMode] = useState("dark");
-
-  const colorMode = useMemo(
-    () => ({
-      toggleColorMode: () =>
-        setMode((prev) => (prev === "light" ? "dark" : "light")),
-    }),
-    []
-  );
-
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-
-  return [theme, colorMode];
+  const theme = createTheme({
+    palette: {
+      mode: "light", // or "dark"
+      primary: { main: "#ff7043" },
+      secondary: { main: "#4b0082" },
+      background: {
+        default: "#1a1a1a",
+        paper: "#f2efe6",
+      },
+    },
+    typography: {
+      fontFamily: "sans-serif",
+    },
+  });
+  return [theme];
 };

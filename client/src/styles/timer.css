@@ -1,3 +1,4 @@
+/* General Timer Container */
 .timer {
   display: flex;
   flex-direction: column;
@@ -29,41 +30,7 @@
   width: fit-content;
 }
 
-.timer-buttons {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-.timer-button {
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.timer-button:hover {
-  background-color: var(--accent-color);
-  transform: scale(1.05);
-}
-
-/* Secondary button style */
-.timer-button.secondary {
-  background-color: transparent;
-  border: 2px solid var(--neutral-color);
-  color: var(--background-color);
-}
-
-.timer-button.secondary:hover {
-  background-color: var(--accent-color);
-  color: var(--background-color);
-  transform: scale(1.05);
-}
-
+/* Session Buttons Wrapper */
 .session-buttons {
   display: flex;
   gap: 10px;
@@ -72,24 +39,9 @@
   flex-wrap: wrap;
 }
 
-.session-button {
-  padding: 8px 14px;
-  font-size: 1rem;
-  background: transparent;
-  border: 2px solid var(--neutral-color);
-  color: var(--background-color);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.session-button:hover {
-  background-color: var(--accent-color);
-  transform: scale(1.05);
-}
-
-.session-button.active {
-  background-color: var(--primary-color);
-  color: var(--background-color);
-  transform: scale(1.05);
+/* Timer Buttons Wrapper */
+.timer-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
 }
