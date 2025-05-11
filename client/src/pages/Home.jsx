@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Timer from "./Timer";
 import axios from "axios";
 import useUser from "../utils/useUser";
@@ -14,13 +14,15 @@ import {
   Grid,
 } from "@mui/material";
 import "../styles/tracking.css";
+import { SettingsContext } from "../utils/SettingsContext"; // Make sure the path is correct
 
 const HomePage = () => {
+  const { pomodoroDuration } = useContext(SettingsContext); // Get pomodoroDuration from context
   const [projects, setProjects] = useState([]);
   const [newProject, setNewProject] = useState("");
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(null);
   const [newTask, setNewTask] = useState("");
-  const [sessionMinutes, setSessionMinutes] = useState(25);
+  // We no longer need local state for sessionMinutes here
   const [sessionLogs, setSessionLogs] = useState([]);
 
   // Check if user is logged in
@@ -85,85 +87,100 @@ const HomePage = () => {
   };
 
   return (
-    <Box sx={{ padding: 2, maxHeight: "100%" }}>
-      <Grid container spacing={3}>
+    <Box
+      sx={{
+        width: { xs: "100%", md: "30%", lg: "100%" },
+        height: "100%",
+        p: 3,
+        bgcolor: "background.paper",
+        color: "text.primary",
+        borderRadius: 2,
+        boxShadow: 4,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
+    >
+      <Grid container spacing={3} alignItems="flex-start">
+        <Grid item xs={12} md={6}>
+          {/* Left side: Project and Task Input */}
+          <Box>
+            <Typography variant="h6">Add a New Project</Typography>
+            <TextField
+              label="New Project Name"
+              value={newProject}
+              onChange={(e) => setNewProject(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <Button variant="contained" onClick={handleAddProject}>
+              Add Project
+            </Button>
+          </Box>
+
+          {projects.length > 0 && (
+            <Box mt={4}>
+              <Typography variant="h6">Select a Project</Typography>
+              <FormControl fullWidth>
+                <InputLabel>Project</InputLabel>
+                <Select
+                  value={selectedProjectIndex ?? ""}
+                  onChange={(e) =>
+                    setSelectedProjectIndex(
+                      e.target.value !== "" ? Number(e.target.value) : null
+                    )
+                  }
+                >
+                  <MenuItem value="">Select a Project</MenuItem>
+                  {projects.map((project, index) => (
+                    <MenuItem key={index} value={index}>
+                      {project.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+
+          {selectedProjectIndex !== null && (
+            <Box mt={4}>
+              <Typography variant="h6">Add a New Task</Typography>
+              <TextField
+                label="New Task Name"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
+              <Button variant="contained" onClick={handleAddTask}>
+                Add Task
+              </Button>
+
+              <Box mt={2}>
+                <Typography variant="h6">Tasks:</Typography>
+                <ul>
+                  {projects[selectedProjectIndex].tasks.map(
+                    (task, taskIndex) => (
+                      <li key={taskIndex}>{task}</li>
+                    )
+                  )}
+                </ul>
+              </Box>
+            </Box>
+          )}
+        </Grid>
         <Grid
           item
           xs={12}
           md={6}
           sx={{ display: "flex", justifyContent: "center" }}
         >
-          <Timer
-            sessionDuration={sessionMinutes}
-            onTimerComplete={handleTimerComplete}
-          />
+          {/* Right side: Timer */}
+          <Timer onTimerComplete={handleTimerComplete} />
         </Grid>
       </Grid>
 
-      <Box mt={4}>
-        <Typography variant="h6">Add a New Project</Typography>
-        <TextField
-          label="New Project Name"
-          value={newProject}
-          onChange={(e) => setNewProject(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <Button variant="contained" onClick={handleAddProject}>
-          Add Project
-        </Button>
-      </Box>
-
-      {projects.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h6">Select a Project</Typography>
-          <FormControl fullWidth>
-            <InputLabel>Project</InputLabel>
-            <Select
-              value={selectedProjectIndex ?? ""}
-              onChange={(e) =>
-                setSelectedProjectIndex(
-                  e.target.value !== "" ? Number(e.target.value) : null
-                )
-              }
-            >
-              <MenuItem value="">Select a Project</MenuItem>
-              {projects.map((project, index) => (
-                <MenuItem key={index} value={index}>
-                  {project.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-      )}
-
-      {selectedProjectIndex !== null && (
-        <Box mt={4}>
-          <Typography variant="h6">Add a New Task</Typography>
-          <TextField
-            label="New Task Name"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <Button variant="contained" onClick={handleAddTask}>
-            Add Task
-          </Button>
-
-          <Box mt={2}>
-            <Typography variant="h6">Tasks:</Typography>
-            <ul>
-              {projects[selectedProjectIndex].tasks.map((task, taskIndex) => (
-                <li key={taskIndex}>{task}</li>
-              ))}
-            </ul>
-          </Box>
-        </Box>
-      )}
-
-      {/* Optional: Display session log */}
+      {/* Optional: Display session log (can be below the grid) */}
       {sessionLogs.length > 0 && (
         <Box mt={4}>
           <Typography variant="h6">Session History</Typography>

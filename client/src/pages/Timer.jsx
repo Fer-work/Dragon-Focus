@@ -1,18 +1,33 @@
 import { useState, useEffect, useRef } from "react";
-import { Box, Button, Typography, TextField } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
+import { useContext } from "react";
+import { SettingsContext } from "../utils/SettingsContext"; // Import the context
 
-const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
-  const [secondsLeft, setSecondsLeft] = useState(sessionDuration * 60);
+const Timer = ({ onTimerComplete }) => {
+  const { pomodoroDuration, shortBreakDuration, longBreakDuration } =
+    useContext(SettingsContext);
+  const [secondsLeft, setSecondsLeft] = useState(pomodoroDuration * 60);
   const [isRunning, setIsRunning] = useState(false);
-  const [currentSession, setCurrentSession] = useState("work");
-  const [customDuration, setCustomDuration] = useState(sessionDuration); // For custom duration input
+  const [currentSession, setCurrentSession] = useState("pomodoro");
   const intervalRef = useRef(null);
 
-  // Update timer if the parent passes a new sessionDuration
+  // Update timer when the active session or durations change
   useEffect(() => {
-    setSecondsLeft(sessionDuration * 60);
-    setCustomDuration(sessionDuration);
-  }, [sessionDuration]);
+    switch (currentSession) {
+      case "pomodoro":
+        setSecondsLeft(pomodoroDuration * 60);
+        break;
+      case "shortBreak":
+        setSecondsLeft(shortBreakDuration * 60);
+        break;
+      case "longBreak":
+        setSecondsLeft(longBreakDuration * 60);
+        break;
+      default:
+        setSecondsLeft(pomodoroDuration * 60);
+        break;
+    }
+  }, [currentSession, pomodoroDuration, shortBreakDuration, longBreakDuration]);
 
   // Run the timer logic
   useEffect(() => {
@@ -22,7 +37,7 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
             setIsRunning(false);
-            onTimerComplete?.(sessionDuration * 60); // Send duration back to parent
+            onTimerComplete?.(secondsLeft); // Send the duration of the completed session
             return 0;
           }
           return prev - 1;
@@ -34,7 +49,7 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [isRunning, sessionDuration]);
+  }, [isRunning, onTimerComplete, secondsLeft]);
 
   const toggleTimer = () => {
     setIsRunning((prev) => !prev);
@@ -42,23 +57,27 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
 
   const resetTimer = () => {
     clearInterval(intervalRef.current);
-    setSecondsLeft(customDuration * 60);
+    switch (currentSession) {
+      case "pomodoro":
+        setSecondsLeft(pomodoroDuration * 60);
+        break;
+      case "shortBreak":
+        setSecondsLeft(shortBreakDuration * 60);
+        break;
+      case "longBreak":
+        setSecondsLeft(longBreakDuration * 60);
+        break;
+      default:
+        setSecondsLeft(pomodoroDuration * 60);
+        break;
+    }
     setIsRunning(false);
   };
 
-  const changeSession = (sessionType, durationInMinutes) => {
+  const changeSession = (sessionType) => {
     clearInterval(intervalRef.current);
     setCurrentSession(sessionType);
-    setSecondsLeft(durationInMinutes * 60);
     setIsRunning(false);
-  };
-
-  const handleCustomDurationChange = (e) => {
-    const newDuration = parseInt(e.target.value);
-    if (newDuration > 0) {
-      setCustomDuration(newDuration);
-      setSecondsLeft(newDuration * 60);
-    }
   };
 
   const formatTime = (seconds) => {
@@ -71,65 +90,48 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
 
   return (
     <Box
-      className="timer"
       sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        maxHeight: "80vh", // Max height of 80% of viewport height
-        overflowY: "auto", // Allow scrolling if the content overflows
+        padding: 3,
+        borderRadius: 2,
+        bgcolor: "background.paper",
+        boxShadow: 2,
       }}
     >
-      <Typography variant="h4" sx={{ marginBottom: 2 }}>
-        🔥 Dragon Timer 🔥
-      </Typography>
-
-      {/* Custom Duration Input */}
-      <TextField
-        label="Custom Time (min)"
-        type="number"
-        value={customDuration}
-        onChange={handleCustomDurationChange}
-        variant="outlined"
-        sx={{ marginBottom: 2 }}
-      />
-
       {/* Session Buttons */}
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 1,
+          marginBottom: 2,
+          justifyContent: "center",
+        }}
+      >
         <Button
           variant="contained"
-          color={currentSession === "work" ? "primary" : "default"}
-          onClick={() => changeSession("work", 25)}
+          color={currentSession === "pomodoro" ? "primary" : "default"}
+          onClick={() => changeSession("pomodoro")}
+          size="small"
         >
-          Pomodoro (25 min)
+          Pomodoro
         </Button>
         <Button
           variant="contained"
           color={currentSession === "shortBreak" ? "primary" : "default"}
-          onClick={() => changeSession("shortBreak", 5)}
+          onClick={() => changeSession("shortBreak")}
+          size="small"
         >
-          Short Break (5 min)
+          Short Break
         </Button>
         <Button
           variant="contained"
           color={currentSession === "longBreak" ? "primary" : "default"}
-          onClick={() => changeSession("longBreak", 15)}
+          onClick={() => changeSession("longBreak")}
+          size="small"
         >
-          Long Break (15 min)
-        </Button>
-        <Button
-          variant="contained"
-          color={currentSession === "focusCycle" ? "primary" : "default"}
-          onClick={() => changeSession("focusCycle", 90)}
-        >
-          Focus Cycle (90 min)
-        </Button>
-        <Button
-          variant="contained"
-          color={currentSession === "focusCycleBreak" ? "primary" : "default"}
-          onClick={() => changeSession("focusCycleBreak", 20)}
-        >
-          Focus Break (20 min)
+          Long Break
         </Button>
       </Box>
 
@@ -139,12 +141,12 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
       </Typography>
 
       {/* Timer Buttons */}
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box sx={{ display: "flex", gap: 1 }}>
         <Button
           variant="contained"
           color={isRunning ? "error" : "success"}
           onClick={toggleTimer}
-          sx={{ padding: "1rem 2rem" }}
+          sx={{ padding: "0.75rem 1.5rem" }}
         >
           {isRunning ? "Pause" : "Start"}
         </Button>
@@ -152,7 +154,7 @@ const Timer = ({ sessionDuration = 25, onTimerComplete }) => {
           variant="outlined"
           color="secondary"
           onClick={resetTimer}
-          sx={{ padding: "1rem 2rem" }}
+          sx={{ padding: "0.75rem 1.5rem" }}
         >
           Reset
         </Button>

@@ -1,6 +1,5 @@
 import { createContext, useState, useMemo } from "react";
 import { createTheme } from "@mui/material/styles";
-import { Typography } from "@mui/material";
 
 // Color design tokens
 export const tokens = (mode) => ({
@@ -114,6 +113,7 @@ export const themeSettings = (mode) => {
       background: {
         default: colors.base[500],
         paper: colors.base[600],
+        fire: colors.base[200],
       },
       text: {
         primary: colors.base[100],
@@ -124,24 +124,30 @@ export const themeSettings = (mode) => {
       },
     },
     typography: {
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: "'MedievalSharp', cursive", // Apply the MedievalSharp font
       fontSize: 14,
       h1: {
+        fontFamily: "'MedievalSharp', cursive",
         fontSize: 40,
       },
       h2: {
+        fontFamily: "'MedievalSharp', cursive",
         fontSize: 32,
       },
       h3: {
+        fontFamily: "'MedievalSharp', cursive",
         fontSize: 24,
       },
       h4: {
+        fontFamily: "'MedievalSharp', cursive",
         fontSize: 20,
       },
       h5: {
+        fontFamily: "'MedievalSharp', cursive",
         fontSize: 16,
       },
       h6: {
+        fontFamily: "'MedievalSharp', cursive",
         fontSize: 14,
       },
     },
@@ -149,6 +155,7 @@ export const themeSettings = (mode) => {
       MuiButton: {
         styleOverrides: {
           root: {
+            fontFamily: "'MedievalSharp', cursive", // Apply to buttons as well
             borderRadius: "8px",
             textTransform: "none",
             fontWeight: 600,
@@ -165,19 +172,16 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = () => {
-  const theme = createTheme({
-    palette: {
-      mode: "light", // or "dark"
-      primary: { main: "#ff7043" },
-      secondary: { main: "#4b0082" },
-      background: {
-        default: "#1a1a1a",
-        paper: "#f2efe6",
-      },
-    },
-    typography: {
-      fontFamily: "sans-serif",
-    },
-  });
-  return [theme];
+  const [mode, setMode] = useState("dark"); // Default to dark mode for the flame aesthetic
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () =>
+        setMode((prev) => (prev === "light" ? "dark" : "light")),
+    }),
+    []
+  );
+
+  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+
+  return [theme, colorMode];
 };

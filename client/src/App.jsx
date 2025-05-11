@@ -35,7 +35,7 @@ function App() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <CssBaseline /> {/* Ensures consistent baseline styles */}
+        <CssBaseline />
         <RouterProvider router={router} />
       </ThemeProvider>
     </ColorModeContext.Provider>

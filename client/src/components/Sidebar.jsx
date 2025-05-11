@@ -16,22 +16,22 @@ export default function Sidebar() {
   return (
     <Box
       sx={{
-        width: { xs: "100%", md: "30%" },
         height: "100%",
-        p: 3,
-        bgcolor: "background.paper",
-        color: "text.primary",
+        width: "100%",
+        bgcolor: "background.default",
         borderRadius: 2,
-        boxShadow: 4,
+        padding: 1,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
+        justifyContent: "space-evenly",
       }}
     >
       {/* Header */}
-      <Typography variant="h5" align="center" gutterBottom>
+      <Typography variant="h4" align="center" gutterBottom>
         Dragon Focus
       </Typography>
+
+      <Divider sx={{ my: 2 }} />
 
       {/* Navigation */}
       <Stack spacing={2} flexGrow={1}>
