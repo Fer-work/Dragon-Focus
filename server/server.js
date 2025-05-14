@@ -44,7 +44,9 @@ app.use(routes);
 connectToDatabase()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`API Server listening on http://localhost:${PORT}`);
+      console.log(
+        `Dragon Focus API Server listening on http://localhost:${PORT}`
+      );
     });
   })
   .catch((err) => {
