@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-
 import express from "express";
 import admin from "firebase-admin";
 import fs from "fs";
@@ -9,17 +8,15 @@ import { fileURLToPath } from "url";
 import { connectToDatabase } from "./config/connection.js";
 import routes from "./routes/index.js";
 
-// Load environment variables from .env file
 dotenv.config();
 
-// This gets the current path file (since __filename isn't nativel available in ES modules)
 const __filename = fileURLToPath(import.meta.url);
-
-// This gets the current directory name of the file
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(__filename); // __dirname here refers to the 'server' directory
 
 // Read Firebase service account credentials from JSON file
-const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
+// Consider making this path more robust
+const credentialsPath = path.join(__dirname, "credentials.json"); // Assumes credentials.json is in the 'server' directory
+const credentials = JSON.parse(fs.readFileSync(credentialsPath));
 
 admin.initializeApp({
   credential: admin.credential.cert(credentials),
@@ -32,14 +29,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Serve static files from the frontend build directory
-app.use(express.static(path.join(__dirname, "dist")));
+// Ensure this path matches where your client actually builds.
+// If client is a sibling to server, and builds into client/build:
+app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
-// For all non-API routes, serve teh frontend app's index.html
-app.get(/^(?!\/api).+/, (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
-});
-
-app.use(routes);
+app.use(routes); // This is your main router from routes/index.js
 
 connectToDatabase()
   .then(() => {

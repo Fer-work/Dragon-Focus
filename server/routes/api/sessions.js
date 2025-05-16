@@ -1,15 +1,25 @@
 import { Router } from "express";
 import {
   createSession,
-  getSessions,
+  getSessionsForUser,
+  getSessionById, // Ensure this is imported
   updateSession,
   deleteSession,
 } from "../../controllers/sessionController.js";
 
+import { protect } from "../../utils/authMiddleware.js";
+
 const router = Router();
 
-router.route("/").get(getSessions).post(createSession);
+// Apply auth middleware to all session routes
+router.use(protect);
 
-router.route("/:id").put(updateSession).delete(deleteSession);
+router.route("/").get(getSessionsForUser).post(createSession);
+
+router
+  .route("/:id")
+  .get(getSessionById)
+  .put(updateSession)
+  .delete(deleteSession);
 
 export default router;

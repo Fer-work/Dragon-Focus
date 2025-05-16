@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useEffect } from "react";
 import Timer from "./Timer";
 import axios from "axios";
 import useUser from "../utils/useUser";
@@ -28,6 +29,21 @@ const HomePage = () => {
   // Check if user is logged in
   const { user } = useUser();
 
+  useEffect(() => {
+    const fetchToken = async () => {
+      if (user) {
+        try {
+          const token = await user.getIdToken(true); // Pass true to force refresh if needed
+          console.log("Firebase ID Token for Postman:", token);
+          // You can copy this token from the browser console
+        } catch (error) {
+          console.error("Error fetching ID token for Postman:", error);
+        }
+      }
+    };
+    fetchToken();
+  }, [user]); // Re-run if the user object changes
+
   const handleAddProject = () => {
     if (newProject.trim()) {
       setProjects([...projects, { name: newProject, tasks: [] }]);
@@ -52,6 +68,7 @@ const HomePage = () => {
     const timestamp = new Date().toISOString();
 
     const token = user && (await user.getIdToken());
+    console.log("Firebase ID Token: ", token);
     const headers = token ? { authtoken: token } : {};
 
     const selectedProject =

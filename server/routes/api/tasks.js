@@ -1,15 +1,27 @@
 import { Router } from "express";
 import {
   createTask,
-  getTasks,
+  getTasksForUser, // Get all tasks for the authenticated user (can be filtered)
+  getTaskById,
   updateTask,
   deleteTask,
 } from "../../controllers/taskController.js";
+import { protect } from "../../utils/authMiddleware.js"; // Example: Your auth middleware
 
 const router = Router();
 
-router.route("/").get(getTasks).post(createTask);
+// All task routes should be protected
+router.use(protect); // Example: Apply auth middleware to all task routes
 
-router.route("/:id").put(updateTask).delete(deleteTask);
+router
+  .route("/")
+  .post(createTask) // Create a new task (projectId should be in the request body)
+  .get(getTasksForUser); // Get tasks for the authenticated user (e.g., query by projectId: /tasks?projectId=...)
+
+router
+  .route("/:taskId")
+  .get(getTaskById) // Get a specific task by its ID
+  .put(updateTask) // Update a specific task
+  .delete(deleteTask); // Delete a specific task
 
 export default router;
