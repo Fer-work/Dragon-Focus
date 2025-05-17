@@ -3,16 +3,21 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Pages
-import HomePage from "./pages/Home.jsx";
+import HomePage from "./pages/HomePage.jsx";
 import Layout from "./Layout.jsx";
-import NotFoundPage from "./pages/NotFound.jsx";
-import StatsPage, { statsLoader } from "./pages/Stats.jsx";
-import SettingsPage from "./pages/Settings.jsx";
-import LoginPage from "./pages/Login.jsx";
-import CreateAccountPage from "./pages/CreateAccount.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
+import StatsPage, { statsLoader } from "./pages/StatsPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import CreateAccountPage from "./pages/CreateAccountPage.jsx";
+import Landing from "./components/Landing.jsx";
 
 // Router Configuration
 const routes = [
+  {
+    path: "/landing",
+    element: <Landing />, // import at the top
+  },
   {
     path: "/",
     element: <Layout />,

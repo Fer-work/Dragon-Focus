@@ -91,6 +91,8 @@ const Timer = ({ onTimerComplete }) => {
   return (
     <Box
       sx={{
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -105,7 +107,6 @@ const Timer = ({ onTimerComplete }) => {
         sx={{
           display: "flex",
           gap: 1,
-          marginBottom: 2,
           justifyContent: "center",
         }}
       >
@@ -136,12 +137,27 @@ const Timer = ({ onTimerComplete }) => {
       </Box>
 
       {/* Timer Display */}
-      <Typography variant="h2" sx={{ marginBottom: 2 }}>
-        {formatTime(secondsLeft)}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignContent: "center",
+          textAlign: "center",
+          width: "90%",
+          height: "60%",
+          bgcolor: "background.fire",
+          borderRadius: 2,
+          boxShadow: 3,
+          my: "auto",
+        }}
+      >
+        <Typography variant="h1" sx={{ my: "auto" }}>
+          {formatTime(secondsLeft)}
+        </Typography>
+      </Box>
 
       {/* Timer Buttons */}
-      <Box sx={{ display: "flex", gap: 1 }}>
+      <Box sx={{ display: "flex", gap: 2 }}>
         <Button
           variant="contained"
           color={isRunning ? "error" : "success"}

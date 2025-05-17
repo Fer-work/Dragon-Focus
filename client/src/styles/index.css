@@ -28,7 +28,7 @@ body,
 
 /* === Body Background === */
 body {
-  background-image: var(--flame-gradient);
+  background-image: url("../assets/background2.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
