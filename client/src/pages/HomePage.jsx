@@ -520,7 +520,9 @@ const HomePage = () => {
                 disabled={!selectedProjectId || isLoadingTasks}
                 sx={{
                   mb: 2,
-                  bgcolor: "primary.main",
+                  bgcolor: !selectedProjectId
+                    ? "secondary.main"
+                    : "primary.main",
                   color: (theme) =>
                     theme.palette.mode === "dark"
                       ? theme.palette.neutral[900]
@@ -537,7 +539,7 @@ const HomePage = () => {
                     display: "block",
                     margin: "auto",
                     mt: 1,
-                    color: "secondary.light",
+                    color: "secondary.dark",
                   }}
                 />
               )}

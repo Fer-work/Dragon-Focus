@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import Layout from "./Layout.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
-import StatsPage, { statsLoader } from "./pages/StatsPage.jsx";
+import StatsPage from "./pages/StatsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import CreateAccountPage from "./pages/CreateAccountPage.jsx";
@@ -24,7 +24,7 @@ const routes = [
     errorElement: <NotFoundPage />,
     children: [
       { path: "/", element: <HomePage /> },
-      { path: "/stats", element: <StatsPage />, loader: statsLoader },
+      { path: "/stats", element: <StatsPage /> },
       { path: "/settings", element: <SettingsPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/create-account", element: <CreateAccountPage /> },
