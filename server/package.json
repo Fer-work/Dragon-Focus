@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "dragon-focus-server",
   "version": "1.0.0",
   "description": "Server for Dragon Focus",
   "main": "server.js",

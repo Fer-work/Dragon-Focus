@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, Typography, useTheme, ButtonGroup } from "@mui/material";
 import { SettingsContext } from "../utils/SettingsContext";
 
@@ -10,7 +10,6 @@ import TimerIcon from "@mui/icons-material/Timer"; // For Pomodoro
 import FreeBreakfastIcon from "@mui/icons-material/FreeBreakfast"; // For Breaks
 
 const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
-  // Added disabled prop
   const { pomodoroDuration, shortBreakDuration, longBreakDuration } =
     useContext(SettingsContext);
   const theme = useTheme();
@@ -20,7 +19,7 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
   const [currentSession, setCurrentSession] = useState("pomodoro");
   const intervalRef = useRef(null);
 
-  // Effect to update timer when active session or durations change from context
+  // Effect to update timer when active session, durations, or isRunning state changes
   useEffect(() => {
     let newDuration;
     switch (currentSession) {
@@ -38,25 +37,36 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
         break;
     }
     setSecondsLeft(newDuration);
-    // When session type changes, timer should not be running
-    // If it was running, clear interval and set isRunning to false
+
+    // If the session type changes OR if isRunning becomes false externally (e.g. timer completes),
+    // ensure the timer is stopped and isRunning state is false.
     if (isRunning) {
+      // Only act if it was previously running and now needs to stop due to session change
+      // This specific 'if (isRunning)' block's purpose is to stop the timer
+      // when currentSession or durations change WHILE it was running.
+      // The primary stopping logic is in the second useEffect.
+      // However, if currentSession changes, we want to reset isRunning.
       clearInterval(intervalRef.current);
       setIsRunning(false);
     }
-  }, [currentSession, pomodoroDuration, shortBreakDuration, longBreakDuration]); // Removed isRunning from deps
+  }, [
+    currentSession,
+    pomodoroDuration,
+    shortBreakDuration,
+    longBreakDuration,
+    isRunning,
+  ]); // Added isRunning to dependency array
 
   // Effect to run the timer logic
   useEffect(() => {
     if (isRunning && !timerDisabledProp) {
-      // Only run if not globally disabled
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
             setIsRunning(false);
-            // Pass the duration of the session that just completed
             let completedSessionDuration = 0;
+            // Determine duration based on the session type that just ENDED
             switch (currentSession) {
               case "pomodoro":
                 completedSessionDuration = pomodoroDuration * 60;
@@ -77,7 +87,7 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
         });
       }, 1000);
     } else {
-      clearInterval(intervalRef.current); // Clear interval if not running or disabled
+      clearInterval(intervalRef.current);
     }
     return () => {
       clearInterval(intervalRef.current);
@@ -86,19 +96,26 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
     isRunning,
     onTimerComplete,
     timerDisabledProp,
-    currentSession,
-    pomodoroDuration,
-    shortBreakDuration,
-    longBreakDuration,
-  ]); // Added dependencies that affect completedSessionDuration
+    currentSession, // currentSession is needed here for the switch case in onTimerComplete
+    pomodoroDuration, // Needed for onTimerComplete
+    shortBreakDuration, // Needed for onTimerComplete
+    longBreakDuration, // Needed for onTimerComplete
+  ]);
 
   const toggleTimer = () => {
-    if (timerDisabledProp) return; // Don't toggle if globally disabled
+    if (timerDisabledProp && !isRunning) return; // Prevent starting if disabled
+    if (timerDisabledProp && isRunning) {
+      // Allow pausing even if disabled
+      setIsRunning(false);
+      return;
+    }
     setIsRunning((prev) => !prev);
   };
 
   const resetTimer = () => {
-    if (timerDisabledProp && !isRunning) return; // Allow reset if running even if disabled, or if not disabled
+    // Allow reset if timer is running OR if it's not disabled
+    if (!isRunning && timerDisabledProp) return;
+
     clearInterval(intervalRef.current);
     let newDuration;
     switch (currentSession) {
@@ -120,9 +137,10 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
   };
 
   const changeSession = (sessionType) => {
-    if (timerDisabledProp && sessionType !== currentSession) return; // Prevent changing session if disabled, unless it's to reset current
+    if (isRunning) return; // Do not allow changing session type while timer is running
+    if (timerDisabledProp && sessionType !== currentSession) return;
     setCurrentSession(sessionType);
-    // setIsRunning(false); // This is handled by the first useEffect now
+    // isRunning will be set to false by the first useEffect when currentSession changes
   };
 
   const formatTime = (seconds) => {
@@ -133,26 +151,33 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
     return `${mins}:${secs}`;
   };
 
-  // Styles for session buttons
   const getSessionButtonStyle = (sessionName) => ({
     flexGrow: 1,
     color:
       currentSession === sessionName
         ? theme.palette.getContrastText(theme.palette.primary.main)
-        : theme.palette.text.secondary, // Inactive text color
+        : theme.palette.text.secondary,
     borderColor:
       currentSession === sessionName
-        ? "primary.dark"
-        : theme.palette.neutral[theme.palette.mode === "dark" ? 600 : 300],
+        ? theme.palette.primary.dark // Active border
+        : theme.palette.neutral[theme.palette.mode === "dark" ? 600 : 300], // Inactive border
+    backgroundColor:
+      currentSession === sessionName
+        ? theme.palette.primary.main
+        : "transparent",
     "&:hover": {
       backgroundColor:
         currentSession === sessionName
-          ? "primary.dark"
+          ? theme.palette.primary.dark
           : theme.palette.action.hover,
       borderColor:
         currentSession === sessionName
-          ? "primary.dark"
+          ? theme.palette.primary.dark
           : theme.palette.primary.light,
+    },
+    "&.Mui-disabled": {
+      // Style for when ButtonGroup is disabled
+      borderColor: theme.palette.action.disabledBackground,
     },
   });
 
@@ -164,21 +189,19 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "space-around", // Distribute space more evenly
-        p: { xs: 2, sm: 3 }, // Responsive padding
-        // bgcolor, borderRadius, boxShadow, border are inherited from HomePage's timer panel Box
+        justifyContent: "space-around",
+        p: { xs: 2, sm: 3 },
       }}
     >
       {/* Session Type Buttons */}
       <ButtonGroup
-        variant="outlined"
-        aria-label="outlined primary button group"
+        variant="outlined" // Base variant, active button will override to contained
+        aria-label="session type button group"
         fullWidth
         sx={{ mb: 3 }}
-        disabled={timerDisabledProp && isRunning} // Disable changing session type while running & globally disabled
+        disabled={isRunning || timerDisabledProp} // Disable changing session type while running OR if globally disabled
       >
         <Button
-          color={currentSession === "pomodoro" ? "primary" : "inherit"}
           variant={currentSession === "pomodoro" ? "contained" : "outlined"}
           onClick={() => changeSession("pomodoro")}
           startIcon={<TimerIcon />}
@@ -187,7 +210,6 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
           Pomodoro
         </Button>
         <Button
-          color={currentSession === "shortBreak" ? "primary" : "inherit"}
           variant={currentSession === "shortBreak" ? "contained" : "outlined"}
           onClick={() => changeSession("shortBreak")}
           startIcon={<FreeBreakfastIcon />}
@@ -196,10 +218,9 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
           Short Break
         </Button>
         <Button
-          color={currentSession === "longBreak" ? "primary" : "inherit"}
           variant={currentSession === "longBreak" ? "contained" : "outlined"}
           onClick={() => changeSession("longBreak")}
-          startIcon={<FreeBreakfastIcon sx={{ transform: "scale(1.2)" }} />} // Slightly larger icon
+          startIcon={<FreeBreakfastIcon sx={{ transform: "scale(1.2)" }} />}
           sx={getSessionButtonStyle("longBreak")}
         >
           Long Break
@@ -211,29 +232,38 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
         sx={{
           display: "flex",
           justifyContent: "center",
-          alignItems: "center", // Vertically center the text
-          width: { xs: "260px", sm: "320px", md: "380px" }, // Responsive width
-          height: { xs: "160px", sm: "200px", md: "240px" }, // Responsive height
+          alignItems: "center",
+          width: { xs: "240px", sm: "300px", md: "360px" }, // Slightly adjusted for potentially larger digits
+          height: { xs: "240px", sm: "300px", md: "360px" },
           bgcolor:
             theme.palette.mode === "dark"
-              ? theme.palette.primary[900]
-              : theme.palette.neutral[100], // Very dark/light for high contrast
-          border: `4px solid ${theme.palette.primary.main}`, // Prominent border with primary color
-          borderRadius: "50%", // Make it circular
-          boxShadow: `0 0 10px ${theme.palette.primary.light}, 0 0 20px ${theme.palette.accent.main} inset`, // Glow effect
-          my: 2, // Adjusted margin
-          position: "relative", // For potential pseudo-elements or inner glow
+              ? theme.palette.neutral[900] // Very Dark (almost black)
+              : theme.palette.neutral[100], // Very Light Jade/Stone White
+          border: `4px solid ${theme.palette.primary.main}`, // Green for light, Orange for dark
+          borderRadius: "50%",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? `0 0 20px ${theme.palette.primary.light}, 0 0 30px ${theme.palette.accent.main} inset` // Dark mode glow
+              : `0 0 20px ${theme.palette.primary.light}, 0 0 30px ${theme.palette.primary.light} inset`, // Light mode glow (green based)
+          my: 2,
+          position: "relative",
         }}
       >
         <Typography
           variant="h1"
-          component="div" // More appropriate than h1 if "Dragon Focus" is the main h1
+          component="div"
           sx={{
-            fontFamily: "'Segment7', 'MedievalSharp', cursive", // Digital-looking font, fallback to theme
-            fontSize: { xs: "4rem", sm: "5.5rem", md: "7rem" }, // Responsive font size
-            color: theme.palette.accent.main, // Bright accent color for the digits
-            lineHeight: 1, // Ensure text is centered vertically
-            textShadow: `0 0 10px ${theme.palette.accent.light}`, // Subtle glow for text
+            fontFamily: "'Segment7', 'MedievalSharp', cursive",
+            fontSize: { xs: "3.5rem", sm: "5rem", md: "6.5rem" }, // Adjusted for container
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.accent.main // Gold for Dark Mode
+                : theme.palette.primary.dark, // Dark Green for Light Mode
+            lineHeight: 1,
+            textShadow:
+              theme.palette.mode === "dark"
+                ? `0 0 10px ${theme.palette.accent.light}` // Gold glow
+                : `0 0 8px ${theme.palette.primary.light}`, // Subtle Green glow
           }}
         >
           {formatTime(secondsLeft)}
@@ -245,25 +275,28 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
         variant="contained"
         aria-label="timer control button group"
         sx={{ gap: { xs: 1, sm: 2 } }}
-        disabled={timerDisabledProp} // Disable control buttons if globally disabled
+        disabled={timerDisabledProp && !isRunning} // Only disable if globally disabled AND timer is not running (allows pausing)
       >
         <Button
           variant="contained"
           onClick={toggleTimer}
           startIcon={isRunning ? <PauseIcon /> : <PlayArrowIcon />}
+          disabled={timerDisabledProp && !isRunning} // Specifically disable start if globally disabled
           sx={{
             px: { xs: 2, sm: 4 },
             py: { xs: 1, sm: 1.5 },
             fontSize: { xs: "0.8rem", sm: "1rem" },
             bgcolor: isRunning
-              ? theme.palette.error.main
-              : theme.palette.success.main, // Use theme's success/error
+              ? theme.palette.warning.main // Use warning color (orange) for Pause
+              : theme.palette.success.main,
             color: theme.palette.getContrastText(
-              isRunning ? theme.palette.error.main : theme.palette.success.main
+              isRunning
+                ? theme.palette.warning.main
+                : theme.palette.success.main
             ),
             "&:hover": {
               bgcolor: isRunning
-                ? theme.palette.error.dark
+                ? theme.palette.warning.dark
                 : theme.palette.success.dark,
             },
           }}
@@ -274,14 +307,19 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
           variant="outlined"
           onClick={resetTimer}
           startIcon={<ReplayIcon />}
+          // Reset button should be available even if timerDisabledProp is true, as long as timer is running or was running
+          disabled={!isRunning && timerDisabledProp}
           sx={{
             px: { xs: 2, sm: 4 },
             py: { xs: 1, sm: 1.5 },
             fontSize: { xs: "0.8rem", sm: "1rem" },
             color: "secondary.main",
-            borderColor: "secondary.light",
+            borderColor:
+              theme.palette.mode === "dark"
+                ? "secondary.light"
+                : "secondary.main", // Ensure visibility in light mode
             "&:hover": {
-              borderColor: "secondary.main",
+              borderColor: "secondary.dark",
               backgroundColor: theme.palette.action.hover,
             },
           }}

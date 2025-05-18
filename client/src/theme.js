@@ -1,58 +1,54 @@
 import { createContext, useState, useMemo } from "react";
 import { createTheme } from "@mui/material/styles";
 
-// Color design tokens inspired by the flame gradient
+// Color design tokens inspired by the flame gradient (dark) and Quetzalcoatl (light)
 export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
-        // Dark Mode Palette - Infused with Flame Gradient
+        // Dark Mode Palette - Infused with Flame Gradient (UNCHANGED)
         neutral: {
-          // For backgrounds and general text
-          100: "#f5df62", // Pale Gold from gradient (Primary Text)
-          200: "#ffd700", // Gold from gradient (Secondary Text / Brighter elements)
-          300: "#ccac00", // Darker Gold
-          400: "#a39a89", // Darker Parchment (like previous neutral)
-          500: "#3c362a", // Dark Taupe
-          600: "#1E0000", // Dark Red-Black (Paper Background, inspired by gradient's #330000)
-          700: "#0F0000", // Very Dark Red-Black (Default Background, inspired by gradient)
-          800: "#050000", // Almost Black
-          900: "#000000", // Black (from gradient)
+          100: "#f5df62",
+          200: "#ffd700",
+          300: "#ccac00",
+          400: "#a39a89",
+          500: "#3c362a",
+          600: "#1E0000",
+          700: "#0F0000",
+          800: "#050000",
+          900: "#000000",
         },
         primary: {
-          // Core Flame Colors from Gradient
-          100: "#fff5e0", // Very Pale Orange/Yellow
-          200: "#f5df62", // Pale Gold (from gradient, lightest flame tip)
-          300: "#ffd700", // Gold (from gradient)
-          400: "#ffa500", // Lighter Orange (from gradient)
-          500: "#ff8c00", // Main Orange (from gradient, --flame-orange)
-          600: "#cc4e00", // Dark Orange (from gradient)
-          700: "#972424", // Muted Red (from gradient)
-          800: "#660000", // Dark Red (from gradient)
-          900: "#330000", // Very Dark Red (from gradient)
+          100: "#fff5e0",
+          200: "#f5df62",
+          300: "#ffd700",
+          400: "#ffa500",
+          500: "#ff8c00",
+          600: "#cc4e00",
+          700: "#972424",
+          800: "#660000",
+          900: "#330000",
         },
         secondary: {
-          // Rich Brown / Leather - to complement flame without competing
           100: "#d9c8b8",
           200: "#c0a992",
           300: "#a68b6c",
           400: "#8c6f4f",
-          500: "#735738", // Main Rich Brown
+          500: "#735738",
           600: "#5f472d",
           700: "#4b3722",
           800: "#382818",
           900: "#24190e",
         },
         accent: {
-          // Brightest highlights - Gold/Yellow from Gradient
-          100: "#fff8e1", // Pale Gold
-          200: "#ffefb3", // Light Gold
-          300: "#ffe580", // Soft Gold
-          400: "#f5df62", // Pale Gold (from gradient)
-          500: "#ffd700", // Main Gold (from gradient)
-          600: "#e6ac00", // Darker Gold
-          700: "#cc9700", // Deep Gold
-          800: "#b38200", // Antique Gold
-          900: "#996f00", // Darkest Gold
+          100: "#fff8e1",
+          200: "#ffefb3",
+          300: "#ffe580",
+          400: "#f5df62",
+          500: "#ffd700",
+          600: "#e6ac00",
+          700: "#cc9700",
+          800: "#b38200",
+          900: "#996f00",
         },
         error: { main: "#f44336" },
         warning: { main: "#ffa726" },
@@ -60,58 +56,69 @@ export const tokens = (mode) => ({
         success: { main: "#66bb6a" },
       }
     : {
-        // Light Mode Palette - Harmonious with Flame Tones
+        // Light Mode Palette - "Vibrant Quetzal Mode"
         neutral: {
-          100: "#fdfcf9", // Very Light Cream (background default)
-          200: "#f4f0e9", // Light Cream (paper background)
-          300: "#e9e1d6", // Soft Beige
-          400: "#ded3c3", // Light Tan
-          500: "#c4b8a8", // Tan
-          600: "#a39a89", // Medium Taupe
-          700: "#660000", // Dark Red from gradient (Primary Text)
-          800: "#4c0000", // Deeper Red (Secondary Text)
-          900: "#330000", // Very Dark Red from gradient
+          100: "#fffcf2", // Radiant Light (Background Default)
+          200: "#f0f8f0", // Very Pale Green/Off-white (Paper Background - subtle green tint)
+          300: "#d0d8d0", // Light Stone Gray
+          400: "#b0b8b0", // Medium Stone Gray
+          500: "#909890", // Stone Gray
+          600: "#5c645f", // Darker Gray-Green (for less important text/borders)
+          700: "#2e294e", // Cosmic Indigo (Primary Text)
+          800: "#1f1c37", // Darker Indigo
+          900: "#100e20", // Very Dark Indigo/Near Black
         },
         primary: {
-          // Warm Oranges/Yellows, suitable for light backgrounds
-          100: "#fff8e1", // Pale Gold
-          200: "#ffefb3", // Light Gold
-          300: "#ffe082", // Soft Yellow-Orange
-          400: "#ffa500", // Lighter Orange (Good for main actions)
-          500: "#ff8c00", // Main Orange (Vibrant)
-          600: "#e67352", // Darker Orange
-          700: "#cc4e00", // Burnt Orange (Good for text on light if bold)
-          800: "#b34b2d",
-          900: "#993a1c",
+          // Jungle Emerald / Quetzal Green
+          100: "#e0f2e3", // Pale Emerald
+          200: "#c2e5c8", // Light Emerald
+          300: "#a3d8ad", // Soft Emerald
+          400: "#66bb6a", // Medium Emerald (MUI Green 400)
+          500: "#1e5128", // Jungle Emerald (Main Primary - from your gradient)
+          600: "#15421f", // Darker Jungle Emerald
+          700: "#0c3315", // Deep Jungle Emerald
+          800: "#05240c", // Very Deep Emerald
+          900: "#001503", // Darkest Emerald
         },
         secondary: {
-          // Muted Terracotta or Warm Brown
-          100: "#ffebee", // Lightest reddish-brown
-          200: "#ffddd9", // Lighter
-          300: "#fcc2bb",
-          400: "#f8a79e",
-          500: "#e57373", // Muted Red / Terracotta (was #d9534f)
-          600: "#d35f5f",
-          700: "#c24b4b",
-          800: "#b03737",
-          900: "#9f2323",
+          // Turquoise / Quetzal Feather Blue-Green
+          100: "#dff7f5", // Pale Turquoise
+          200: "#bff0ec", // Light Turquoise
+          300: "#9fe8e2", // Soft Turquoise
+          400: "#40c5b8", // Medium Turquoise (Derived from #00a896)
+          500: "#00a896", // Turquoise (Main Secondary - from your gradient)
+          600: "#008a7c", // Darker Turquoise
+          700: "#006c62", // Deep Turquoise
+          800: "#004e48", // Very Deep Turquoise
+          900: "#002f2e", // Darkest Turquoise
         },
         accent: {
-          // Gold / Bright Orange
-          100: "#fff8e1",
-          200: "#ffefb3",
-          300: "#ffe580",
-          400: "#ffd700", // Main Gold for accents (from gradient)
-          500: "#ffc107", // Deeper Gold / Bright Orange
-          600: "#e6ac00",
-          700: "#cc9700",
-          800: "#b38200",
-          900: "#996f00",
+          // Solar Gold & Sacred Fire Orange
+          // Gold Ramp
+          gold100: "#fff9e0",
+          gold200: "#fff3c2",
+          gold300: "#ffeda3",
+          gold400: "#ffe785",
+          gold500: "#fff01f", // Solar Gold (Main Gold Accent - from your gradient)
+          gold600: "#e6d81b",
+          gold700: "#cca917",
+          gold800: "#b38b14",
+          gold900: "#996c10",
+          // Orange/Red Ramp
+          fire100: "#ffebe0",
+          fire200: "#ffd8c2",
+          fire300: "#ffc5a3",
+          fire400: "#ff9d66", // Lighter Sacred Fire (Derived from #ff6f00)
+          fire500: "#ff6f00", // Sacred Fire Orange (Main Fire Accent - from your gradient)
+          fire600: "#e65a00",
+          fire700: "#cc4600",
+          // Heart Red (can be a spot accent)
+          heartRed: "#d72638", // From your gradient
         },
-        error: { main: "#d32f2f" },
-        warning: { main: "#f57c00" },
-        info: { main: "#0288d1" },
-        success: { main: "#388e3c" },
+        error: { main: "#d32f2f" }, // Standard dark red for errors
+        warning: { main: "#ff6f00" }, // Use Sacred Fire Orange for warnings
+        info: { main: "#028090" }, // Use Quetzal Feather for info
+        success: { main: "#1e5128" }, // Use Jungle Emerald for success
       }),
 });
 
@@ -123,34 +130,45 @@ export const themeSettings = (mode) => {
       mode: mode,
       primary: {
         main: colors.primary[500],
-        light: colors.primary[300], // Example: using a lighter shade from your scale
-        dark: colors.primary[700], // Example: using a darker shade
+        light: colors.primary[300],
+        dark: colors.primary[700],
+        contrastText:
+          mode === "light" ? colors.neutral[100] : colors.neutral[100], // Radiant light for text on dark green, and also on light green for pop
       },
       secondary: {
         main: colors.secondary[500],
         light: colors.secondary[300],
         dark: colors.secondary[700],
+        contrastText:
+          mode === "light" ? colors.neutral[900] : colors.neutral[100], // Dark indigo text on light turquoise, light text on dark turquoise
       },
       neutral: colors.neutral,
       accent: {
-        main: colors.accent[500],
-        light: colors.accent[300],
-        dark: colors.accent[700],
+        // Define main accents, others can be accessed via theme.palette.accent.goldXXX etc.
+        main: colors.accent.gold500, // Solar Gold as the primary accent
+        fire: colors.accent.fire500, // Sacred Fire Orange
+        heartRed: colors.accent.heartRed,
+        // You can add light/dark variants if needed, e.g.,
+        // mainLight: colors.accent.gold300,
+        // mainDark: colors.accent.gold700,
       },
       background: {
-        default: mode === "dark" ? colors.neutral[700] : colors.neutral[100],
-        paper: mode === "dark" ? colors.neutral[600] : colors.neutral[200],
+        default: mode === "dark" ? colors.neutral[700] : colors.neutral[100], // Radiant Light for Quetzal default BG
+        paper: mode === "dark" ? colors.neutral[600] : colors.primary[200], // Pale Green/Off-white for Quetzal paper BG
       },
       text: {
-        primary: mode === "dark" ? colors.neutral[100] : colors.neutral[700],
-        secondary: mode === "dark" ? colors.neutral[200] : colors.neutral[600], // Adjusted for better contrast
+        primary: mode === "dark" ? colors.neutral[100] : colors.neutral[700], // Cosmic Indigo for Quetzal primary text
+        secondary: mode === "dark" ? colors.neutral[200] : colors.neutral[600], // Darker Gray-Green for Quetzal secondary text
         disabled: mode === "dark" ? colors.neutral[400] : colors.neutral[500],
-        accent: colors.accent[mode === "dark" ? 400 : 500], // Using the brighter accents
+        // For text that needs to be an accent color (use sparingly)
+        accent: mode === "dark" ? colors.accent.gold500 : colors.accent.fire500,
       },
-      error: { main: colors.error.main },
-      warning: { main: colors.warning.main },
-      info: { main: colors.info.main },
-      success: { main: colors.success.main },
+      error: { main: colors.error.main, contrastText: colors.neutral[100] },
+      warning: { main: colors.warning.main, contrastText: colors.neutral[900] }, // Dark text on orange
+      info: { main: colors.info.main, contrastText: colors.neutral[100] },
+      success: { main: colors.success.main, contrastText: colors.neutral[100] },
+      divider:
+        mode === "dark" ? "rgba(245, 223, 98, 0.2)" : "rgba(46, 41, 78, 0.15)", // Indigo-based divider for light
     },
     typography: {
       fontFamily: "'MedievalSharp', cursive",
@@ -175,6 +193,14 @@ export const themeSettings = (mode) => {
             borderRadius: "8px",
             textTransform: "none",
             fontWeight: 600,
+            // Add a subtle shadow to buttons for a more "gamified" feel
+            // boxShadow: mode === 'light' ? '0px 2px 4px rgba(46, 41, 78, 0.2)' : '0px 2px 4px rgba(0, 0, 0, 0.3)',
+          },
+          containedPrimary: {
+            color: colors.neutral[100], // Ensure contrast on primary buttons
+          },
+          containedSecondary: {
+            color: colors.neutral[100], // Ensure contrast on secondary buttons
           },
         },
       },
@@ -183,6 +209,13 @@ export const themeSettings = (mode) => {
           root: {
             backgroundColor:
               mode === "dark" ? colors.neutral[800] : colors.neutral[200],
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundColor: mode === "light" ? colors.neutral[200] : undefined,
           },
         },
       },

@@ -12,6 +12,19 @@
     #ffd700,
     #f5df62
   );
+  --quetzal-gradient: linear-gradient(
+    to top,
+    #fffcf2,
+    /* Radiant light – divine presence */ #fff01f,
+    /* Solar gold – enlightenment */ #ff6f00,
+    /* Sacred fire – transformation */ #d72638,
+    /* Heart red – life force, east */ #1e5128,
+    /* Jungle emerald – nature, life, jade */ #00a896,
+    /* Turquoise – wisdom, water, air */ #028090,
+    /* Quetzal feather – movement, wind */ #05668d,
+    /* Deep cyan – sky, fertility */ #2e294e
+      /* Cosmic indigo – mystery, power */
+  );
 }
 
 /* === Global Resets === */
@@ -28,7 +41,8 @@ body,
 
 /* === Body Background === */
 body {
-  background-image: url("../assets/background2.png");
+  /* background-image: url("../assets/images/backgrounds/background2.png"); */
+  background-image: url("../assets/images/backgrounds/Quetzal.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

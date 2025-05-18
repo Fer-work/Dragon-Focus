@@ -16,7 +16,11 @@ export default function Landing() {
 
   return (
     <div className={`landing-container ${fadeOut ? "fade-out" : ""}`}>
-      <img src="/src/assets/scroll.png" alt="Scroll" className="scroll-image" />
+      <img
+        src="/src/assets/images/DragonFocusScroll.png"
+        alt="Scroll"
+        className="scroll-image"
+      />
       <button onClick={handleStart} className="start-button">
         Begin
       </button>

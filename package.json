@@ -1,0 +1,27 @@
+{
+  "name": "dragon_focus",
+  "version": "1.0.0",
+  "description": "Pomodoro style focus app. Become a Dragon Warrior of Focus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "concurrently \"cd server && npm run dev\" \"cd client && npm run dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fer-work/Dragon-Focus.git"
+  },
+  "keywords": [
+    "Pomodoro",
+    "Dragon-Warrior"
+  ],
+  "author": "Fernando Sanchez Gutierrez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fer-work/Dragon-Focus/issues"
+  },
+  "homepage": "https://github.com/Fer-work/Dragon-Focus#readme",
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
