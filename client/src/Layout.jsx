@@ -55,7 +55,6 @@ export default function Layout() {
               display: "flex",
               flexDirection: { xs: "column", md: "row" },
               width: "95vw",
-              maxWidth: "1600px",
               height: { xs: "auto", md: "90vh" },
               maxHeight: { xs: "none", md: "1200px" },
               gap: { xs: 2, sm: 3 }, // Increased gap
@@ -123,9 +122,7 @@ export default function Layout() {
               <Box
                 sx={{
                   flexGrow: 1,
-                  p: { xs: 1, sm: 1.5, md: 2 }, // Adjusted padding for content area
-                  overflowY: "auto", // Content within Outlet scrolls
-                  // bgcolor is inherited from parent ("background.paper")
+                  overflowY: "auto",
                   // This ensures HomePage and other pages sit on the neutral[200] (Light Jade/Stone) in light mode
                 }}
               >

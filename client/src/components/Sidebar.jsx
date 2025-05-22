@@ -11,7 +11,7 @@ import {
   useTheme, // Import useTheme
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import BarChartIcon from "@mui/icons-material/BarChart";
+import { BarChart, Article } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -106,6 +106,15 @@ export default function Sidebar() {
           Home
         </Button>
 
+        <Button
+          component={Link}
+          to="/about"
+          startIcon={<Article />}
+          sx={navButtonStyles("/about")}
+        >
+          About
+        </Button>
+
         {isLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
             <CircularProgress size={24} color="secondary" />
@@ -115,7 +124,7 @@ export default function Sidebar() {
             <Button
               component={Link}
               to="/stats"
-              startIcon={<BarChartIcon />}
+              startIcon={<BarChart />}
               sx={navButtonStyles("/stats")}
             >
               Stats

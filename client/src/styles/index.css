@@ -37,13 +37,29 @@ body,
   padding: 0;
   font-family: "MedievalSharp", cursive; /* Updated font */
   box-sizing: border-box;
+  cursor: url("../assets/characters/RedSamurai/Special1.png"),
+    url("../assets/Money.png"), auto;
 }
 
 /* === Body Background === */
 body {
-  /* background-image: url("../assets/images/backgrounds/background2.png"); */
-  background-image: url("../assets/images/backgrounds/Quetzal.png");
+  background-image: url("../assets/images/backgrounds/background2.png");
+  /* background-image: url("../assets/images/backgrounds/Quetzal.png"); */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+@keyframes stretch {
+  0% {
+    opacity: 0.2;
+    background-color: green;
+    border-radius: 100%;
+  }
+  50% {
+    background-color: orange;
+  }
+  100% {
+    background-color: red;
+  }
 }

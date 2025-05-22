@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, Typography, useTheme, ButtonGroup } from "@mui/material";
-import { SettingsContext } from "../utils/SettingsContext";
+import { SettingsContext } from "../../utils/SettingsContext";
 
 // Optional: Icons for buttons
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -9,7 +9,10 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import TimerIcon from "@mui/icons-material/Timer"; // For Pomodoro
 import FreeBreakfastIcon from "@mui/icons-material/FreeBreakfast"; // For Breaks
 
-const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
+export default function Timer({
+  onTimerComplete,
+  disabled: timerDisabledProp,
+}) {
   const { pomodoroDuration, shortBreakDuration, longBreakDuration } =
     useContext(SettingsContext);
   const theme = useTheme();
@@ -329,6 +332,4 @@ const Timer = ({ onTimerComplete, disabled: timerDisabledProp }) => {
       </ButtonGroup>
     </Box>
   );
-};
-
-export default Timer;
+}

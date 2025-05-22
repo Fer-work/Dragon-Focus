@@ -11,6 +11,7 @@ import SettingsPage from "./pages/SettingsPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import CreateAccountPage from "./pages/CreateAccountPage.jsx";
 import Landing from "./components/Landing.jsx";
+import AboutPage from "./pages/AboutPage.jsx";
 
 // Router Configuration
 const routes = [
@@ -24,6 +25,7 @@ const routes = [
     errorElement: <NotFoundPage />,
     children: [
       { path: "/", element: <HomePage /> },
+      { path: "/about", element: <AboutPage /> },
       { path: "/stats", element: <StatsPage /> },
       { path: "/settings", element: <SettingsPage /> },
       { path: "/login", element: <LoginPage /> },
