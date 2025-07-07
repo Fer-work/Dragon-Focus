@@ -1,5 +1,6 @@
 import Task from "../models/Task.js";
 import Project from "../models/Project.js"; // To verify project ownership
+import FocusSession from "../models/FocusSession.js"; // For cascading updates on delete
 
 // @desc    Create a new Task
 // @route   POST /api/tasks
@@ -9,7 +10,7 @@ export async function createTask(req, res) {
     const {
       name,
       description,
-      projectId, // Expecting ObjectId from the client
+      projectId, // Optional
       status,
       dueDate,
       estimatedPomodoros,
@@ -17,26 +18,25 @@ export async function createTask(req, res) {
 
     const userId = req.user._id; // From authMiddleware
 
-    if (!name || !projectId) {
-      return res
-        .status(400)
-        .json({ message: "Task name and Project ID are required." });
+    if (!name) {
+      return res.status(400).json({ message: "Task name is required." });
     }
 
-    // Verify that the project exists and belongs to the user
-    const project = await Project.findOne({ _id: projectId, userId });
-    if (!project) {
-      return res
-        .status(404)
-        .json({
-          message: "Project not found or user not authorized for this project.",
+    // If a projectId is provided, we must verify it exists and belongs to the user.
+    if (projectId) {
+      const projectExists = await Project.findOne({ _id: projectId, userId });
+      if (!projectExists) {
+        return res.status(404).json({
+          message: "Project not found or you are not authorized.",
         });
+      }
     }
 
+    // --- CREATION ---
     const newTask = new Task({
       userId,
-      projectId,
       name,
+      projectId: projectId || null, // Assign projectId if provided, otherwise null
       description,
       status,
       dueDate,
@@ -52,7 +52,7 @@ export async function createTask(req, res) {
 
     res.status(201).json({
       message: "Task created successfully!",
-      task: populatedTask || savedTask,
+      task: populatedTask,
     });
   } catch (error) {
     console.error("Error creating task:", error);
@@ -62,9 +62,7 @@ export async function createTask(req, res) {
         .status(400)
         .json({ message: "Validation Error", errors: messages });
     }
-    if (error.name === "CastError") {
-      return res.status(400).json({ message: "Invalid Project ID format." });
-    }
+
     res.status(500).json({ message: "Failed to create task on the server." });
   }
 }
@@ -76,13 +74,19 @@ export async function createTask(req, res) {
 export async function getTasksForUser(req, res) {
   try {
     const userId = req.user._id;
+    const { projectId, unassigned } = req.query;
     const queryFilters = { userId };
 
-    // If a projectId is provided in the query (e.g., /api/tasks?projectId=...)
-    if (req.query.projectId) {
-      queryFilters.projectId = req.query.projectId;
+    // Filter by a specific project ID.
+    if (projectId) {
+      queryFilters.projectId = projectId;
     }
-    // You could add other filters like status: req.query.status
+
+    // Add a filter to find tasks that do NOT have a project.
+    // e.g., /api/tasks?unassigned=true
+    if (unassigned === "true") {
+      queryFilters.projectId = null;
+    }
 
     const tasks = await Task.find(queryFilters)
       .populate("projectId", "name color") // Populate project details
@@ -91,11 +95,6 @@ export async function getTasksForUser(req, res) {
     res.status(200).json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    if (error.name === "CastError" && error.path === "projectId") {
-      return res
-        .status(400)
-        .json({ message: "Invalid Project ID format in query." });
-    }
     res.status(500).json({ message: "Failed to fetch tasks." });
   }
 }
@@ -105,13 +104,10 @@ export async function getTasksForUser(req, res) {
 // @access  Private
 export async function getTaskById(req, res) {
   try {
-    const userId = req.user._id;
-    const taskId = req.params.taskId;
-
-    const task = await Task.findOne({ _id: taskId, userId }).populate(
-      "projectId",
-      "name color"
-    );
+    const task = await Task.findOne({
+      _id: req.params.taskId,
+      userId: req.user._id,
+    }).populate("projectId", "name color");
 
     if (!task) {
       return res
@@ -147,21 +143,36 @@ export async function updateTask(req, res) {
         .json({ message: "Task not found or not authorized." });
     }
 
-    // If projectId is being updated, verify the new project belongs to the user
-    if (updates.projectId && updates.projectId !== task.projectId.toString()) {
-      const project = await Project.findOne({ _id: updates.projectId, userId });
-      if (!project) {
-        return res
-          .status(403)
-          .json({
-            message:
-              "Cannot assign task to a project not owned by the user or project not found.",
+    // --- HANDLE PROJECT ASSIGNMENT ---
+    // This logic allows assigning, changing, or un-assigning a project.
+    if ("projectId" in updates) {
+      const newProjectId = updates.projectId;
+      // If the new ID is not null (i.e., we are assigning/changing a project)
+      if (newProjectId) {
+        const project = await Project.findOne({ _id: newProjectId, userId });
+        if (!project) {
+          return res.status(403).json({
+            message: "Cannot assign task to a project that is not yours.",
           });
+        }
+        task.projectId = newProjectId;
+        // Also update all existing sessions for this task to reflect the new project.
+        await FocusSession.updateMany(
+          { taskId: task._id },
+          { $set: { projectId: newProjectId } }
+        );
+      } else {
+        // If projectId is explicitly set to null, un-assign it.
+        task.projectId = null;
+        // Update historical sessions to also be un-assigned from the project.
+        await FocusSession.updateMany(
+          { taskId: task._id },
+          { $set: { projectId: null } }
+        );
       }
-      task.projectId = updates.projectId;
     }
 
-    // Update allowed fields
+    // --- UPDATE OTHER FIELDS ---
     const allowedUpdates = [
       "name",
       "description",
@@ -170,12 +181,12 @@ export async function updateTask(req, res) {
       "estimatedPomodoros",
       "actualPomodoros",
     ];
-    Object.keys(updates).forEach((key) => {
-      if (allowedUpdates.includes(key) && key !== "projectId") {
-        // projectId handled separately
+
+    for (const key of allowedUpdates) {
+      if (key in updates) {
         task[key] = updates[key];
       }
-    });
+    }
 
     const updatedTask = await task.save();
     const populatedTask = await Task.findById(updatedTask._id).populate(
@@ -185,7 +196,7 @@ export async function updateTask(req, res) {
 
     res.status(200).json({
       message: "Task updated successfully!",
-      task: populatedTask || updatedTask,
+      task: populatedTask,
     });
   } catch (error) {
     console.error("Error updating task:", error);
@@ -195,11 +206,7 @@ export async function updateTask(req, res) {
         .status(400)
         .json({ message: "Validation Error", errors: messages });
     }
-    if (error.name === "CastError") {
-      return res
-        .status(400)
-        .json({ message: "Invalid ID format for task or project." });
-    }
+
     res.status(500).json({ message: "Failed to update task." });
   }
 }
@@ -221,11 +228,14 @@ export async function deleteTask(req, res) {
         .json({ message: "Task not found or not authorized." });
     }
 
-    // Optional: You might want to remove this task's ID from any FocusSessions
-    // that reference it, or set their taskId to null. This depends on desired data integrity.
-    // Example: await FocusSession.updateMany({ taskId: taskId }, { $set: { taskId: null } });
+    // --- DATA INTEGRITY ---
+    // When a task is deleted, we should also delete all focus sessions
+    // associated with it to prevent orphaned data.
+    await FocusSession.deleteMany({ taskId: taskId });
 
-    res.status(200).json({ message: "Task deleted successfully." });
+    res.status(200).json({
+      message: "Task and all its associated sessions deleted successfully.",
+    });
   } catch (error) {
     console.error("Error deleting task:", error);
     if (error.name === "CastError") {

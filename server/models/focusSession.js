@@ -8,17 +8,17 @@ const focusSessionSchema = new mongoose.Schema(
       required: [true, "User ID is required."],
       index: true,
     },
-    projectId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Project", // References the Project model
-      required: [true, "Project ID is required for a session."],
-      index: true,
-    },
     taskId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task", // References the Task model
+      required: [true, "Task ID is required for a session."],
       index: true, // Optional: A session might not always be tied to a specific task
-      default: null, // Explicitly set default to null if task is optional
+    },
+    projectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project", // References the Project model
+      default: null, // A session doesn't need to belong to a project
+      index: true,
     },
     timestamp: {
       // When the session actually occurred/completed

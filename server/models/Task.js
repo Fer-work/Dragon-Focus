@@ -5,7 +5,7 @@ const taskSchema = new mongoose.Schema(
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project", // References the Project model
-      required: [true, "Project ID is required for a task."],
+      default: null,
       index: true,
     },
     userId: {
