@@ -1,3 +1,4 @@
+//
 import Task from "../models/Task.js";
 import Project from "../models/Project.js"; // To verify project ownership
 import FocusSession from "../models/FocusSession.js"; // For cascading updates on delete
@@ -22,6 +23,7 @@ export async function createTask(req, res) {
       return res.status(400).json({ message: "Task name is required." });
     }
 
+    // TODO: revise the block of code below. Why would we need to check a project id? The user should only be able to see projects that belong to them anyway. Showing any other would be a bad UX. Perhaps it's a double check to make check the data integrity from the database?
     // If a projectId is provided, we must verify it exists and belongs to the user.
     if (projectId) {
       const projectExists = await Project.findOne({ _id: projectId, userId });
@@ -44,10 +46,13 @@ export async function createTask(req, res) {
     });
 
     const savedTask = await newTask.save();
+
+    // TODO: What exactly is this doing? Is this going into the Project schema?
     // Populate project info in the response
     const populatedTask = await Task.findById(savedTask._id).populate(
       "projectId",
-      "name color"
+      "name",
+      "color"
     );
 
     res.status(201).json({
@@ -74,6 +79,7 @@ export async function createTask(req, res) {
 export async function getTasksForUser(req, res) {
   try {
     const userId = req.user._id;
+    // TODO: What is unassigned doing?
     const { projectId, unassigned } = req.query;
     const queryFilters = { userId };
 

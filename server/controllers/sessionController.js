@@ -1,6 +1,5 @@
 import FocusSession from "../models/FocusSession.js";
-import Project from "../models/Project.js"; // Needed for default project logic
-import Task from "../models/Task.js"; // Potentially for default task logic
+import Task from "../models/Task.js"; // For default task logic
 
 // @desc    Create a new Focus Session
 // @route   POST /api/sessions

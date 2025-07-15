@@ -152,10 +152,6 @@ const FocusSetup = ({ user, onFocusTargetsChange, onPageError }) => {
   };
 
   const handleOpenCreateTaskModal = () => {
-    if (!selectedProjectId) {
-      setError("Please select a project before adding a task.");
-      return;
-    }
     setTaskToEdit(null);
     setIsTaskModalOpen(true);
   };
@@ -404,7 +400,7 @@ const FocusSetup = ({ user, onFocusTargetsChange, onPageError }) => {
             onClick={handleOpenCreateTaskModal}
             startIcon={<AddCircleOutlineIcon />}
             fullWidth
-            disabled={!selectedProjectId || isLoadingTasks}
+            disabled={isLoadingTasks}
             sx={{
               mb: 2,
               bgcolor: !selectedProjectId ? "secondary.main" : "primary.main", // Check this logic

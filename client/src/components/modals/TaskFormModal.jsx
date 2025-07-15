@@ -95,9 +95,8 @@ const TaskFormModal = ({
       return;
     }
 
-    if (!projectId && !isEditMode) {
+    if (!isEditMode) {
       // projectId is crucial for creating new tasks
-      setError("Project ID is missing. Cannot create task.");
       setIsLoading(false);
       return;
     }
@@ -111,10 +110,9 @@ const TaskFormModal = ({
       status,
       // dueDate: dueDate ? format(dueDate, 'yyyy-MM-dd') : null, // Format for DatePicker
       dueDate: dueDate || null, // For type="date", ensure it's null if empty
-      estimatedPomodoros: estimatedPomodoros
-        ? parseInt(estimatedPomodoros, 10)
-        : 0,
-      projectId: isEditMode ? initialTaskData.projectId : projectId, // Use initialTaskData's projectId if editing
+      estimatedPomodoros: estimatedPomodoros ? parseInt(estimatedPomodoros) : 0,
+      // TODO: Optional now, set default = null.
+      projectId: isEditMode ? initialTaskData.projectId : null,
     };
 
     try {
