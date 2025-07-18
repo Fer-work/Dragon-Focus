@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import { Box, Fade, useTheme } from "@mui/material";
-import { SettingsProvider } from "./utils/SettingsContext.jsx"; // Import the provider
+import { SettingsProvider } from "../utils/SettingsContext.jsx"; // Import the provider
 import { useState, useEffect } from "react";
 
 export default function Layout() {

@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema(
       defaultPomodoroTime: { type: Number, default: 25 }, // in minutes
       defaultShortBreakTime: { type: Number, default: 5 }, // in minutes
       defaultLongBreakTime: { type: Number, default: 15 }, // in minutes
+      defaultLongBreakInterval: {
+        type: Number,
+        default: 4,
+      },
       theme: { type: String, default: "default" },
     },
     // Example for Phase 2: tracking unlocked guardians

@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import useUser from "../utils/useUser";
+import useUser from "../../utils/useUser";
 import {
   Box,
   Typography,

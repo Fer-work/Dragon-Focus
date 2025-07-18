@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Pages
 import HomePage from "./pages/HomePage.jsx";
-import Layout from "./Layout.jsx";
+import Layout from "./layouts/Layout.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import StatsPage from "./pages/StatsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
-import useUser from "../utils/useUser"; // To get user info
-import { ColorModeContext } from "../theme"; // To get the color mode toggle
+import useUser from "../../utils/useUser"; // To get user info
+import { ColorModeContext } from "../../theme"; // To get the color mode toggle
 
 // Optional: Icons for theme toggle
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
