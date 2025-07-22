@@ -228,11 +228,19 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = () => {
-  const [mode, setMode] = useState("dark");
+  // 1. Check local storage first, then fall back to 'dark'
+  const [mode, setMode] = useState(() => {
+    return localStorage.getItem("themeMode") || "dark";
+  });
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () =>
-        setMode((prev) => (prev === "light" ? "dark" : "light")),
+        setMode((prev) => {
+          const newMode = prev === "light" ? "dark" : "light";
+          // 2. Save the new choice to local storage
+          localStorage.setItem("themeMode", newMode);
+          return newMode;
+        }),
     }),
     []
   );

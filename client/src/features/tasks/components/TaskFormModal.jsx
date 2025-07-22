@@ -20,7 +20,7 @@ import {
 // import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // import { parseISO, format } from 'date-fns'; // For handling date strings
 
-import useUser from "../../utils/useUser";
+import useUser from "../../features/authentication/hooks/useUser";
 
 const modalStyle = {
   position: "absolute",

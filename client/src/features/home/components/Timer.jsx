@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Box, Button, Typography, useTheme, ButtonGroup } from "@mui/material";
-import { SettingsContext } from "../../utils/SettingsContext";
+import { SettingsContext } from "../../features/stats/hooks/SettingsContext";
 
 // Optional: Icons for buttons
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -333,3 +333,43 @@ export default function Timer({
     </Box>
   );
 }
+
+// --- Timer Complete Handler ---
+const handleTimerComplete = async (durationInSeconds) => {
+  if (!user) {
+    setPageError("You must be logged in to save a session.");
+    return;
+  }
+  if (!currentSelectedTaskId) {
+    setPageError("Please select a task to log this session.");
+    return;
+  }
+
+  const durationInMinutes = durationInSeconds / 60;
+  const timestamp = new Date().toISOString();
+  const token = await user.getIdToken();
+  const headers = { authtoken: token };
+
+  const sessionData = {
+    timestamp,
+    duration: durationInMinutes,
+    projectId: currentSelectedProjectId || null,
+    taskId: currentSelectedTaskId,
+  };
+
+  console.log("Attempting to save session:", sessionData);
+  setPageError(null); // Clear previous errors
+
+  try {
+    const response = await axios.post("/api/sessions", sessionData, {
+      headers,
+    });
+    console.log("Session saved:", response.data);
+  } catch (err) {
+    console.error("Failed to save session:", err);
+    setPageError(
+      err.response?.data?.message ||
+        "Failed to save your session. Please try again."
+    );
+  }
+};

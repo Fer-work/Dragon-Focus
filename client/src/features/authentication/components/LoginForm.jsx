@@ -1,6 +1,4 @@
-import { useState, useContext } from "react"; // Added useContext
-import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { ColorModeContext } from "../../../theme";
 import {
   Container,
   Box,
@@ -13,51 +11,16 @@ import {
   Link as MuiLink, // For consistent MUI link styling
   useTheme,
 } from "@mui/material";
-import { ColorModeContext } from "../theme"; // To access toggle if needed, or just useTheme
+import { Link as RouterLink } from "react-router-dom";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // For loading state
-
-  const navigate = useNavigate();
-  const theme = useTheme(); // Access the theme
-
-  const handleLogin = async (event) => {
-    event.preventDefault(); // Prevent default form submission
-    setError(null); // Clear previous errors
-    setIsLoading(true);
-
-    if (!email || !password) {
-      setError("Please enter both email and password.");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      await signInWithEmailAndPassword(getAuth(), email, password);
-      // User state will be updated by onAuthStateChanged listener (used by useUser hook)
-      // Navigate to home page after successful login
-      navigate("/"); // Navigate to root, which should lead to HomePage
-    } catch (err) {
-      // Firebase provides specific error codes and messages
-      if (
-        err.code === "auth/user-not-found" ||
-        err.code === "auth/wrong-password" ||
-        err.code === "auth/invalid-credential"
-      ) {
-        setError("Invalid email or password. Please try again.");
-      } else if (err.code === "auth/invalid-email") {
-        setError("Please enter a valid email address.");
-      } else {
-        setError("Failed to log in. Please try again later.");
-      }
-      console.error("Login error:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const LoginForm = ({
+  formValues,
+  onFormChange,
+  onSubmit,
+  isLoading,
+  error,
+}) => {
+  const theme = useTheme();
 
   return (
     <Container
@@ -109,7 +72,7 @@ const LoginPage = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleLogin} sx={{ width: "100%" }}>
+        <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
           <TextField
             margin="normal"
             required
@@ -119,8 +82,8 @@ const LoginPage = () => {
             name="email"
             autoComplete="email"
             autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formValues.email}
+            onChange={onFormChange}
             disabled={isLoading}
             sx={{
               "& label.Mui-focused": { color: "primary.light" },
@@ -138,8 +101,8 @@ const LoginPage = () => {
             type="password"
             id="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formValues.password}
+            onChange={onFormChange}
             disabled={isLoading}
             sx={{
               "& label.Mui-focused": { color: "primary.light" },
@@ -187,5 +150,4 @@ const LoginPage = () => {
     </Container>
   );
 };
-
-export default LoginPage;
+export default LoginForm;

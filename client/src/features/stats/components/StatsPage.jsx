@@ -19,12 +19,12 @@ import {
   prepareTimelineData, // We'll use this later for charts
   aggregateTimeByProject, // We'll use this later for charts
 } from "../utils/statsProcessor/"; // Ensure this path is correct
-import StatCard from "../components/stats/StatCard";
+import StatCard from "./StatCard";
 // Optional: Import icons if you want to use them
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import AvTimerIcon from "@mui/icons-material/AvTimer";
-import FocusTimelineChart from "../components/stats/FocusTimelineChart";
+import FocusTimelineChart from "./FocusTimeLineChart";
 import "../styles/index.css";
 
 const StatsPage = () => {

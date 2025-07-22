@@ -1,4 +1,5 @@
-// src/components/HomeComponents/FocusSetup.jsx
+// src/features/home/components/FocusSetup.jsx
+
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
@@ -9,7 +10,6 @@ import {
   FormControl,
   Box,
   Typography,
-  Grid, // Keep Grid if FocusSetup defines its own column structure
   CircularProgress,
   Alert,
   IconButton,
@@ -24,164 +24,8 @@ import TaskFormModal from "../modals/TaskFormModal";
 // Note: useUser will be passed as a prop or used directly if FocusSetup has access to the same context/hook setup
 // For this refactor, let's assume `user` is passed as a prop.
 
-const FocusSetup = ({ user, onFocusTargetsChange, onPageError }) => {
+const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
   const theme = useTheme();
-
-  // API Data State
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
-
-  // Selection State
-  const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [selectedTaskId, setSelectedTaskId] = useState("");
-
-  // Modal State
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [projectToEdit, setProjectToEdit] = useState(null);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState(null);
-
-  // Loading and Error State
-  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
-  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
-  const [error, setError] = useState(null); // Component-specific error
-
-  // Inform HomePage when selections change
-  useEffect(() => {
-    if (onFocusTargetsChange) {
-      onFocusTargetsChange(selectedProjectId, selectedTaskId);
-    }
-  }, [selectedProjectId, selectedTaskId, onFocusTargetsChange]);
-
-  // Pass errors up to HomePage if needed, or handle them locally
-  useEffect(() => {
-    if (onPageError && error) {
-      onPageError(error);
-    }
-  }, [error, onPageError]);
-
-  // --- Data Fetching ---
-  const fetchProjects = useCallback(async () => {
-    if (!user) return;
-    setIsLoadingProjects(true);
-    setError(null);
-    try {
-      const token = await user.getIdToken();
-      const response = await axios.get("/api/projects", {
-        headers: { authtoken: token },
-      });
-      setProjects(response.data || []);
-    } catch (err) {
-      console.error("Failed to fetch projects:", err);
-      setError(err.response?.data?.message || "Failed to load projects.");
-      setProjects([]);
-    } finally {
-      setIsLoadingProjects(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
-
-  const fetchTasks = useCallback(
-    async (projectId) => {
-      if (!user || !projectId) {
-        setTasks([]);
-        return;
-      }
-      setIsLoadingTasks(true);
-      setError(null);
-      try {
-        const token = await user.getIdToken();
-        const response = await axios.get(`/api/projects/${projectId}/tasks`, {
-          headers: { authtoken: token },
-        });
-        setTasks(response.data || []);
-      } catch (err) {
-        console.error("Failed to fetch tasks:", err);
-        setError(
-          err.response?.data?.message ||
-            "Failed to load tasks for the selected project."
-        );
-        setTasks([]);
-      } finally {
-        setIsLoadingTasks(false);
-      }
-    },
-    [user]
-  );
-
-  useEffect(() => {
-    if (selectedProjectId) {
-      fetchTasks(selectedProjectId);
-    } else {
-      setTasks([]);
-      setSelectedTaskId(""); // Clear selected task if project is cleared
-    }
-  }, [selectedProjectId, fetchTasks]);
-
-  // --- Modal Handlers ---
-  const handleOpenCreateProjectModal = () => {
-    setProjectToEdit(null);
-    setIsProjectModalOpen(true);
-  };
-
-  const handleOpenEditProjectModal = (project) => {
-    setProjectToEdit(project);
-    setIsProjectModalOpen(true);
-  };
-
-  const handleProjectModalClose = () => {
-    setIsProjectModalOpen(false);
-    setProjectToEdit(null);
-  };
-
-  const handleProjectSave = (savedProject) => {
-    if (projectToEdit) {
-      setProjects((prevProjects) =>
-        prevProjects.map((p) => (p._id === savedProject._id ? savedProject : p))
-      );
-    } else {
-      setProjects((prevProjects) => [...prevProjects, savedProject]);
-    }
-    if (selectedProjectId === savedProject._id || !projectToEdit) {
-      setSelectedProjectId(savedProject._id); // Auto-select new/edited project
-    }
-    handleProjectModalClose();
-  };
-
-  const handleOpenCreateTaskModal = () => {
-    setTaskToEdit(null);
-    setIsTaskModalOpen(true);
-  };
-
-  const handleOpenEditTaskModal = (task) => {
-    setTaskToEdit(task);
-    setIsTaskModalOpen(true);
-  };
-
-  const handleTaskModalClose = () => {
-    setIsTaskModalOpen(false);
-    setTaskToEdit(null);
-  };
-
-  const handleTaskSave = (savedTask) => {
-    if (taskToEdit) {
-      setTasks((prevTasks) =>
-        prevTasks.map((t) => (t._id === savedTask._id ? savedTask : t))
-      );
-    } else {
-      setTasks((prevTasks) => [...prevTasks, savedTask]);
-    }
-    setSelectedTaskId(savedTask._id); // Auto-select new/edited task
-    handleTaskModalClose();
-  };
-
-  // --- Render Logic ---
-  const selectedProjectObject = projects.find(
-    (p) => p._id === selectedProjectId
-  );
 
   return (
     <>
@@ -444,4 +288,4 @@ const FocusSetup = ({ user, onFocusTargetsChange, onPageError }) => {
   );
 };
 
-export default FocusSetup;
+export default FocusSetupUI;

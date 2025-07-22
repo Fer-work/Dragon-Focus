@@ -14,7 +14,7 @@ import {
   Grid,
   Alert, // For displaying errors
 } from "@mui/material";
-import useUser from "../../utils/useUser"; // To get the auth token
+import useUser from "../../features/authentication/hooks/useUser"; // To get the auth token
 
 // Define the style for the modal content
 const modalStyle = {
