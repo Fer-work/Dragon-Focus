@@ -58,7 +58,6 @@ export default function AboutPage() {
               ? `0px 0px 15px 0px ${theme.palette.primary.main}`
               : `0px 0px 15px 0px ${theme.palette.secondary.main}`, // Thematic shadow
           color: "text.primary",
-          overflowY: "auto", // Ensure content scrolls if it overflows
           maxHeight: "calc(100vh - 120px)", // Adjust based on Topbar/other fixed elements
         }}
       >

@@ -14,13 +14,13 @@ import {
   Grid,
   Alert,
 } from "@mui/material";
-// For DatePicker, you might need to install and import from @mui/x-date-pickers
-// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-// import { parseISO, format } from 'date-fns'; // For handling date strings
 
-import useUser from "../../features/authentication/hooks/useUser";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { parseISO } from "date-fns"; // For handling date strings
+
+import useUser from "../../../globalHooks/useUser"; // To get the auth token
 
 const modalStyle = {
   position: "absolute",
@@ -48,41 +48,54 @@ const TaskFormModal = ({
   const isEditMode = Boolean(initialTaskData);
 
   // Form state
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("pending");
-  const [dueDate, setDueDate] = useState(null); // For DatePicker
-  const [estimatedPomodoros, setEstimatedPomodoros] = useState("");
+  const [formState, setFormState] = useState({
+    name: "",
+    description: "",
+    status: "pending",
+    dueDate: null,
+    estimatedPomodoros: "",
+  });
 
   // API call state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Pre-fill form if in edit mode
   useEffect(() => {
-    if (open) {
-      // Only update form when modal is opened
-      if (isEditMode && initialTaskData) {
-        setName(initialTaskData.name || "");
-        setDescription(initialTaskData.description || "");
-        setStatus(initialTaskData.status || "pending");
-        // setDueDate(initialTaskData.dueDate ? parseISO(initialTaskData.dueDate) : null);
-        setDueDate(
-          initialTaskData.dueDate ? initialTaskData.dueDate.split("T")[0] : ""
-        ); // Simpler for type="date"
-        setEstimatedPomodoros(
-          initialTaskData.estimatedPomodoros?.toString() || ""
-        );
-      } else {
-        // Reset form for create mode
-        setName("");
-        setDescription("");
-        setStatus("pending");
-        setDueDate(""); // Reset to empty string for type="date"
-        setEstimatedPomodoros("");
-      }
-      setError(null); // Clear errors when modal opens/props change
+    if (isEditMode && initialTaskData) {
+      setFormState({
+        name: initialTaskData.name || "",
+        description: initialTaskData.description || "",
+        status: initialTaskData.status || "pending",
+        // Key Change: Parse the date string from the DB into a Date object
+        dueDate: initialTaskData.dueDate
+          ? parseISO(initialTaskData.dueDate)
+          : null,
+        estimatedPomodoros:
+          initialTaskData.estimatedPomodoros?.toString() || "",
+      });
+    } else {
+      // Reset form for create mode or if initialTaskData is not there
+      setFormState({
+        name: "",
+        description: "",
+        status: "pending",
+        dueDate: null,
+        estimatedPomodoros: "",
+      });
     }
   }, [initialTaskData, isEditMode, open]);
+
+  // This handler works for standard TextFields
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  // Key Change: A separate handler specifically for the DatePicker
+  const handleDateChange = (newDate) => {
+    setFormState((prevState) => ({ ...prevState, dueDate: newDate }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -95,24 +108,15 @@ const TaskFormModal = ({
       return;
     }
 
-    if (!isEditMode) {
-      // projectId is crucial for creating new tasks
-      setIsLoading(false);
-      return;
-    }
-
     const token = await user.getIdToken();
     const headers = { authtoken: token };
 
+    // Key Change: Create the final payload, ensuring projectId is included for new tasks
     const taskData = {
-      name,
-      description,
-      status,
-      // dueDate: dueDate ? format(dueDate, 'yyyy-MM-dd') : null, // Format for DatePicker
-      dueDate: dueDate || null, // For type="date", ensure it's null if empty
-      estimatedPomodoros: estimatedPomodoros ? parseInt(estimatedPomodoros) : 0,
-      // TODO: Optional now, set default = null.
-      projectId: isEditMode ? initialTaskData.projectId : null,
+      ...formState,
+      // The dueDate is already a Date object, the backend will handle it.
+      // If creating a new task, add the projectId.
+      ...(!isEditMode && { projectId: projectId }),
     };
 
     try {
@@ -123,14 +127,11 @@ const TaskFormModal = ({
           taskData,
           { headers }
         );
+        onSave(response.data.task || response.data);
+        handleClose();
       } else {
         response = await axios.post("/api/tasks", taskData, { headers });
       }
-
-      // The task data might be nested under a 'task' key or be the direct response
-      const savedTask = response.data.task || response.data;
-      onSave(savedTask);
-      handleClose();
     } catch (err) {
       console.error("Failed to save task:", err);
       const errorMessage =
@@ -151,7 +152,7 @@ const TaskFormModal = ({
   };
 
   const handleClose = () => {
-    // Don't reset fields here on close, useEffect handles it based on `open` prop
+    setError(null);
     onClose();
   };
 
@@ -184,8 +185,8 @@ const TaskFormModal = ({
               variant="outlined"
               fullWidth
               required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formState.name}
+              onChange={handleInputChange}
               disabled={isLoading}
             />
           </Grid>
@@ -196,8 +197,8 @@ const TaskFormModal = ({
               fullWidth
               multiline
               rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formState.description}
+              onChange={handleInputChange}
               disabled={isLoading}
             />
           </Grid>
@@ -205,10 +206,11 @@ const TaskFormModal = ({
             <FormControl fullWidth variant="outlined" disabled={isLoading}>
               <InputLabel id="task-status-label">Status</InputLabel>
               <Select
-                labelId="task-status-label"
-                value={status}
+                id="task-status-label"
+                name="status"
                 label="Status"
-                onChange={(e) => setStatus(e.target.value)}
+                value={formState.status}
+                onChange={handleInputChange}
               >
                 <MenuItem value="pending">Pending</MenuItem>
                 <MenuItem value="in-progress">In Progress</MenuItem>
@@ -219,42 +221,24 @@ const TaskFormModal = ({
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
+              name="estimatedPomodoros"
               label="Estimated Pomodoros"
-              variant="outlined"
-              fullWidth
               type="number"
-              value={estimatedPomodoros}
-              onChange={(e) => setEstimatedPomodoros(e.target.value)}
-              disabled={isLoading}
-              inputProps={{ min: 0 }}
+              value={formState.estimatedPomodoros}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={12}>
-            {/* Using native HTML5 date picker for simplicity. 
-                For a richer experience, use MUI's DatePicker from @mui/x-date-pickers */}
-            <TextField
-              label="Due Date (Optional)"
-              type="date"
-              fullWidth
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              disabled={isLoading}
-            />
-            {/* Example for MUI X DatePicker (requires setup)
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Due Date (Optional)"
-                value={dueDate}
-                onChange={(newValue) => {
-                  setDueDate(newValue);
-                }}
-                renderInput={(params) => <TextField {...params} fullWidth disabled={isLoading} />}
+                value={formState.dueDate}
+                onChange={handleDateChange} // Use the dedicated date handler
+                renderInput={(params) => (
+                  <TextField {...params} fullWidth disabled={isLoading} />
+                )}
               />
             </LocalizationProvider>
-            */}
           </Grid>
         </Grid>
 

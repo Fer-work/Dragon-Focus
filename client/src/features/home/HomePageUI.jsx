@@ -104,10 +104,10 @@ const HomePageUI = ({
               )}
             <Timer
               key={selectedTaskId}
-              pomodoroDurationProp={pomodoroDuration}
-              pomodoroShortBreakProp={shortBreak}
-              pomodoroLongBreakProp={longBreak}
-              pomodoroIntervalProp={longBreakInterval}
+              pomodoroDuration={pomodoroDuration}
+              shortBreakDuration={shortBreak}
+              longBreakDuration={longBreak}
+              longBreakInterval={longBreakInterval}
               onTimerComplete={onTimerComplete}
               disabled={!selectedTaskId}
             />

@@ -2,8 +2,9 @@
 import { useState, useCallback, useContext } from "react";
 import axios from "axios";
 import useUser from "../../globalHooks/useUser";
-import HomePageUI from "./components/HomePageUI";
+import HomePageUI from "./HomePageUI";
 import { SettingsContext } from "../settings/hooks/SettingsContext";
+import { CircularProgress } from "@mui/material";
 
 const HomePage = () => {
   const { user } = useUser();

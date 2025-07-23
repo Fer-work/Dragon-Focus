@@ -10,21 +10,20 @@ import {
   Text, // For custom labels or messages
 } from "recharts";
 import { useTheme } from "@mui/material/styles";
-import { Typography, Box, Paper } from "@mui/material";
+import { Typography, Paper } from "@mui/material";
 
-const FocusTimelineChart = ({ data, loading, periodLabel }) => {
+const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
   const theme = useTheme();
 
   // Define colors from your theme for the chart
-  const barColor = theme.palette.primary.main; // Use primary color for bars
-  const gridColor = theme.palette.divider; // Use divider color for grid lines
-  const textColor = theme.palette.text.secondary; // Use secondary text color for labels
+  const barColor = theme.palette.primary.main;
+  const textColor = theme.palette.text.secondary;
   const tooltipBackgroundColor = theme.palette.background.paper;
   const tooltipBorderColor =
     theme.palette.neutral?.[theme.palette.mode === "dark" ? 600 : 300] ||
     theme.palette.divider;
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Paper
         elevation={3}
@@ -42,7 +41,6 @@ const FocusTimelineChart = ({ data, loading, periodLabel }) => {
         <Typography variant="h6" color="text.secondary">
           Loading chart data...
         </Typography>
-        {/* Or a CircularProgress, but Typography might be enough if StatCards also show loading */}
       </Paper>
     );
   }
@@ -120,7 +118,7 @@ const FocusTimelineChart = ({ data, loading, periodLabel }) => {
         >
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke={gridColor}
+            stroke={textColor}
             vertical={false}
           />
           <XAxis

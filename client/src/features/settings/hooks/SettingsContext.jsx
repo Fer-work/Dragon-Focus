@@ -1,39 +1,108 @@
-// client/src/utils/SettingsContext.jsx
-import { createContext, useState } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
+import axios from "axios";
+import useUser from "../../../globalHooks/useUser";
 
-export const SettingsContext = createContext();
+const defaultSettings = {
+  pomodoroDuration: 25,
+  shortBreakDuration: 5,
+  longBreakDuration: 15,
+  longBreakInterval: 4,
+};
+
+const defaultContextValue = {
+  settings: defaultSettings,
+  isSettingsLoading: true,
+  error: null,
+  updateSettings: async () => {},
+};
+
+export const SettingsContext = createContext(defaultContextValue);
 
 export const SettingsProvider = ({ children }) => {
-  // Fetch Settings from database settings first
-  //  const dbDuration = // The user model has a field for preferences. Meaning we could access it through the User.prefences field and get these four settings.
-  // const dbShortBreak
-  // const dbLongBreak
-  // const dbLongBreakInterval
+  const { user } = useUser();
+  const [settings, setSettings] = useState(defaultSettings);
+  const [isSettingsLoading, setIsSettingsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Then try to set t
-  const [pomodoroDuration, setPomodoroDuration] = useState(25);
-  const [shortBreakDuration, setShortBreakDuration] = useState(5);
-  const [longBreakDuration, setLongBreakDuration] = useState(15);
-  const [longBreakInterval, setLongBreakInterval] = useState(4);
+  useEffect(() => {
+    // This data fetching logic is now perfect.
+    const fetchSettings = async () => {
+      if (!user) {
+        setSettings(defaultSettings);
+        setIsSettingsLoading(false);
+        return;
+      }
+      try {
+        const token = await user.getIdToken();
+        const response = await axios.get("/api/users/me", {
+          headers: { authtoken: token },
+        });
+        if (response.data && response.data.preferences) {
+          setSettings((prev) => ({ ...prev, ...response.data.preferences }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings:", err);
+        setError("Could not load saved settings. Using defaults.");
+      } finally {
+        setIsSettingsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, [user]);
 
-  const updateSettings = (newSettings) => {
-    setPomodoroDuration(newSettings.pomodoroDuration);
-    setShortBreakDuration(newSettings.shortBreakDuration);
-    setLongBreakDuration(newSettings.longBreakDuration);
-    setLongBreakInterval(newSettings.longBreakInterval);
+  // --- Key Fix: Correct the updateSettings function ---
+  const updateSettings = useCallback(
+    async (newSettings) => {
+      if (!user) {
+        setError("You must be logged in to save settings.");
+        return { success: false, error: "User not authenticated." };
+      }
+
+      try {
+        // 1. Save the new settings to the database
+        const token = await user.getIdToken();
+        await axios.put("/api/users/me", newSettings, {
+          headers: { authtoken: token },
+        });
+
+        // 2. On success, update the local state by merging the new settings
+        setSettings((currentSettings) => ({
+          ...currentSettings,
+          ...newSettings,
+        }));
+
+        return { success: true };
+      } catch (err) {
+        console.error("Failed to update settings:", err);
+        const errorMessage =
+          err.response?.data?.message || "Failed to save settings.";
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      }
+    },
+    [user]
+  );
+
+  const value = {
+    settings,
+    isSettingsLoading,
+    error,
+    updateSettings,
   };
 
   return (
-    <SettingsContext.Provider
-      value={{
-        pomodoroDuration,
-        shortBreakDuration,
-        longBreakDuration,
-        longBreakInterval,
-        updateSettings,
-      }}
-    >
+    <SettingsContext.Provider value={value}>
       {children}
     </SettingsContext.Provider>
   );
+};
+
+export const useSettings = () => {
+  return useContext(SettingsContext);
 };

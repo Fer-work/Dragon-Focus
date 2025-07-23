@@ -1,7 +1,5 @@
 // src/features/home/components/FocusSetup.jsx
 
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import {
   Button,
   Select,
@@ -19,17 +17,30 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
-import ProjectFormModal from "../modals/ProjectFormModal";
-import TaskFormModal from "../modals/TaskFormModal";
-// Note: useUser will be passed as a prop or used directly if FocusSetup has access to the same context/hook setup
-// For this refactor, let's assume `user` is passed as a prop.
-
-const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
+const FocusSetupUI = ({
+  projects,
+  tasks,
+  selectedProjectId,
+  selectedTaskId,
+  selectedProjectName,
+  isLoadingProjects,
+  isLoadingTasks,
+  error,
+  onProjectChange,
+  onTaskChange,
+  onOpenCreateProjectModal,
+  onOpenEditProjectModal,
+  onOpenCreateTaskModal,
+  onOpenEditTaskModal,
+  onClearError,
+}) => {
   const theme = useTheme();
+
+  // Find the selected task object to pass to the edit modal handler
+  const selectedTaskObject = tasks.find((t) => t._id === selectedTaskId);
 
   return (
     <>
-      {" "}
       {/* Use Fragment or a Box if you need a root wrapper with styles */}
       {/* Inner Box for styling the "selection panel" */}
       <Box
@@ -64,7 +75,7 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
           <Alert
             severity="error"
             sx={{ mb: 2, bgcolor: "error.dark", color: "white" }}
-            onClose={() => setError(null)} // Allow dismissing the error
+            onClose={onClearError} // Allow dismissing the error
           >
             {error}
           </Alert>
@@ -87,7 +98,7 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
               <Select
                 labelId="project-select-label"
                 value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
+                onChange={(e) => onProjectChange(e.target.value)}
                 label="Project (Optional)"
                 sx={{
                   color: "text.primary",
@@ -104,7 +115,7 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
                 }}
               >
                 <MenuItem value="">
-                  <em>Select a Project</em>
+                  <em>Select a Project or None</em>
                 </MenuItem>
                 {projects.map((project) => (
                   <MenuItem key={project._id} value={project._id}>
@@ -113,11 +124,9 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
                 ))}
               </Select>
             </FormControl>
-            {selectedProjectId && selectedProjectObject && (
+            {selectedProjectId && (
               <IconButton
-                onClick={() =>
-                  handleOpenEditProjectModal(selectedProjectObject)
-                }
+                onClick={onOpenEditProjectModal}
                 size="medium"
                 sx={{
                   color: "accent.main",
@@ -137,7 +146,7 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleOpenCreateProjectModal}
+            onClick={onOpenCreateProjectModal}
             startIcon={<AddCircleOutlineIcon />}
             fullWidth
             sx={{
@@ -165,22 +174,18 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
         {/* Task Selection */}
         <Box>
           <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            <FormControl
-              fullWidth
-              variant="outlined"
-              disabled={isLoadingTasks || !selectedProjectId}
-            >
+            <FormControl fullWidth variant="outlined" disabled={isLoadingTasks}>
               <InputLabel
                 id="task-select-label"
                 sx={{ color: "text.secondary" }}
               >
-                Task (Optional)
+                Task (Required)
               </InputLabel>
               <Select
                 labelId="task-select-label"
                 value={selectedTaskId}
-                onChange={(e) => setSelectedTaskId(e.target.value)}
-                label="Task (Optional)"
+                onChange={(e) => onTaskChange(e.target.value)}
+                label="Task (Required)"
                 sx={{
                   color: "text.primary",
                   "& .MuiOutlinedInput-notchedOutline": {
@@ -214,13 +219,9 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
                 ))}
               </Select>
             </FormControl>
-            {selectedTaskId && tasks.find((t) => t._id === selectedTaskId) && (
+            {selectedTaskId && selectedTaskObject && (
               <IconButton
-                onClick={() =>
-                  handleOpenEditTaskModal(
-                    tasks.find((t) => t._id === selectedTaskId)
-                  )
-                }
+                onClick={() => onOpenEditTaskModal(selectedTaskObject)}
                 color="secondary"
                 size="medium"
                 sx={{
@@ -241,7 +242,7 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={handleOpenCreateTaskModal}
+            onClick={onOpenCreateTaskModal}
             startIcon={<AddCircleOutlineIcon />}
             fullWidth
             disabled={isLoadingTasks}
@@ -255,7 +256,7 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
               "&:hover": { bgcolor: "primary.dark" },
             }}
           >
-            New Task for "{selectedProjectObject?.name || "Project"}"
+            New Task for "{selectedProjectName}"
           </Button>
           {isLoadingTasks && (
             <CircularProgress
@@ -270,20 +271,6 @@ const FocusSetupUI = ({ user, onFocusTargetsChange, onPageError }) => {
           )}
         </Box>
       </Box>
-      {/* Modals */}
-      <ProjectFormModal
-        open={isProjectModalOpen}
-        onClose={handleProjectModalClose}
-        onSave={handleProjectSave}
-        initialProjectData={projectToEdit}
-      />
-      <TaskFormModal
-        open={isTaskModalOpen}
-        onClose={handleTaskModalClose}
-        onSave={handleTaskSave}
-        initialTaskData={taskToEdit}
-        projectId={selectedProjectId} // Pass the currently selected project ID
-      />
     </>
   );
 };

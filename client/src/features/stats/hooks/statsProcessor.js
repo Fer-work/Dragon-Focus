@@ -6,6 +6,8 @@ import {
   startOfMonth, // Gets the start of a month
   endOfMonth, // Gets the end of a month
   isWithinInterval, // Checks if a date is within a given interval
+  format,
+  startOfDay,
 } from "date-fns";
 
 /**
@@ -135,8 +137,7 @@ export const countSessions = (sessions) => {
 
 /**
  * Groups sessions by project and calculates total time spent per project.
- * @param {Array<Object>} sessions - An array of session objects. Each session should have a 'projectId' object with 'name' and 'color', and a 'duration'.
- * @returns {Array<Object>} An array of objects, e.g., [{ name: 'Project A', value: 120, color: '#ff0000' }, ...]
+ * Now includes an "Unassigned" category for tasks without a project.
  */
 export const aggregateTimeByProject = (sessions) => {
   if (!Array.isArray(sessions)) return [];
@@ -144,27 +145,26 @@ export const aggregateTimeByProject = (sessions) => {
   const projectTimeMap = new Map();
 
   sessions.forEach((session) => {
+    if (typeof session.duration !== "number") return;
+
+    let projectName = "Unassigned";
+    let projectColor = "#8884d8"; // Default color for unassigned
+
+    // Check if a valid project object exists
     if (
       session.projectId &&
       typeof session.projectId === "object" &&
-      session.projectId.name &&
-      typeof session.duration === "number"
+      session.projectId.name
     ) {
-      const projectName = session.projectId.name;
-      const projectColor = session.projectId.color || "#8884d8"; // Default color if none provided
-
-      if (projectTimeMap.has(projectName)) {
-        projectTimeMap.set(projectName, {
-          value: projectTimeMap.get(projectName).value + session.duration,
-          color: projectColor, // Assuming color is consistent for the project
-        });
-      } else {
-        projectTimeMap.set(projectName, {
-          value: session.duration,
-          color: projectColor,
-        });
-      }
+      projectName = session.projectId.name;
+      projectColor = session.projectId.color || projectColor;
     }
+
+    const currentTotal = projectTimeMap.get(projectName)?.value || 0;
+    projectTimeMap.set(projectName, {
+      value: currentTotal + session.duration,
+      color: projectColor,
+    });
   });
 
   // Convert map to array format suitable for Recharts (e.g., PieChart)
@@ -176,45 +176,46 @@ export const aggregateTimeByProject = (sessions) => {
 };
 
 /**
- * Prepares data for a timeline chart (e.g., focus minutes per day for the last N days).
- * @param {Array<Object>} sessions - An array of session objects.
- * @param {number} numberOfDays - The number of past days to include (e.g., 7 for last week).
- * @returns {Array<Object>} Data formatted for a bar or line chart, e.g., [{ date: 'Mon', minutes: 60 }, ...]
+ * Prepares data for a timeline chart in a more performant way.
  */
 export const prepareTimelineData = (sessions, numberOfDays = 7) => {
   if (!Array.isArray(sessions)) return [];
 
+  // 1. First, create a map of total minutes per day from the sessions.
+  // This is much faster as we only loop through the sessions array ONCE.
+  const dailyMinutesMap = new Map();
+  sessions.forEach((session) => {
+    if (!session.timestamp || typeof session.duration !== "number") return;
+    try {
+      const dayKey = format(
+        startOfDay(parseISO(session.timestamp)),
+        "yyyy-MM-dd"
+      );
+      const currentMinutes = dailyMinutesMap.get(dayKey) || 0;
+      dailyMinutesMap.set(dayKey, currentMinutes + session.duration);
+    } catch (error) {
+      console.error(
+        "prepareTimelineData: Error parsing session timestamp",
+        session.timestamp,
+        error
+      );
+    }
+  });
+
+  // 2. Now, build the timeline for the last N days.
   const timelineData = [];
-  const today = new Date();
+  const today = startOfDay(new Date());
 
   for (let i = numberOfDays - 1; i >= 0; i--) {
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() - i);
-    targetDate.setHours(0, 0, 0, 0); // Normalize to start of the day
 
-    const sessionsForDate = sessions.filter((session) => {
-      if (!session.timestamp) return false;
-      try {
-        const sessionDate = parseISO(session.timestamp);
-        sessionDate.setHours(0, 0, 0, 0); // Normalize session date
-        return sessionDate.getTime() === targetDate.getTime();
-      } catch (error) {
-        console.error(
-          "filterSessionsForThisMonth: Error parsing session timestamp",
-          session.timestamp,
-          error
-        );
-        return false;
-      }
-    });
-
-    const totalMinutesForDate = calculateTotalMinutes(sessionsForDate);
+    const dayKey = format(targetDate, "yyyy-MM-dd");
+    const totalMinutesForDate = dailyMinutesMap.get(dayKey) || 0;
 
     timelineData.push({
-      // Format date for display (e.g., 'Mon', 'Tue' or 'MM/DD')
-      // date: format(targetDate, 'EEE'), // e.g., Mon, Tue
-      date: targetDate.toLocaleDateString(undefined, { weekday: "short" }), // 'Mon', 'Tue' (locale-dependent)
-      // date: format(targetDate, 'MM/dd'),
+      // Use date-fns format for consistent output (e.g., 'Mon', 'Tue')
+      date: format(targetDate, "EEE"),
       minutes: totalMinutesForDate,
     });
   }

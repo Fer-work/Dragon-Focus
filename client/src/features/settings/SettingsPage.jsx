@@ -10,7 +10,7 @@ import {
   Alert, // For feedback messages
   useTheme,
 } from "@mui/material";
-import { SettingsContext } from "../utils/SettingsContext";
+import { SettingsContext } from "./hooks/SettingsContext";
 
 const SettingsPage = () => {
   const {

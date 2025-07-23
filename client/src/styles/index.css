@@ -43,8 +43,8 @@ body,
 
 /* === Body Background === */
 body {
-  background-image: url("../assets/images/backgrounds/background2.png");
-  /* background-image: url("../assets/images/backgrounds/Quetzal.png"); */
+  /* background-image: url("../assets/images/backgrounds/background2.png"); */
+  background-image: url("../assets/images/backgrounds/Quetzal.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

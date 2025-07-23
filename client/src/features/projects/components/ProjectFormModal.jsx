@@ -14,7 +14,7 @@ import {
   Grid,
   Alert, // For displaying errors
 } from "@mui/material";
-import useUser from "../../features/authentication/hooks/useUser"; // To get the auth token
+import useUser from "../../../globalHooks/useUser"; // To get the auth token
 
 // Define the style for the modal content
 const modalStyle = {
@@ -22,12 +22,14 @@ const modalStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: { xs: "90%", sm: "70%", md: "500px" }, // Responsive width
+  width: { xs: "90%", sm: "70%", md: "500px" },
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
   borderRadius: 2,
+  maxHeight: "90vh", // Prevent modal from being too tall
+  overflowY: "auto", // Allow scrolling if content overflows
 };
 
 const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
@@ -35,10 +37,13 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
   const isEditMode = Boolean(initialProjectData);
 
   // Form state
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [color, setColor] = useState("#4A90E2"); // Default color
-  const [status, setStatus] = useState("active"); // Default status
+  // --- Key Change: Group form state into one object ---
+  const [formState, setFormState] = useState({
+    name: "",
+    description: "",
+    color: "#4A90E2",
+    status: "active",
+  });
 
   // API call state
   const [isLoading, setIsLoading] = useState(false);
@@ -47,18 +52,28 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
   // Pre-fill form if in edit mode
   useEffect(() => {
     if (isEditMode && initialProjectData) {
-      setName(initialProjectData.name || "");
-      setDescription(initialProjectData.description || "");
-      setColor(initialProjectData.color || "#4A90E2");
-      setStatus(initialProjectData.status || "active");
+      setFormState({
+        name: initialProjectData.name || "",
+        description: initialProjectData.description || "",
+        color: initialProjectData.color || "#4A90E2",
+        status: initialProjectData.status || "active",
+      });
     } else {
       // Reset form for create mode or if initialProjectData is not there
-      setName("");
-      setDescription("");
-      setColor("#4A90E2");
-      setStatus("active");
+      setFormState({
+        name: "",
+        description: "",
+        color: "#4A90E2",
+        status: "active",
+      });
     }
   }, [initialProjectData, isEditMode, open]); // Re-run if initialProjectData, mode, or open status changes
+
+  // --- Key Change: A single handler for all form inputs ---
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -74,35 +89,21 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
     const token = await user.getIdToken();
     const headers = { authtoken: token };
 
-    const projectData = {
-      name,
-      description,
-      color,
-      status,
-    };
+    const projectData = formState;
 
     try {
       let response;
       if (isEditMode) {
-        // Update existing project
         response = await axios.put(
           `/api/projects/${initialProjectData._id}`,
           projectData,
           { headers }
         );
       } else {
-        // Create new project
         response = await axios.post("/api/projects", projectData, { headers });
       }
-
-      if (response.data && (response.data.project || response.data)) {
-        // The project data might be nested under a 'project' key or be the direct response
-        const savedProject = response.data.project || response.data;
-        onSave(savedProject); // Pass the saved/updated project data back
-        handleClose(); // Close modal on success
-      } else {
-        throw new Error("Invalid response structure from server.");
-      }
+      onSave(response.data.project || response.data);
+      handleClose();
     } catch (err) {
       console.error("Failed to save project:", err);
       const errorMessage =
@@ -159,8 +160,8 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
               variant="outlined"
               fullWidth
               required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formState.name}
+              onChange={handleInputChange}
               disabled={isLoading}
             />
           </Grid>
@@ -171,8 +172,8 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
               fullWidth
               multiline
               rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formState.description}
+              onChange={handleInputChange}
               disabled={isLoading}
             />
           </Grid>
@@ -182,8 +183,8 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
               variant="outlined"
               fullWidth
               type="color" // Using type="color" for a basic color picker
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
+              value={formState.color}
+              onChange={handleInputChange}
               disabled={isLoading}
               helperText="Click to pick a color"
               sx={{
@@ -202,9 +203,11 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
               <Select
                 labelId="project-status-label"
                 id="project-status"
-                value={status}
+                value={formState.status}
                 label="Status"
-                onChange={(e) => setStatus(e.target.value)}
+                onChange={(e) =>
+                  setFormState((prev) => ({ ...prev, status: e.target.value }))
+                }
               >
                 <MenuItem value="active">Active</MenuItem>
                 <MenuItem value="on-hold">On Hold</MenuItem>

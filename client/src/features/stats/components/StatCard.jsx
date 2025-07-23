@@ -4,18 +4,13 @@ import { useTheme } from "@mui/material/styles"; // To access theme for dynamic 
 const StatCard = ({ title, value, unit, icon, loading, cardColor }) => {
   const theme = useTheme();
 
-  // Determine text color based on cardColor for better contrast if cardColor is used
-  // This is a simplified example; more sophisticated contrast logic might be needed
-  // if cardColor can vary widely. For now, assumes cardColor is a background.
-  const textColor = cardColor
+  // Key Change: Consolidated all text color logic into one variable.
+  const contentColor = cardColor
     ? theme.palette.getContrastText(theme.palette[cardColor]?.main || cardColor)
     : theme.palette.text.primary;
-  const unitColor = cardColor
-    ? theme.palette.getContrastText(theme.palette[cardColor]?.main || cardColor)
-    : theme.palette.text.secondary;
-  const titleColor = cardColor
-    ? theme.palette.getContrastText(theme.palette[cardColor]?.main || cardColor)
-    : theme.palette.text.secondary;
+
+  // Use a slightly less prominent color for the title, based on the main content color.
+  const titleColor = cardColor ? contentColor : theme.palette.text.secondary;
 
   return (
     <Paper
@@ -46,7 +41,7 @@ const StatCard = ({ title, value, unit, icon, loading, cardColor }) => {
         <Box
           sx={{
             fontSize: "2.5rem",
-            color: cardColor ? textColor : "primary.main",
+            color: cardColor ? contentColor : "primary.main",
             mb: 1,
           }}
         >
@@ -72,15 +67,17 @@ const StatCard = ({ title, value, unit, icon, loading, cardColor }) => {
         <Typography
           variant="h3" // Larger for the main value
           component="p"
-          color={cardColor ? textColor : "primary.main"}
+          color={cardColor ? contentColor : "primary.main"}
           sx={{ fontWeight: "bold", lineHeight: 1.2 }} // Adjust line height
         >
-          {value.toFixed(1)}
+          {typeof value === "number"
+            ? value.toFixed(1).replace(".0", "")
+            : value || 0}
           {unit && (
             <Typography
               variant="h6" // Make unit slightly smaller than value
               component="span"
-              color={unitColor}
+              color={titleColor}
               sx={{ ml: 0.5, fontWeight: "normal" }}
             >
               {unit}
