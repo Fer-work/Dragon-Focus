@@ -54,186 +54,181 @@ const FocusSetupUI = ({
   };
 
   return (
-    <>
-      <Box
+    <Box
+      sx={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        p: { xs: 2, sm: 3 }, // Keep the padding for internal content.
+        gap: 2, // Keep the gap for spacing between elements.
+        overflowY: "auto", // Allow this panel's content to scroll if it's too tall.
+
+        // --- THE FLAME EFFECT (INNER BORDER) ---
+        // This is the second, brighter border that sits inside the outer red border.
+        // It creates the orange layer of our fire gradient.
+        border: `2px solid ${theme.palette.secondary.main}`, // Using #ff8c00 orange
+
+        // We use a slightly smaller border radius to nest it perfectly inside the parent panel.
+        borderRadius: 2,
+      }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
         sx={{
-          p: 2,
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-start",
-          gap: 2,
-          // --- REVISED: Aligned with the panelStyles from Layout.jsx ---
-          bgcolor: "background.paper",
-          borderRadius: 3,
-          boxShadow: theme.shadows[5],
-          border: `2px solid ${theme.palette.divider}`,
+          textAlign: "center",
+          color: "primary.main",
+          fontWeight: "bold",
+          pb: 1,
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{
-            textAlign: "center",
-            color: "primary.main",
-            fontWeight: "bold",
-            pb: 1,
-          }}
+        Select Focus Setup
+      </Typography>
+
+      {error && (
+        // REVISED: Removed sx prop. The `severity` prop now correctly styles the alert
+        // using the error colors defined in our theme.
+        <Alert severity="error" sx={{ mb: 2 }} onClose={onClearError}>
+          {error}
+        </Alert>
+      )}
+
+      {/* Category Selection */}
+
+      <Box sx={{ my: 1 }}>
+        <FormControl
+          fullWidth
+          variant="outlined"
+          disabled={isLoadingCategories}
         >
-          Select Focus Setup
-        </Typography>
-
-        {error && (
-          // REVISED: Removed sx prop. The `severity` prop now correctly styles the alert
-          // using the error colors defined in our theme.
-          <Alert severity="error" sx={{ mb: 2 }} onClose={onClearError}>
-            {error}
-          </Alert>
+          <InputLabel
+            id="category-select-label"
+            sx={{ color: "text.secondary" }}
+          >
+            Category (Optional)
+          </InputLabel>
+          {/* REVISED: All complex border styling is removed. The theme handles it now! */}
+          <Select
+            labelId="category-select-label"
+            value={selectedCategoryId}
+            onChange={(e) => onCategoryChange(e.target.value)}
+            label="Category (Optional)"
+            sx={{ color: "text.primary" }} // Only need to set the text color
+          >
+            <MenuItem value="">
+              <em>Select a Category or None</em>
+            </MenuItem>
+            {categories.map((category) => (
+              <MenuItem key={category._id} value={category._id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {selectedCategoryId && (
+          <IconButton
+            onClick={onOpenEditCategoryModal}
+            size="medium"
+            sx={editIconButtonStyles}
+            aria-label="edit category"
+          >
+            <EditIcon />
+          </IconButton>
         )}
-
-        {/* Category Selection */}
-        <Box my={2}>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            <FormControl
-              fullWidth
-              variant="outlined"
-              disabled={isLoadingCategories}
-            >
-              <InputLabel
-                id="category-select-label"
-                sx={{ color: "text.secondary" }}
-              >
-                Category (Optional)
-              </InputLabel>
-              {/* REVISED: All complex border styling is removed. The theme handles it now! */}
-              <Select
-                labelId="category-select-label"
-                value={selectedCategoryId}
-                onChange={(e) => onCategoryChange(e.target.value)}
-                label="Category (Optional)"
-                sx={{ color: "text.primary" }} // Only need to set the text color
-              >
-                <MenuItem value="">
-                  <em>Select a Category or None</em>
-                </MenuItem>
-                {categories.map((category) => (
-                  <MenuItem key={category._id} value={category._id}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {selectedCategoryId && (
-              <IconButton
-                onClick={onOpenEditCategoryModal}
-                size="medium"
-                sx={editIconButtonStyles}
-                aria-label="edit category"
-              >
-                <EditIcon />
-              </IconButton>
-            )}
-          </Box>
-          {/* REVISED: Redundant sx properties removed. `color="primary"` handles all styling. */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={onOpenCreateCategoryModal}
-            startIcon={<AddCircleOutlineIcon />}
-            fullWidth
-            sx={{ mb: 2 }}
-          >
-            New Category
-          </Button>
-          {isLoadingCategories && (
-            <CircularProgress
-              size={24}
-              sx={{ display: "block", margin: "auto", color: "primary.light" }}
-            />
-          )}
-        </Box>
-
-        {/* REVISED: Using the theme's divider color */}
-        <Divider sx={{ my: 1, borderColor: "divider" }} />
-
-        {/* Task Selection */}
-        <Box>
-          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            {/* We can use the color="secondary" prop to hint that this is a secondary input */}
-            <FormControl
-              fullWidth
-              variant="outlined"
-              disabled={isLoadingTasks}
-              color="secondary"
-            >
-              <InputLabel
-                id="task-select-label"
-                sx={{ color: "text.secondary" }}
-              >
-                Task (Required)
-              </InputLabel>
-              {/* REVISED: All complex border styling is removed. */}
-              <Select
-                labelId="task-select-label"
-                value={selectedTaskId}
-                onChange={(e) => onTaskChange(e.target.value)}
-                label="Task (Required)"
-                sx={{ color: "text.primary" }}
-              >
-                <MenuItem value="">
-                  <em>Select a Task or None</em>
-                </MenuItem>
-                {tasks.map((task) => (
-                  <MenuItem key={task._id} value={task._id}>
-                    {task.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {selectedTaskId && selectedTaskObject && (
-              <IconButton
-                onClick={() => onOpenEditTaskModal(selectedTaskObject)}
-                size="medium"
-                sx={editIconButtonStyles}
-                aria-label="edit task"
-              >
-                <EditIcon />
-              </IconButton>
-            )}
-          </Box>
-          {/* REVISED: Removed complex/confusing sx prop. `color="secondary"` handles this cleanly. */}
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={onOpenCreateTaskModal}
-            startIcon={<AddCircleOutlineIcon />}
-            fullWidth
-            disabled={isLoadingTasks}
-            sx={{ mb: 2 }}
-          >
-            {`New task${
-              selectedCategoryName === "Unassigned"
-                ? ""
-                : `for ${selectedCategoryName}`
-            }`}
-          </Button>
-
-          {isLoadingTasks && (
-            <CircularProgress
-              size={24}
-              sx={{
-                display: "block",
-                margin: "auto",
-                mt: 1,
-                color: "secondary.dark",
-              }}
-            />
-          )}
-        </Box>
       </Box>
-    </>
+      {/* REVISED: Redundant sx properties removed. `color="primary"` handles all styling. */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onOpenCreateCategoryModal}
+        startIcon={<AddCircleOutlineIcon />}
+        fullWidth
+        sx={{ mb: 2 }}
+      >
+        New Category
+      </Button>
+      {isLoadingCategories && (
+        <CircularProgress
+          size={24}
+          sx={{ display: "block", margin: "auto", color: "primary.light" }}
+        />
+      )}
+
+      {/* REVISED: Using the theme's divider color */}
+      <Divider sx={{ borderColor: "divider" }} />
+
+      {/* Task Selection */}
+      <Box sx={{ mt: 1 }}>
+        {/* We can use the color="secondary" prop to hint that this is a secondary input */}
+        <FormControl
+          fullWidth
+          variant="outlined"
+          disabled={isLoadingTasks}
+          color="secondary"
+        >
+          <InputLabel id="task-select-label" sx={{ color: "text.secondary" }}>
+            Task (Required)
+          </InputLabel>
+          {/* REVISED: All complex border styling is removed. */}
+          <Select
+            labelId="task-select-label"
+            value={selectedTaskId}
+            onChange={(e) => onTaskChange(e.target.value)}
+            label="Task (Required)"
+            sx={{ color: "text.primary" }}
+          >
+            <MenuItem value="">
+              <em>Select a Task or None</em>
+            </MenuItem>
+            {tasks.map((task) => (
+              <MenuItem key={task._id} value={task._id}>
+                {task.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {selectedTaskId && selectedTaskObject && (
+          <IconButton
+            onClick={() => onOpenEditTaskModal(selectedTaskObject)}
+            size="medium"
+            sx={editIconButtonStyles}
+            aria-label="edit task"
+          >
+            <EditIcon />
+          </IconButton>
+        )}
+      </Box>
+      {/* REVISED: Removed complex/confusing sx prop. `color="secondary"` handles this cleanly. */}
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onOpenCreateTaskModal}
+        startIcon={<AddCircleOutlineIcon />}
+        fullWidth
+        disabled={isLoadingTasks}
+        sx={{ mb: 2 }}
+      >
+        {`New task${
+          selectedCategoryName === "Unassigned"
+            ? ""
+            : `for ${selectedCategoryName}`
+        }`}
+      </Button>
+
+      {isLoadingTasks && (
+        <CircularProgress
+          size={24}
+          sx={{
+            display: "block",
+            margin: "auto",
+            mt: 1,
+            color: "secondary.dark",
+          }}
+        />
+      )}
+    </Box>
   );
 };
 

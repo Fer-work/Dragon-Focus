@@ -1,5 +1,8 @@
+// src/features/authentication/LoginPage.jsx
+
 import { useState } from "react"; // Added useContext
 import { useNavigate } from "react-router-dom";
+import { useTransition } from "../../globalHooks/TransitionContext";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import LoginForm from "./components/LoginForm";
 
@@ -12,6 +15,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { triggerTransition } = useTransition();
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -38,9 +42,10 @@ const LoginPage = () => {
         formValues.email,
         formValues.password
       );
-      // User state will be updated by onAuthStateChanged listener (used by useUser hook)
-      // Navigate to home page after successful login
-      navigate("/"); // Navigate to root, which should lead to HomePage
+
+      // On success, trigger the transition
+      triggerTransition();
+      navigate("/");
     } catch (err) {
       // Firebase provides specific error codes and messages
       if (

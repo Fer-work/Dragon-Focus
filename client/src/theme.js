@@ -131,6 +131,7 @@ export const themeSettings = (mode) => {
     palette: {
       mode: mode,
       primary: {
+        ...colors.primary,
         main: colors.primary[500],
         light: colors.primary[300],
         dark: colors.primary[700],
@@ -138,6 +139,7 @@ export const themeSettings = (mode) => {
           mode === "light" ? colors.neutral[100] : colors.neutral[900], // Light mode: White text on "Jungle Green". Dark mode: Dark text on "Dragon's Fire" orange.
       },
       secondary: {
+        ...colors.secondary,
         main: colors.secondary[500],
         light: colors.secondary[300],
         dark: colors.secondary[700],
@@ -145,9 +147,12 @@ export const themeSettings = (mode) => {
         contrastText:
           mode === "light" ? colors.neutral[900] : colors.neutral[100], // Light mode: Dark text on "Quetzal Turquoise". Dark mode: Light text on "Earthy Brown".
       },
-      neutral: colors.neutral,
+      neutral: {
+        ...colors.neutral,
+      },
       // REVISED: The accent object is now simplified and more powerful.
       accent: {
+        ...colors.accent,
         main: colors.accent[500], // Dark: "Dragon's Gold", Light: "Coatl Red"
         light: colors.accent[300],
         dark: colors.accent[700],
@@ -155,7 +160,7 @@ export const themeSettings = (mode) => {
       background: {
         // REVISED: Mapped to our new thematic background colors.
         default: mode === "dark" ? colors.neutral[800] : colors.neutral[100], // Dark: "Deep Charcoal", Light: "Misty White"
-        paper: mode === "dark" ? colors.neutral[700] : colors.neutral[200], // Dark: "Charcoal", Light: "Pale Jade"
+        paper: mode === "dark" ? colors.neutral[700] : colors.secondary[200], // Dark: "Charcoal", Light: "Pale Jade"
       },
       text: {
         // REVISED: Mapped to our new thematic text colors for optimal contrast.

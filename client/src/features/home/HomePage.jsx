@@ -53,7 +53,7 @@ const HomePage = () => {
 
   // TODO: Check this for loading.
   // Don't render until the user and settings are loaded to prevent crashes
-  if (isSettingsLoading || !user) {
+  if (isSettingsLoading) {
     // Or return a loading spinner component
     return <CircularProgress size={24} color="inherit" />;
   }

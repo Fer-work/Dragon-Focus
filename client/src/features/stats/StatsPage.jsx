@@ -40,6 +40,7 @@ const StatsPage = () => {
         headers: { authtoken: token },
       });
       setAllSessions(response.data || []);
+      console.log(response.data);
     } catch (err) {
       console.error("Failed to fetch sessions:", err);
       setError(err.response?.data?.message || "Failed to load session data.");

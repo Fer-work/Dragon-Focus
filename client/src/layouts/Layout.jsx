@@ -17,14 +17,11 @@ export default function Layout() {
   // --- REFACTOR 1: Define shared panel styles in one place ---
   // This object contains all the presentational styles for our main panels.
   const panelStyles = {
-    bgcolor: "background.paper", // CORRECT: Already using the theme's paper color.
+    bgcolor: theme.palette.background.paper, // CORRECT: Already using the theme's paper color.
     borderRadius: 3,
-    // REVISED: Using the theme's shadow ramp instead of a hardcoded value.
-    // This makes the shadow consistent with other MUI components like Modal.
-    boxShadow: theme.shadows[5],
-    // REVISED: Using the theme's dedicated 'divider' color. This is much cleaner
-    // and semantically correct. It pulls the transparent color we defined in theme.js.
-    border: `2px solid ${theme.palette.divider}`,
+    // --- Updated to match the "Volcanic" theme ---
+    border: `2px solid ${theme.palette.primary[800]}`,
+    boxShadow: `0px 0px 10px 2px ${theme.palette.secondary.main}`,
   };
 
   return (
@@ -39,6 +36,7 @@ export default function Layout() {
             minHeight: "100vh",
             width: "100vw",
             py: { xs: 1, sm: 2, md: 3 },
+            // 3. Set the background image based on the current theme mode
           }}
         >
           {/* Box for App - This is clean, no changes needed */}
@@ -46,9 +44,8 @@ export default function Layout() {
             sx={{
               display: "flex",
               flexDirection: { xs: "column", md: "row" },
-              width: "95vw",
+              width: "90vw",
               height: { xs: "auto", md: "90vh" },
-              maxHeight: { xs: "none", md: "1200px" },
               gap: { xs: 2, sm: 3 },
             }}
           >
@@ -61,6 +58,7 @@ export default function Layout() {
                 p: { xs: 1.5, sm: 2 },
                 display: "flex",
                 flexDirection: "column",
+
                 // --- REFACTOR 2: Apply the shared panel styles ---
                 ...panelStyles,
               }}
@@ -97,8 +95,11 @@ export default function Layout() {
               {/* Box for Outlet (page content) - This is clean, no changes needed */}
               <Box
                 sx={{
-                  flexGrow: 1,
-                  overflowY: "auto",
+                  flex: 1, // <-- Makes this Box grow to fill the remaining vertical space.
+                  display: "flex", // <-- Turns this Box into a flex container for its children.
+                  flexDirection: "column", // <-- Ensures its children (like HomePageUI) stack normally.
+                  overflowY: "auto", // Keep this for scrolling.
+                  bgcolor: theme.palette.primary.dark,
                 }}
               >
                 <Outlet />

@@ -148,7 +148,12 @@ const SettingsPage = () => {
           <Grid container spacing={2}>
             {" "}
             {/* Use Grid for better spacing of multiple fields */}
-            <Grid xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <TextField
                 name="pomodoroDuration"
                 label="Pomodoro (minutes)"
@@ -158,7 +163,12 @@ const SettingsPage = () => {
                 {...commonTextFieldProps}
               />
             </Grid>
-            <Grid xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <TextField
                 name="shortBreakDuration"
                 label="Short Break (minutes)"
@@ -168,7 +178,12 @@ const SettingsPage = () => {
                 {...commonTextFieldProps}
               />
             </Grid>
-            <Grid xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <TextField
                 name="longBreakDuration"
                 label="Long Break (minutes)"
@@ -178,7 +193,12 @@ const SettingsPage = () => {
                 {...commonTextFieldProps}
               />
             </Grid>
-            <Grid xs={12} sm={6}>
+            <Grid
+              size={{
+                xs: 12,
+                sm: 6,
+              }}
+            >
               <TextField
                 name="longBreakInterval"
                 label="Long Break Interval"

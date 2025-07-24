@@ -112,7 +112,7 @@ const Topbar = () => {
             lineHeight: 1.2,
           }}
         >
-          🔥 Dragon Focus 🔥{" "}
+          🔥 Dragon Focus 🔥
           {/* Consider Quetzal-themed emojis for light mode if desired */}
         </Typography>
 

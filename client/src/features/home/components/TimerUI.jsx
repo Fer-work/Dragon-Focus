@@ -28,13 +28,18 @@ const TimerUI = ({
   return (
     <Box
       sx={{
-        width: "100%",
-        height: "100%",
+        // REMOVED: width and height. This component is now sized by its parent Grid cell.
+        // KEPT: These styles are perfect for arranging the content *inside* the timer.
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-around",
         p: { xs: 2, sm: 3 },
+        // --- ADDED: The consistent "Flame Effect" Inner Border ---
+        border: `2px solid ${theme.palette.primary.main}`, // The orange border
+        borderRadius: 2, // The slightly smaller radius
+        width: "100%",
+        maxHeight: "100%",
       }}
     >
       {/* REVISED: Using ToggleButtonGroup for cleaner, semantic session selection */}

@@ -51,6 +51,7 @@ const StatsPageUI = ({
       </Box>
     );
   }
+  console.log(stats);
 
   return (
     <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, width: "100%" }}>
@@ -76,7 +77,13 @@ const StatsPageUI = ({
 
       <Grid container spacing={3}>
         {/* --- LEFT COLUMN: SUMMARY --- */}
-        <Grid item xs={12} md={3} m={"auto"}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 3,
+          }}
+          m={"auto"}
+        >
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <ToggleButtonGroup
               value={selectedPeriod}
@@ -137,7 +144,14 @@ const StatsPageUI = ({
         </Grid>
 
         {/* --- RIGHT COLUMN: DETAILED CHARTS (TABS) --- */}
-        <Grid item xs={12} md={9} m={"auto"} justifyContent={"center"}>
+        <Grid
+          size={{
+            xs: 12,
+            md: 9,
+          }}
+          m={"auto"}
+          justifyContent={"center"}
+        >
           <Box sx={{ borderBottom: 1, borderColor: "divider" }} m="auto">
             <Tabs
               value={currentTab}
