@@ -32,12 +32,12 @@ export async function createSession(req, res) {
     }
 
     // 3. Create the new session
-    // The projectId is automatically inherited from the task.
-    // If the task has no project, session's projectId will correctly be null.
+    // The categoryId is automatically inherited from the task.
+    // If the task has no category, session's categoryId will correctly be null.
     const newSession = new FocusSession({
       userId,
       taskId: task._id,
-      projectId: task.projectId, // Inherit projectId from the task
+      categoryId: task.categoryId, // Inherit categoryId from the task
       duration,
       timestamp: timestamp || new Date(),
       notes,
@@ -47,7 +47,7 @@ export async function createSession(req, res) {
 
     // 4. Populate and respond
     const populatedSession = await FocusSession.findById(savedSession._id)
-      .populate("projectId", "name color")
+      .populate("categoryId", "name color")
       .populate("taskId", "name");
 
     res.status(201).json({
@@ -73,12 +73,12 @@ export async function getSessionsForUser(req, res) {
   try {
     const userId = req.user._id;
     const queryFilters = { userId };
-    if (req.query.projectId) {
-      queryFilters.projectId = req.query.projectId;
+    if (req.query.categoryId) {
+      queryFilters.categoryId = req.query.categoryId;
     }
 
     const sessions = await FocusSession.find(queryFilters)
-      .populate("projectId", "name color")
+      .populate("categoryId", "name color")
       .populate("taskId", "name")
       .sort({ timestamp: -1 });
 
@@ -98,7 +98,7 @@ export async function getSessionById(req, res) {
       _id: req.params.id,
       userId: req.user._id,
     })
-      .populate("projectId", "name color")
+      .populate("categoryId", "name color")
       .populate("taskId", "name");
 
     if (!session) {
@@ -135,8 +135,8 @@ export async function updateSession(req, res) {
         .json({ message: "Focus session not found or not authorized." });
     }
 
-    // A session's task and project are tied to the task itself and shouldn't be updated here.
-    // If a task's project changes, you would update the Task, not the session record.
+    // A session's task and category are tied to the task itself and shouldn't be updated here.
+    // If a task's category changes, you would update the Task, not the session record.
     if (timestamp) session.timestamp = timestamp;
     if (duration) session.duration = duration;
     if (notes !== undefined) session.notes = notes;
@@ -144,7 +144,7 @@ export async function updateSession(req, res) {
     const updatedSession = await session.save();
 
     const populatedSession = await FocusSession.findById(updatedSession._id)
-      .populate("projectId", "name color")
+      .populate("categoryId", "name color")
       .populate("taskId", "name");
 
     res.status(200).json({

@@ -43,9 +43,8 @@ const CreateAccountForm = ({
           alignItems: "center",
           bgcolor: "background.paper",
           borderRadius: 3,
-          border: `1px solid ${
-            theme.palette.neutral[theme.palette.mode === "dark" ? 600 : 300]
-          }`,
+          // REVISED: Using the theme's divider color for a consistent border.
+          border: `1px solid ${theme.palette.divider}`,
         }}
       >
         <Typography
@@ -72,44 +71,31 @@ const CreateAccountForm = ({
         )}
 
         <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
-          {
-            //    Optional: Username field
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              value={formValues.username}
-              onChange={onFormChange}
-              disabled={isLoading}
-              sx={{
-                "& label.Mui-focused": { color: "primary.light" },
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": { borderColor: "primary.main" },
-                },
-              }}
-            />
-          }
+          {/* REVISED: All sx props have been removed from the TextFields. */}
+          {/* The global MuiOutlinedInput style in theme.js handles all styling automatically. */}
           <TextField
             margin="normal"
             required
             fullWidth
-            id="email-create" // Unique ID
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            value={formValues.username}
+            onChange={onFormChange}
+            disabled={isLoading}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email-create"
             label="Email Address"
             name="email"
             autoComplete="email"
             value={formValues.email}
             onChange={onFormChange}
             disabled={isLoading}
-            sx={{
-              "& label.Mui-focused": { color: "primary.light" },
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": { borderColor: "primary.main" },
-              },
-            }}
           />
           <TextField
             margin="normal"
@@ -118,17 +104,11 @@ const CreateAccountForm = ({
             name="password"
             label="Password (min. 6 characters)"
             type="password"
-            id="password-create" // Unique ID
+            id="password-create"
             autoComplete="new-password"
             value={formValues.password}
             onChange={onFormChange}
             disabled={isLoading}
-            sx={{
-              "& label.Mui-focused": { color: "primary.light" },
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": { borderColor: "primary.main" },
-              },
-            }}
           />
           <TextField
             margin="normal"
@@ -142,12 +122,6 @@ const CreateAccountForm = ({
             value={formValues.confirmPassword}
             onChange={onFormChange}
             disabled={isLoading}
-            sx={{
-              "& label.Mui-focused": { color: "primary.light" },
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": { borderColor: "primary.main" },
-              },
-            }}
           />
           <Button
             type="submit"
@@ -160,8 +134,8 @@ const CreateAccountForm = ({
               mb: 2,
               py: 1.5,
               fontWeight: "bold",
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-              "&:hover": { bgcolor: "primary.dark" },
+              // REVISED: The color and hover styles are now handled by the theme
+              // when using `variant="contained"` and `color="primary"`.
             }}
           >
             {isLoading ? (

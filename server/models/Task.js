@@ -1,15 +1,17 @@
+// server/models/Task.js
+
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
   {
-    projectId: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Project", // References the Project model
+      ref: "Category", // References the Category model
       default: null,
       index: true,
     },
     userId: {
-      // Denormalized for easier querying, ensuring task owner matches project owner
+      // Denormalized for easier querying, ensuring task owner matches Category owner
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // References the User model
       required: [true, "User ID is required for a task."],
@@ -38,6 +40,14 @@ const taskSchema = new mongoose.Schema(
     dueDate: {
       type: Date,
     },
+    color: {
+      type: String,
+      trim: true,
+      match: [
+        /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/,
+        "Please provide a valid hex color code.",
+      ],
+    },
     estimatedPomodoros: {
       // User's estimate of Pomodoros needed
       type: Number,
@@ -58,7 +68,7 @@ const taskSchema = new mongoose.Schema(
 );
 
 // Optional: Compound index if you often query tasks by user and project
-// taskSchema.index({ userId: 1, projectId: 1 });
+// taskSchema.index({ userId: 1, categoryId: 1 });
 
 const Task = mongoose.model("Task", taskSchema);
 

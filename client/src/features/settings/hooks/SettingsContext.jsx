@@ -1,3 +1,5 @@
+// client/src/features/settings/SettingsContext.jsx
+
 import {
   createContext,
   useState,
@@ -44,7 +46,22 @@ export const SettingsProvider = ({ children }) => {
           headers: { authtoken: token },
         });
         if (response.data && response.data.preferences) {
-          setSettings((prev) => ({ ...prev, ...response.data.preferences }));
+          const prefs = response.data.preferences;
+
+          // --- THE BULLETPROOF FIX ---
+          // This directly sets the new state, using the fetched value if it exists,
+          // or falling back to the previous state's value if it doesn't.
+          // This prevents 'undefined' from ever overwriting a valid default.
+          setSettings((prevSettings) => ({
+            pomodoroDuration:
+              prefs.defaultPomodoroTime ?? prevSettings.pomodoroDuration,
+            shortBreakDuration:
+              prefs.defaultShortBreakTime ?? prevSettings.shortBreakDuration,
+            longBreakDuration:
+              prefs.defaultLongBreakTime ?? prevSettings.longBreakDuration,
+            longBreakInterval:
+              prefs.defaultLongBreakInterval ?? prevSettings.longBreakInterval,
+          }));
         }
       } catch (err) {
         console.error("Failed to fetch settings:", err);

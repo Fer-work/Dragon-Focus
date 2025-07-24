@@ -1,3 +1,5 @@
+// server/routes/api/tasks.js
+
 import { Router } from "express";
 import {
   createTask,
@@ -15,8 +17,8 @@ router.use(protect); // Example: Apply auth middleware to all task routes
 
 router
   .route("/")
-  .post(createTask) // Create a new task (projectId should be in the request body)
-  .get(getTasksForUser); // Get tasks for the authenticated user (e.g., query by projectId: /tasks?projectId=...)
+  .post(createTask) // Create a new task (categoryId should be in the request body)
+  .get(getTasksForUser); // Get tasks for the authenticated user (e.g., query by categoryId: /tasks?categoryId=...)
 
 router
   .route("/:taskId")

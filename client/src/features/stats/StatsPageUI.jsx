@@ -5,8 +5,8 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Button,
-  ButtonGroup,
+  ToggleButton,
+  ToggleButtonGroup,
   Grid,
   Tabs,
   Tab,
@@ -76,34 +76,34 @@ const StatsPageUI = ({
 
       <Grid container spacing={3}>
         {/* --- LEFT COLUMN: SUMMARY --- */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3} m={"auto"}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            <ButtonGroup variant="outlined" fullWidth>
-              <Button
-                onClick={() => onPeriodChange("today")}
-                variant={selectedPeriod === "today" ? "contained" : "outlined"}
-              >
+            <ToggleButtonGroup
+              value={selectedPeriod}
+              exclusive
+              onChange={(event, newPeriod) => {
+                if (newPeriod !== null) {
+                  // Prevents unselecting everything
+                  onPeriodChange(newPeriod);
+                }
+              }}
+              aria-label="time period"
+              fullWidth
+              color="primary" // The selected button will use the primary color
+            >
+              <ToggleButton value="today" aria-label="today">
                 Today
-              </Button>
-              <Button
-                onClick={() => onPeriodChange("week")}
-                variant={selectedPeriod === "week" ? "contained" : "outlined"}
-              >
+              </ToggleButton>
+              <ToggleButton value="today" aria-label="today">
                 Week
-              </Button>
-              <Button
-                onClick={() => onPeriodChange("month")}
-                variant={selectedPeriod === "month" ? "contained" : "outlined"}
-              >
+              </ToggleButton>
+              <ToggleButton value="today" aria-label="today">
                 Month
-              </Button>
-              <Button
-                onClick={() => onPeriodChange("all")}
-                variant={selectedPeriod === "all" ? "contained" : "outlined"}
-              >
+              </ToggleButton>
+              <ToggleButton value="today" aria-label="today">
                 All
-              </Button>
-            </ButtonGroup>
+              </ToggleButton>
+            </ToggleButtonGroup>
 
             {stats.sessionCount > 0 ? (
               <>
@@ -137,8 +137,8 @@ const StatsPageUI = ({
         </Grid>
 
         {/* --- RIGHT COLUMN: DETAILED CHARTS (TABS) --- */}
-        <Grid item xs={12} md={8}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Grid item xs={12} md={9} m={"auto"} justifyContent={"center"}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }} m="auto">
             <Tabs
               value={currentTab}
               onChange={handleTabChange}

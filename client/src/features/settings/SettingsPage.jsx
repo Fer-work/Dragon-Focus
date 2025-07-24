@@ -9,88 +9,79 @@ import {
   Grid,
   Alert, // For feedback messages
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import { SettingsContext } from "./hooks/SettingsContext";
 
 const SettingsPage = () => {
-  const {
-    pomodoroDuration,
-    shortBreakDuration,
-    longBreakDuration,
-    longBreakInterval,
-    updateSettings,
-  } = useContext(SettingsContext);
+  // Key Fix 1: Correctly destructure the context value
+  const { settings, updateSettings, isSettingsLoading } =
+    useContext(SettingsContext);
   const theme = useTheme();
 
-  // Local state for form inputs, initialized from context
-  const [localPomodoroDuration, setLocalPomodoroDuration] =
-    useState(pomodoroDuration);
-  const [localShortBreakDuration, setLocalShortBreakDuration] =
-    useState(shortBreakDuration);
-  const [localLongBreakDuration, setLocalLongBreakDuration] =
-    useState(longBreakDuration);
-  const [localLongBreakInterval, setLocalLongBreakInterval] =
-    useState(longBreakInterval);
+  // Refactor: Use a single state object for the form
+  const [formState, setFormState] = useState(settings);
+  const [feedback, setFeedback] = useState({ type: "", text: "" });
+  const [isSaving, setIsSaving] = useState(false);
 
-  const [feedbackMessage, setFeedbackMessage] = useState({
-    type: "",
-    text: "",
-  }); // For success/error messages
-
-  // Effect to update local state if context values change (e.g., loaded from localStorage later)
+  // This useEffect correctly syncs the form when the global settings are loaded
   useEffect(() => {
-    setLocalPomodoroDuration(pomodoroDuration);
-    setLocalShortBreakDuration(shortBreakDuration);
-    setLocalLongBreakDuration(longBreakDuration);
-    setLocalLongBreakInterval(longBreakInterval);
-  }, [
-    pomodoroDuration,
-    shortBreakDuration,
-    longBreakDuration,
-    longBreakInterval,
-  ]);
+    if (settings) {
+      setFormState(settings);
+    }
+  }, [settings]);
 
-  const handleSaveSettings = (event) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Key Fix 2: Make the save handler async and check the result
+  const handleSaveSettings = async (event) => {
     event.preventDefault();
-    setFeedbackMessage({ type: "", text: "" }); // Clear previous message
+    setFeedback({ type: "", text: "" });
+    setIsSaving(true);
 
-    // Basic validation (ensure values are positive numbers)
-    const pd = parseInt(localPomodoroDuration, 10);
-    const sbd = parseInt(localShortBreakDuration, 10);
-    const lbd = parseInt(localLongBreakDuration, 10);
-    const lbi = parseInt(localLongBreakInterval, 10);
+    const newSettings = {
+      pomodoroDuration: parseInt(formState.pomodoroDuration, 10),
+      shortBreakDuration: parseInt(formState.shortBreakDuration, 10),
+      longBreakDuration: parseInt(formState.longBreakDuration, 10),
+      longBreakInterval: parseInt(formState.longBreakInterval, 10),
+    };
 
-    if (
-      isNaN(pd) ||
-      pd <= 0 ||
-      isNaN(sbd) ||
-      sbd <= 0 ||
-      isNaN(lbd) ||
-      lbd <= 0 ||
-      isNaN(lbi) ||
-      lbi <= 0
-    ) {
-      setFeedbackMessage({
+    // Check for valid numbers
+    if (Object.values(newSettings).some((val) => isNaN(val) || val <= 0)) {
+      setFeedback({
         type: "error",
-        text: "All durations and intervals must be positive numbers.",
+        text: "All values must be positive numbers.",
       });
+      setIsSaving(false);
       return;
     }
 
-    updateSettings({
-      pomodoroDuration: pd,
-      shortBreakDuration: sbd,
-      longBreakDuration: lbd,
-      longBreakInterval: lbi,
-    });
-    setFeedbackMessage({
-      type: "success",
-      text: "Settings saved successfully!",
-    });
+    const result = await updateSettings(newSettings);
 
-    // Optionally, clear message after a few seconds
-    setTimeout(() => setFeedbackMessage({ type: "", text: "" }), 3000);
+    if (result.success) {
+      setFeedback({ type: "success", text: "Settings saved successfully!" });
+    } else {
+      setFeedback({
+        type: "error",
+        text: result.error || "Failed to save settings.",
+      });
+    }
+
+    setIsSaving(false);
+    setTimeout(() => setFeedback({ type: "", text: "" }), 4000);
   };
+
+  // While the initial settings are loading, show a spinner
+  if (isSettingsLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   const commonTextFieldProps = {
     type: "number",
@@ -103,17 +94,6 @@ const SettingsPage = () => {
     inputProps: {
       min: 1, // Minimum value for durations/interval
       sx: { color: "text.primary" }, // Style for input text
-    },
-    sx: {
-      "& label.Mui-focused": { color: "primary.light" },
-      "& .MuiOutlinedInput-root": {
-        "& fieldset": {
-          borderColor:
-            theme.palette.neutral[theme.palette.mode === "dark" ? 500 : 300],
-        },
-        "&:hover fieldset": { borderColor: "primary.light" },
-        "&.Mui-focused fieldset": { borderColor: "primary.main" },
-      },
     },
   };
 
@@ -130,16 +110,15 @@ const SettingsPage = () => {
       }}
     >
       <Paper
-        elevation={6}
+        elevation={0}
         sx={{
           p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
           width: "100%",
           bgcolor: "background.paper",
           borderRadius: 3,
-          border: `1px solid ${
-            theme.palette.neutral[theme.palette.mode === "dark" ? 600 : 300]
-          }`,
-          boxShadow: "0px 8px 25px rgba(0,0,0,0.15)",
+          // REVISED: Using theme tokens for a consistent look.
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: theme.shadows[6],
         }}
       >
         <Typography
@@ -152,12 +131,12 @@ const SettingsPage = () => {
           ⚙️ Timer Settings ⚙️
         </Typography>
 
-        {feedbackMessage.text && (
+        {feedback.text && (
           <Alert
-            severity={feedbackMessage.type || "info"}
+            severity={feedback.type || "info"}
             sx={{ width: "100%", mb: 2 }}
           >
-            {feedbackMessage.text}
+            {feedback.text}
           </Alert>
         )}
 
@@ -169,39 +148,43 @@ const SettingsPage = () => {
           <Grid container spacing={2}>
             {" "}
             {/* Use Grid for better spacing of multiple fields */}
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
-                id="pomodoro-duration"
+                name="pomodoroDuration"
                 label="Pomodoro (minutes)"
-                value={localPomodoroDuration}
-                onChange={(e) => setLocalPomodoroDuration(e.target.value)}
+                type="number"
+                value={formState.pomodoroDuration}
+                onChange={handleInputChange}
                 {...commonTextFieldProps}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
-                id="short-break-duration"
+                name="shortBreakDuration"
                 label="Short Break (minutes)"
-                value={localShortBreakDuration}
-                onChange={(e) => setLocalShortBreakDuration(e.target.value)}
+                type="number"
+                value={formState.shortBreakDuration}
+                onChange={handleInputChange}
                 {...commonTextFieldProps}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
-                id="long-break-duration"
+                name="longBreakDuration"
                 label="Long Break (minutes)"
-                value={localLongBreakDuration}
-                onChange={(e) => setLocalLongBreakDuration(e.target.value)}
+                type="number"
+                value={formState.longBreakDuration}
+                onChange={handleInputChange}
                 {...commonTextFieldProps}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
-                id="long-break-interval"
-                label="Long Break Interval (sessions)"
-                value={localLongBreakInterval}
-                onChange={(e) => setLocalLongBreakInterval(e.target.value)}
+                name="longBreakInterval"
+                label="Long Break Interval"
+                type="number"
+                value={formState.longBreakInterval}
+                onChange={handleInputChange}
                 {...commonTextFieldProps}
                 helperText="After how many Pomodoros"
               />
@@ -219,11 +202,10 @@ const SettingsPage = () => {
               py: 1.5,
               fontSize: "1rem",
               fontWeight: "bold",
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-              "&:hover": { bgcolor: "primary.dark" },
             }}
+            disabled={isSaving}
           >
-            Save Settings
+            {isSaving ? <CircularProgress size={24} /> : "Save Settings"}
           </Button>
         </Box>
       </Paper>

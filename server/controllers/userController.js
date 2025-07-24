@@ -164,8 +164,10 @@ export async function getCurrentUser(req, res) {
 // @access  Private (requires authentication via protect middleware)
 export async function updateCurrentUser(req, res) {
   try {
-    const userId = req.user._id; // Get MongoDB _id from authenticated user object
-    const { username, preferences } = req.body;
+    const userId = req.user._id;
+    // Key Change: We get the whole body, not a nested 'preferences' object.
+    const updates = req.body;
+    console.log("Updates: ", updates);
 
     // Find the user by their MongoDB _id
     let user = await User.findById(userId);
@@ -175,18 +177,37 @@ export async function updateCurrentUser(req, res) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Update allowed fields
-    if (username !== undefined) {
-      user.username = username.trim() === "" ? null : username.trim(); // Allow unsetting username
+    // Update username if it was sent
+    if (updates.username !== undefined) {
+      user.username = updates.username;
     }
 
-    if (preferences) {
-      // Merge preferences carefully to avoid overwriting nested objects unintentionally
-      user.preferences = { ...user.preferences, ...preferences };
+    // --- Start of Fix ---
+    // Explicitly map incoming preference keys to the schema's field names
+    const preferencesToUpdate = {};
+    if (updates.pomodoroDuration !== undefined) {
+      preferencesToUpdate.defaultPomodoroTime = updates.pomodoroDuration;
     }
+    if (updates.shortBreakDuration !== undefined) {
+      preferencesToUpdate.defaultShortBreakTime = updates.shortBreakDuration;
+    }
+    if (updates.longBreakDuration !== undefined) {
+      preferencesToUpdate.defaultLongBreakTime = updates.longBreakDuration;
+    }
+    if (updates.longBreakInterval !== undefined) {
+      preferencesToUpdate.defaultLongBreakInterval = updates.longBreakInterval;
+    }
+
+    // Merge the correctly mapped preferences into the user's existing preferences
+    user.preferences = {
+      ...user.preferences.toObject(),
+      ...preferencesToUpdate,
+    };
+    // --- End of Fix ---
+
     // Add other updatable fields as needed, e.g., focusGems (though that might be updated by other actions)
-
     const updatedUser = await user.save();
+    console.log(`updatedUser: `, updatedUser);
 
     res.status(200).json({
       message: "User profile updated successfully!",

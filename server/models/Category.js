@@ -1,30 +1,30 @@
 import mongoose from "mongoose";
 
-const projectSchema = new mongoose.Schema(
+const categorySchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // References the User model
-      required: [true, "User ID is required for a project."],
+      required: [true, "User ID is required for a category."],
       index: true,
     },
     name: {
       type: String,
-      required: [true, "Project name is required."],
+      required: [true, "Category name is required."],
       trim: true,
-      minlength: [1, "Project name cannot be empty."],
-      maxlength: [100, "Project name cannot exceed 100 characters."],
+      minlength: [1, "Category name cannot be empty."],
+      maxlength: [100, "Category name cannot exceed 100 characters."],
     },
     description: {
       type: String,
       trim: true,
-      maxlength: [500, "Project description cannot exceed 500 characters."],
+      maxlength: [500, "Category description cannot exceed 500 characters."],
     },
     status: {
       type: String,
       enum: {
         values: ["active", "on-hold", "completed", "archived"],
-        message: "{VALUE} is not a supported project status.",
+        message: "{VALUE} is not a supported Category status.",
       },
       default: "active",
     },
@@ -44,6 +44,6 @@ const projectSchema = new mongoose.Schema(
   }
 );
 
-const Project = mongoose.model("Project", projectSchema);
+const Category = mongoose.model("Category", categorySchema);
 
-export default Project;
+export default Category;

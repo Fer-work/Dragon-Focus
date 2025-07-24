@@ -13,6 +13,7 @@ import {
   MenuItem,
   Grid,
   Alert,
+  useTheme, // Import useTheme to access the theme in our style object
 } from "@mui/material";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -22,29 +23,33 @@ import { parseISO } from "date-fns"; // For handling date strings
 
 import useUser from "../../../globalHooks/useUser"; // To get the auth token
 
-const modalStyle = {
+// REVISED: This function now accepts the theme to create dynamic styles.
+const createModalStyle = (theme) => ({
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: { xs: "90%", sm: "70%", md: "500px" },
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  // REVISED: Using the theme's divider color for a consistent, thematic border.
+  border: `2px solid ${theme.palette.divider}`,
+  // REVISED: Using the theme's shadow ramp for consistency.
+  boxShadow: theme.shadows[24],
   p: 4,
   borderRadius: 2,
-  maxHeight: "90vh", // Prevent modal from being too tall
-  overflowY: "auto", // Allow scrolling if content overflows
-};
+  maxHeight: "90vh",
+  overflowY: "auto",
+});
 
 const TaskFormModal = ({
   open,
   onClose,
   onSave,
   initialTaskData,
-  projectId,
+  categoryId,
 }) => {
   const { user } = useUser();
+  const theme = useTheme();
   const isEditMode = Boolean(initialTaskData);
 
   // Form state
@@ -81,6 +86,7 @@ const TaskFormModal = ({
         description: "",
         status: "pending",
         dueDate: null,
+        color: "#4A90E2",
         estimatedPomodoros: "",
       });
     }
@@ -111,12 +117,12 @@ const TaskFormModal = ({
     const token = await user.getIdToken();
     const headers = { authtoken: token };
 
-    // Key Change: Create the final payload, ensuring projectId is included for new tasks
+    // Key Change: Create the final payload, ensuring categoryId is included for new tasks
     const taskData = {
       ...formState,
       // The dueDate is already a Date object, the backend will handle it.
-      // If creating a new task, add the projectId.
-      ...(!isEditMode && { projectId: projectId }),
+      // If creating a new task, add the categoryId.
+      ...(!isEditMode && { categoryId: categoryId }),
     };
 
     try {
@@ -127,11 +133,11 @@ const TaskFormModal = ({
           taskData,
           { headers }
         );
-        onSave(response.data.task || response.data);
-        handleClose();
       } else {
         response = await axios.post("/api/tasks", taskData, { headers });
       }
+      onSave(response.data.task || response.data);
+      handleClose();
     } catch (err) {
       console.error("Failed to save task:", err);
       const errorMessage =
@@ -162,12 +168,17 @@ const TaskFormModal = ({
       onClose={handleClose}
       aria-labelledby="task-form-modal-title"
     >
-      <Box sx={modalStyle} component="form" onSubmit={handleSubmit}>
+      <Box
+        sx={createModalStyle(theme)}
+        component="form"
+        onSubmit={handleSubmit}
+      >
         <Typography
           id="task-form-modal-title"
           variant="h6"
           component="h2"
           gutterBottom
+          sx={{ color: "primary.main", fontWeight: "bold" }} // A touch of thematic color for the title
         >
           {isEditMode ? "Edit Task" : "Create New Task"}
         </Typography>
@@ -182,6 +193,7 @@ const TaskFormModal = ({
           <Grid item xs={12}>
             <TextField
               label="Task Name"
+              name="name"
               variant="outlined"
               fullWidth
               required
@@ -193,6 +205,7 @@ const TaskFormModal = ({
           <Grid item xs={12}>
             <TextField
               label="Description (Optional)"
+              name="description"
               variant="outlined"
               fullWidth
               multiline
@@ -218,6 +231,27 @@ const TaskFormModal = ({
                 <MenuItem value="blocked">Blocked</MenuItem>
               </Select>
             </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Color"
+              name="color"
+              variant="outlined"
+              fullWidth
+              type="color" // Using type="color" for a basic color picker
+              value={formState.color}
+              onChange={handleInputChange}
+              disabled={isLoading}
+              helperText="Click to pick a color"
+              sx={{
+                // Attempt to make the color input display the color swatch better
+                '& input[type="color"]': {
+                  height: "38px", // Match TextField height
+                  padding: "0 5px", // Minimal padding
+                  cursor: "pointer",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

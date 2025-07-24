@@ -13,28 +13,31 @@ import {
   MenuItem,
   Grid,
   Alert, // For displaying errors
+  useTheme, // Import useTheme
 } from "@mui/material";
 import useUser from "../../../globalHooks/useUser"; // To get the auth token
 
-// Define the style for the modal content
-const modalStyle = {
+// REVISED: Using a function to create a theme-aware style object.
+const createModalStyle = (theme) => ({
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: { xs: "90%", sm: "70%", md: "500px" },
   bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
+  // REVISED: Using the theme's divider and shadow for consistency.
+  border: `2px solid ${theme.palette.divider}`,
+  boxShadow: theme.shadows[24],
   p: 4,
   borderRadius: 2,
-  maxHeight: "90vh", // Prevent modal from being too tall
-  overflowY: "auto", // Allow scrolling if content overflows
-};
+  maxHeight: "90vh",
+  overflowY: "auto",
+});
 
-const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
+const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
   const { user } = useUser(); // For getting the auth token
-  const isEditMode = Boolean(initialProjectData);
+  const theme = useTheme();
+  const isEditMode = Boolean(initialCategoryData);
 
   // Form state
   // --- Key Change: Group form state into one object ---
@@ -51,15 +54,15 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
 
   // Pre-fill form if in edit mode
   useEffect(() => {
-    if (isEditMode && initialProjectData) {
+    if (isEditMode && initialCategoryData) {
       setFormState({
-        name: initialProjectData.name || "",
-        description: initialProjectData.description || "",
-        color: initialProjectData.color || "#4A90E2",
-        status: initialProjectData.status || "active",
+        name: initialCategoryData.name || "",
+        description: initialCategoryData.description || "",
+        color: initialCategoryData.color || "#4A90E2",
+        status: initialCategoryData.status || "active",
       });
     } else {
-      // Reset form for create mode or if initialProjectData is not there
+      // Reset form for create mode or if initialCategoryData is not there
       setFormState({
         name: "",
         description: "",
@@ -67,7 +70,7 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
         status: "active",
       });
     }
-  }, [initialProjectData, isEditMode, open]); // Re-run if initialProjectData, mode, or open status changes
+  }, [initialCategoryData, isEditMode, open]); // Re-run if initialCategoryData, mode, or open status changes
 
   // --- Key Change: A single handler for all form inputs ---
   const handleInputChange = (e) => {
@@ -81,7 +84,7 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
     setIsLoading(true);
 
     if (!user) {
-      setError("You must be logged in to save a project.");
+      setError("You must be logged in to save a category.");
       setIsLoading(false);
       return;
     }
@@ -89,27 +92,29 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
     const token = await user.getIdToken();
     const headers = { authtoken: token };
 
-    const projectData = formState;
+    const categoryData = formState;
 
     try {
       let response;
       if (isEditMode) {
         response = await axios.put(
-          `/api/projects/${initialProjectData._id}`,
-          projectData,
+          `/api/categories/${initialCategoryData._id}`,
+          categoryData,
           { headers }
         );
       } else {
-        response = await axios.post("/api/projects", projectData, { headers });
+        response = await axios.post("/api/categories", categoryData, {
+          headers,
+        });
       }
-      onSave(response.data.project || response.data);
+      onSave(response.data.category || response.data);
       handleClose();
     } catch (err) {
-      console.error("Failed to save project:", err);
+      console.error("Failed to save category:", err);
       const errorMessage =
         err.response?.data?.message ||
         err.message ||
-        "Failed to save project. Please try again.";
+        "Failed to save category. Please try again.";
       // If validation errors are an array, format them
       if (
         err.response?.data?.errors &&
@@ -134,17 +139,23 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
     <Modal
       open={open}
       onClose={handleClose}
-      aria-labelledby="project-form-modal-title"
-      aria-describedby="project-form-modal-description"
+      aria-labelledby="category-form-modal-title"
+      aria-describedby="category-form-modal-description"
     >
-      <Box sx={modalStyle} component="form" onSubmit={handleSubmit}>
+      <Box
+        sx={createModalStyle(theme)}
+        component="form"
+        onSubmit={handleSubmit}
+      >
         <Typography
-          id="project-form-modal-title"
+          id="category-form-modal-title"
           variant="h6"
           component="h2"
           gutterBottom
+          // Added for consistency with the other modal
+          sx={{ color: "primary.main", fontWeight: "bold" }}
         >
-          {isEditMode ? "Edit Project" : "Create New Project"}
+          {isEditMode ? "Edit Category" : "Create New Category"}
         </Typography>
 
         {error && (
@@ -156,7 +167,8 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              label="Project Name"
+              label="Category Name"
+              name="name"
               variant="outlined"
               fullWidth
               required
@@ -168,6 +180,7 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
           <Grid item xs={12}>
             <TextField
               label="Description (Optional)"
+              name="description"
               variant="outlined"
               fullWidth
               multiline
@@ -179,7 +192,8 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Color (e.g., #RRGGBB)"
+              label="Color"
+              name="color"
               variant="outlined"
               fullWidth
               type="color" // Using type="color" for a basic color picker
@@ -199,10 +213,11 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth variant="outlined" disabled={isLoading}>
-              <InputLabel id="project-status-label">Status</InputLabel>
+              <InputLabel id="category-status-label">Status</InputLabel>
               <Select
-                labelId="project-status-label"
-                id="project-status"
+                name="status"
+                labelId="category-status-label"
+                id="category-status"
                 value={formState.status}
                 label="Status"
                 onChange={(e) =>
@@ -235,7 +250,7 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
             ) : isEditMode ? (
               "Save Changes"
             ) : (
-              "Create Project"
+              "Create Category"
             )}
           </Button>
         </Box>
@@ -244,4 +259,4 @@ const ProjectFormModal = ({ open, onClose, onSave, initialProjectData }) => {
   );
 };
 
-export default ProjectFormModal;
+export default CategoryFormModal;

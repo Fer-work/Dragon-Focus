@@ -1,3 +1,5 @@
+// server/models/FocusSession.js
+
 import mongoose from "mongoose";
 
 const focusSessionSchema = new mongoose.Schema(
@@ -12,12 +14,12 @@ const focusSessionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Task", // References the Task model
       required: [true, "Task ID is required for a session."],
-      index: true, // Optional: A session might not always be tied to a specific task
+      index: true,
     },
-    projectId: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Project", // References the Project model
-      default: null, // A session doesn't need to belong to a project
+      ref: "Category", // References the Category model
+      default: null, // A session doesn't need to belong to a Category
       index: true,
     },
     timestamp: {

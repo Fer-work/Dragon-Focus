@@ -1,4 +1,3 @@
-import { ColorModeContext } from "../../../theme";
 import {
   Container,
   Box,
@@ -8,7 +7,7 @@ import {
   Paper,
   Alert,
   CircularProgress,
-  Link as MuiLink, // For consistent MUI link styling
+  Link as MuiLink,
   useTheme,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
@@ -25,33 +24,32 @@ const LoginForm = ({
   return (
     <Container
       component="main"
-      maxWidth="xs" // Keeps the form nicely contained and centered
+      maxWidth="xs"
       sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "calc(100vh - 120px)", // Adjust based on layout's header/footer
+        minHeight: "calc(100vh - 120px)",
         py: 4,
       }}
     >
       <Paper
         elevation={6}
         sx={{
-          p: { xs: 3, sm: 4 }, // Responsive padding
+          p: { xs: 3, sm: 4 },
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          bgcolor: "background.paper", // Use paper background from theme
+          bgcolor: "background.paper",
           borderRadius: 3,
-          border: `1px solid ${
-            theme.palette.neutral[theme.palette.mode === "dark" ? 600 : 300]
-          }`,
+          // REVISED: Using the theme's divider color for a consistent border.
+          border: `1px solid ${theme.palette.divider}`,
         }}
       >
         <Typography
           component="h1"
-          variant="h3" // Thematic font will apply
+          variant="h3"
           color="primary.main"
           sx={{ fontWeight: "bold", mb: 1 }}
         >
@@ -73,6 +71,7 @@ const LoginForm = ({
         )}
 
         <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
+          {/* REVISED: Removed sx prop. The theme handles all styling. */}
           <TextField
             margin="normal"
             required
@@ -85,13 +84,8 @@ const LoginForm = ({
             value={formValues.email}
             onChange={onFormChange}
             disabled={isLoading}
-            sx={{
-              "& label.Mui-focused": { color: "primary.light" },
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": { borderColor: "primary.main" },
-              },
-            }}
           />
+          {/* REVISED: Removed sx prop. The theme handles all styling. */}
           <TextField
             margin="normal"
             required
@@ -104,26 +98,19 @@ const LoginForm = ({
             value={formValues.password}
             onChange={onFormChange}
             disabled={isLoading}
-            sx={{
-              "& label.Mui-focused": { color: "primary.light" },
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": { borderColor: "primary.main" },
-              },
-            }}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            color="primary" // Uses primary.main from your theme
+            color="primary"
             disabled={isLoading}
             sx={{
               mt: 3,
               mb: 2,
-              py: 1.5, // Make button a bit taller
+              py: 1.5,
               fontWeight: "bold",
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-              "&:hover": { bgcolor: "primary.dark" },
+              // REVISED: The color and hover styles are handled by the theme.
             }}
           >
             {isLoading ? (
@@ -150,4 +137,5 @@ const LoginForm = ({
     </Container>
   );
 };
+
 export default LoginForm;

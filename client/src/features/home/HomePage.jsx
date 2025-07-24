@@ -17,8 +17,8 @@ const HomePage = () => {
   const [pageError, setPageError] = useState(null);
 
   // --- Callback passed to FocusSetup ---
-  const handleFocusTargetsChange = useCallback((projectId, taskId) => {
-    setCurrentSelectedProjectId(projectId);
+  const handleFocusTargetsChange = useCallback((categoryId, taskId) => {
+    setCurrentSelectedProjectId(categoryId);
     setCurrentSelectedTaskId(taskId);
   }, []);
 
@@ -34,7 +34,7 @@ const HomePage = () => {
       const token = await user.getIdToken();
       const sessionData = {
         duration: durationInSeconds / 60,
-        projectId: currentSelectedProjectId || null,
+        categoryId: currentSelectedProjectId || null,
         taskId: currentSelectedTaskId,
         timestamp: new Date().toISOString(),
       };
@@ -51,6 +51,7 @@ const HomePage = () => {
     }
   };
 
+  // TODO: Check this for loading.
   // Don't render until the user and settings are loaded to prevent crashes
   if (isSettingsLoading || !user) {
     // Or return a loading spinner component
@@ -67,10 +68,10 @@ const HomePage = () => {
       selectedTaskId={currentSelectedTaskId}
       // Other props needed for display
       pageError={pageError}
-      pomodoroDuration={settings.defaultPomodoroTime}
-      shortBreak={settings.defaultShortBreakTime}
-      longBreak={settings.defaultLongBreakTime}
-      longBreakInterval={settings.defaultLongBreakInterval}
+      pomodoroDuration={settings.pomodoroDuration}
+      shortBreak={settings.shortBreakDuration}
+      longBreak={settings.longBreakDuration}
+      longBreakInterval={settings.longBreakInterval}
     />
   );
 };

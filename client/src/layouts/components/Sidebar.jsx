@@ -8,7 +8,7 @@ import {
   Stack,
   Divider,
   CircularProgress,
-  useTheme, // Import useTheme
+  useTheme,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import { BarChart, Article } from "@mui/icons-material";
@@ -20,7 +20,7 @@ export default function Sidebar() {
   const { isLoading, user } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme(); // Get the theme object
+  const theme = useTheme();
 
   const handleLogout = () => {
     signOut(getAuth())
@@ -28,8 +28,9 @@ export default function Sidebar() {
       .catch((error) => console.error("Sign out error:", error));
   };
 
+  // This function is very well-written and uses theme tokens correctly. No changes needed.
   const navButtonStyles = (path) => ({
-    justifyContent: "flex-start", // Corrected: flex-start
+    justifyContent: "flex-start",
     textAlign: "left",
     padding: "10px 16px",
     borderRadius: "8px",
@@ -44,7 +45,7 @@ export default function Sidebar() {
         ? theme.palette.action.selected
         : "transparent",
     "&:hover": {
-      color: theme.palette.primary.light, // Use a specific theme color like primary.light or accent.main
+      color: theme.palette.primary.light,
       backgroundColor: theme.palette.action.hover,
     },
   });
@@ -61,7 +62,6 @@ export default function Sidebar() {
     >
       {/* Top Section: Title and navigation */}
       <Box>
-        {/* Header */}
         <Typography
           variant="h3"
           align="center"
@@ -71,32 +71,20 @@ export default function Sidebar() {
             fontWeight: "bold",
             pt: 2,
             pb: 1,
-            fontFamily: "'MedievalSharp', cursive",
+            // REVISED: The fontFamily is already set globally in the theme's
+            // typography settings, so this override is redundant.
+            // fontFamily: "'MedievalSharp', cursive",
           }}
         >
           Dragon Focus
         </Typography>
       </Box>
 
-      <Divider
-        sx={{
-          my: 1,
-          // Use a specific shade from your neutral palette, or MUI's default 'divider' color
-          borderColor: theme.palette.divider, // MUI's default, which is mode-aware
-          // Or, for more control:
-          // borderColor: theme.palette.mode === 'dark' ? theme.palette.neutral[600] : theme.palette.neutral[300],
-        }}
-      />
+      {/* This Divider is perfect, using the theme's divider color. */}
+      <Divider sx={{ my: 1, borderColor: "divider" }} />
 
       {/* Navigation */}
-      <Stack
-        spacing={1.5}
-        sx={{
-          mt: 2,
-          px: 1,
-          flexGrow: 1 /* Allow stack to take available space */,
-        }}
-      >
+      <Stack spacing={1.5} sx={{ mt: 2, px: 1, flexGrow: 1 }}>
         <Button
           component={Link}
           to="/"
@@ -105,7 +93,6 @@ export default function Sidebar() {
         >
           Home
         </Button>
-
         <Button
           component={Link}
           to="/about"
@@ -141,17 +128,18 @@ export default function Sidebar() {
         ) : (
           <Button
             variant="contained"
-            color="primary"
+            color="primary" // This handles everything!
             startIcon={<LoginIcon />}
             onClick={() => navigate("/login")}
             sx={{
-              m: 1,
-              bgcolor: "primary.main",
-              // For text color on primary button, ensure high contrast
-              color: theme.palette.getContrastText(theme.palette.primary.main),
-              "&:hover": {
-                bgcolor: "primary.dark",
-              },
+              m: 1, // Keep layout-specific styles like margin.
+              // REVISED: All of the following properties are now automatically
+              // handled by the theme when you set `color="primary"`.
+              // bgcolor: "primary.main",
+              // color: theme.palette.getContrastText(theme.palette.primary.main),
+              // "&:hover": {
+              //   bgcolor: "primary.dark",
+              // },
             }}
           >
             Sign In
@@ -161,37 +149,16 @@ export default function Sidebar() {
 
       {/* Footer */}
       {user && (
-        <Box
-          sx={{
-            px: 1,
-            pb: 2,
-            mt: "auto" /* Push to bottom if Stack doesn't fill */,
-          }}
-        >
-          <Divider
-            sx={{
-              my: 1,
-              borderColor: theme.palette.divider,
-              // Or:
-              // borderColor: theme.palette.mode === 'dark' ? theme.palette.neutral[600] : theme.palette.neutral[300],
-            }}
-          />
+        <Box sx={{ px: 1, pb: 2, mt: "auto" }}>
+          <Divider sx={{ my: 1, borderColor: "divider" }} />
           <Button
             variant="contained"
-            color="secondary"
-            startIcon={<LogoutIcon />} // Added icon
+            color="secondary" // This handles everything!
+            startIcon={<LogoutIcon />}
             onClick={handleLogout}
             fullWidth
-            sx={{
-              bgcolor: "secondary.main",
-              // For text color on secondary button, ensure high contrast
-              color: theme.palette.getContrastText(
-                theme.palette.secondary.main
-              ),
-              "&:hover": {
-                bgcolor: "secondary.dark",
-              },
-            }}
+            // REVISED: All styling is now handled by the theme when you set `color="secondary"`.
+            // The sx prop is no longer needed here.
           >
             Logout
           </Button>

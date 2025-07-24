@@ -1,33 +1,5 @@
-/* === Root Variables for Theming === */
-:root {
-  --flame-gradient: linear-gradient(
-    to top,
-    #000000,
-    #330000,
-    #660000,
-    #972424,
-    #cc4e00,
-    #ff8c00,
-    #ffa500,
-    #ffd700,
-    #f5df62
-  );
-  --quetzal-gradient: linear-gradient(
-    to top,
-    #fffcf2,
-    /* Radiant light – divine presence */ #fff01f,
-    /* Solar gold – enlightenment */ #ff6f00,
-    /* Sacred fire – transformation */ #d72638,
-    /* Heart red – life force, east */ #1e5128,
-    /* Jungle emerald – nature, life, jade */ #00a896,
-    /* Turquoise – wisdom, water, air */ #028090,
-    /* Quetzal feather – movement, wind */ #05668d,
-    /* Deep cyan – sky, fertility */ #2e294e
-      /* Cosmic indigo – mystery, power */
-  );
-}
-
 /* === Global Resets === */
+/* It's good practice to ensure the root elements fill the viewport */
 html,
 body,
 #root {
@@ -35,31 +7,14 @@ body,
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: "MedievalSharp", cursive; /* Updated font */
   box-sizing: border-box;
-  cursor: url("../assets/characters/RedSamurai/Special1.png"),
-    url("../assets/Money.png"), auto;
 }
 
 /* === Body Background === */
+/* This is a core part of the app's visual theme */
 body {
-  /* background-image: url("../assets/images/backgrounds/background2.png"); */
   background-image: url("../assets/images/backgrounds/Quetzal.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-}
-
-@keyframes stretch {
-  0% {
-    opacity: 0.2;
-    background-color: green;
-    border-radius: 100%;
-  }
-  50% {
-    background-color: orange;
-  }
-  100% {
-    background-color: red;
-  }
 }

@@ -4,32 +4,22 @@ import { useTheme } from "@mui/material/styles"; // To access theme for dynamic 
 const StatCard = ({ title, value, unit, icon, loading, cardColor }) => {
   const theme = useTheme();
 
-  // Key Change: Consolidated all text color logic into one variable.
-  const contentColor = cardColor
-    ? theme.palette.getContrastText(theme.palette[cardColor]?.main || cardColor)
-    : theme.palette.text.primary;
-
-  // Use a slightly less prominent color for the title, based on the main content color.
-  const titleColor = cardColor ? contentColor : theme.palette.text.secondary;
-
   return (
     <Paper
-      elevation={4} // Slightly more elevation
+      elevation={0} // Using custom border/shadow
       sx={{
-        p: { xs: 2, sm: 2.5 }, // Responsive padding
+        p: { xs: 2, sm: 2.5 },
         textAlign: "center",
-        height: "100%", // Ensure cards in a row have same height if in a Grid
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        bgcolor: cardColor ? `${cardColor}.light` : "background.paper", // Use a light variant of the cardColor or default paper
-        border: `1px solid ${
-          cardColor
-            ? `${cardColor}.main`
-            : theme.palette.neutral[theme.palette.mode === "dark" ? 500 : 300]
-        }`,
-        borderRadius: 3, // Match other rounded corners
+        // REVISED: Simplified background and border logic.
+        bgcolor: "background.paper", // Always use the standard paper background.
+        border: `1px solid ${theme.palette.divider}`, // Use the standard theme divider.
+        borderRadius: 3,
+        boxShadow: theme.shadows[3], // Use a standard theme shadow.
         transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
         "&:hover": {
           transform: "translateY(-4px)",
@@ -41,7 +31,8 @@ const StatCard = ({ title, value, unit, icon, loading, cardColor }) => {
         <Box
           sx={{
             fontSize: "2.5rem",
-            color: cardColor ? contentColor : "primary.main",
+            // REVISED: Use a consistent color for the icon.
+            color: "primary.main",
             mb: 1,
           }}
         >
@@ -50,34 +41,33 @@ const StatCard = ({ title, value, unit, icon, loading, cardColor }) => {
       )}
       <Typography
         variant="h6"
-        component="h3" // More semantic heading for a card title
-        color={titleColor}
+        component="h3"
+        // REVISED: Use the standard secondary text color for all titles.
+        color="text.secondary"
         gutterBottom
         sx={{ fontWeight: "medium" }}
       >
         {title}
       </Typography>
       {loading ? (
-        <CircularProgress
-          size={30}
-          color={cardColor || "primary"}
-          sx={{ mt: 1 }}
-        />
+        <CircularProgress size={30} color="primary" sx={{ mt: 1 }} />
       ) : (
         <Typography
-          variant="h3" // Larger for the main value
+          variant="h3"
           component="p"
-          color={cardColor ? contentColor : "primary.main"}
-          sx={{ fontWeight: "bold", lineHeight: 1.2 }} // Adjust line height
+          // REVISED: Use a consistent accent color for the main value.
+          color="accent.main"
+          sx={{ fontWeight: "bold", lineHeight: 1.2 }}
         >
           {typeof value === "number"
             ? value.toFixed(1).replace(".0", "")
             : value || 0}
           {unit && (
             <Typography
-              variant="h6" // Make unit slightly smaller than value
+              variant="h6"
               component="span"
-              color={titleColor}
+              // REVISED: Use the standard secondary text color for units.
+              color="text.secondary"
               sx={{ ml: 0.5, fontWeight: "normal" }}
             >
               {unit}

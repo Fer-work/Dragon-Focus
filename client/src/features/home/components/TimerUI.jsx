@@ -1,4 +1,11 @@
-import { Box, Button, Typography, useTheme, ButtonGroup } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  useTheme,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 
 // Optional: Icons for buttons
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -18,36 +25,6 @@ const TimerUI = ({
 }) => {
   const theme = useTheme();
 
-  const getSessionButtonStyle = (sessionName) => ({
-    flexGrow: 1,
-    color:
-      currentSession === sessionName
-        ? theme.palette.getContrastText(theme.palette.primary.main)
-        : theme.palette.text.secondary,
-    borderColor:
-      currentSession === sessionName
-        ? theme.palette.primary.dark // Active border
-        : theme.palette.neutral[theme.palette.mode === "dark" ? 600 : 300], // Inactive border
-    backgroundColor:
-      currentSession === sessionName
-        ? theme.palette.primary.main
-        : "transparent",
-    "&:hover": {
-      backgroundColor:
-        currentSession === sessionName
-          ? theme.palette.primary.dark
-          : theme.palette.action.hover,
-      borderColor:
-        currentSession === sessionName
-          ? theme.palette.primary.dark
-          : theme.palette.primary.light,
-    },
-    "&.Mui-disabled": {
-      // Style for when ButtonGroup is disabled
-      borderColor: theme.palette.action.disabledBackground,
-    },
-  });
-
   return (
     <Box
       sx={{
@@ -60,39 +37,35 @@ const TimerUI = ({
         p: { xs: 2, sm: 3 },
       }}
     >
-      {/* Session Type Buttons */}
-      <ButtonGroup
-        variant="outlined" // Base variant, active button will override to contained
-        aria-label="session type button group"
+      {/* REVISED: Using ToggleButtonGroup for cleaner, semantic session selection */}
+      <ToggleButtonGroup
+        value={currentSession}
+        exclusive
+        onChange={(event, newSession) => {
+          if (newSession !== null) {
+            // Prevent unselecting all
+            onChangeSession(newSession);
+          }
+        }}
+        aria-label="session type"
         fullWidth
         sx={{ mb: 3 }}
-        disabled={isRunning || isTimerDisabled} // Disable changing session type while running OR if globally disabled
+        disabled={isRunning || isTimerDisabled}
+        color="primary" // This color will be applied to the selected button
       >
-        <Button
-          onClick={() => onChangeSession("pomodoro")}
-          variant={currentSession === "pomodoro" ? "contained" : "outlined"}
-          sx={getSessionButtonStyle("pomodoro")}
-          startIcon={<TimerIcon />}
-        >
+        <ToggleButton value="pomodoro" aria-label="pomodoro session">
+          <TimerIcon sx={{ mr: 1 }} />
           Pomodoro
-        </Button>
-        <Button
-          onClick={() => onChangeSession("shortBreak")}
-          variant={currentSession === "shortBreak" ? "contained" : "outlined"}
-          sx={getSessionButtonStyle("shortBreak")}
-          startIcon={<FreeBreakfastIcon />}
-        >
+        </ToggleButton>
+        <ToggleButton value="shortBreak" aria-label="short break session">
+          <FreeBreakfastIcon sx={{ mr: 1 }} />
           Short Break
-        </Button>
-        <Button
-          onClick={() => onChangeSession("longBreak")}
-          variant={currentSession === "longBreak" ? "contained" : "outlined"}
-          sx={getSessionButtonStyle("longBreak")}
-          startIcon={<FreeBreakfastIcon />}
-        >
+        </ToggleButton>
+        <ToggleButton value="longBreak" aria-label="long break session">
+          <FreeBreakfastIcon sx={{ mr: 1 }} />
           Long Break
-        </Button>
-      </ButtonGroup>
+        </ToggleButton>
+      </ToggleButtonGroup>
 
       {/* Timer Display */}
       <Box
@@ -138,34 +111,18 @@ const TimerUI = ({
       </Box>
 
       {/* Timer Control Buttons */}
-      <ButtonGroup
-        variant="contained"
-        aria-label="timer control button group"
-        sx={{ gap: { xs: 1, sm: 2 } }}
-        disabled={isTimerDisabled && !isRunning} // Only disable if globally disabled AND timer is not running (allows pausing)
-      >
+      <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 } }}>
         <Button
           variant="contained"
           onClick={onToggle}
           startIcon={isRunning ? <PauseIcon /> : <PlayArrowIcon />}
-          disabled={isTimerDisabled && !isRunning} // Specifically disable start if globally disabled
+          disabled={isTimerDisabled && !isRunning}
+          // REVISED: Using the semantic color prop. The theme handles the rest!
+          color={isRunning ? "warning" : "success"}
           sx={{
             px: { xs: 2, sm: 4 },
             py: { xs: 1, sm: 1.5 },
             fontSize: { xs: "0.8rem", sm: "1rem" },
-            bgcolor: isRunning
-              ? theme.palette.warning.main // Use warning color (orange) for Pause
-              : theme.palette.success.main,
-            color: theme.palette.getContrastText(
-              isRunning
-                ? theme.palette.warning.main
-                : theme.palette.success.main
-            ),
-            "&:hover": {
-              bgcolor: isRunning
-                ? theme.palette.warning.dark
-                : theme.palette.success.dark,
-            },
           }}
         >
           {isRunning ? "Pause" : "Start"}
@@ -174,26 +131,18 @@ const TimerUI = ({
           variant="outlined"
           onClick={onReset}
           startIcon={<ReplayIcon />}
-          // Reset button should be available even if timerDisabledProp is true, as long as timer is running or was running
           disabled={isTimerDisabled && !isRunning}
+          // REVISED: Using the semantic color prop simplifies this greatly.
+          color="secondary"
           sx={{
             px: { xs: 2, sm: 4 },
             py: { xs: 1, sm: 1.5 },
             fontSize: { xs: "0.8rem", sm: "1rem" },
-            color: "secondary.main",
-            borderColor:
-              theme.palette.mode === "dark"
-                ? "secondary.light"
-                : "secondary.main", // Ensure visibility in light mode
-            "&:hover": {
-              borderColor: "secondary.dark",
-              backgroundColor: theme.palette.action.hover,
-            },
           }}
         >
           Reset
         </Button>
-      </ButtonGroup>
+      </Box>
     </Box>
   );
 };

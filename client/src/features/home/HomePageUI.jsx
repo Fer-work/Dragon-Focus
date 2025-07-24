@@ -1,15 +1,8 @@
 // src/home/HomePageUI.jsx
-import {
-  Box,
-  Grid,
-  Alert, // For page-level errors if FocusSetup doesn't handle all
-  useTheme,
-} from "@mui/material";
+import { Box, Grid, Alert, useTheme } from "@mui/material";
 
 import Timer from "./components/Timer";
 import FocusSetup from "./components/FocusSetup";
-
-import "../../styles/home.css";
 
 const HomePageUI = ({
   user,
@@ -25,6 +18,7 @@ const HomePageUI = ({
   const theme = useTheme();
 
   return (
+    // This outer Box is perfect. It correctly uses theme defaults. No changes needed.
     <Box
       sx={{
         width: "100%",
@@ -41,10 +35,10 @@ const HomePageUI = ({
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "row", // Default for container
+          flexDirection: "row",
         }}
       >
-        {/* Left Column: Focus Setup */}
+        {/* Left Column: Focus Setup - This is clean, no changes needed. */}
         <Grid
           item
           xs={12}
@@ -52,9 +46,9 @@ const HomePageUI = ({
           lg={4}
           sx={{
             display: "flex",
-            flex: 1, // Let Grid sizing handle this
-            width: "100%", // Ensure it takes space
-            height: "100%", // Or adjust as needed; 'auto' might be better if content drives height
+            flex: 1,
+            width: "100%",
+            height: "100%",
           }}
         >
           <FocusSetup user={user} onFocusTargetsChange={onFocusTargetsChange} />
@@ -67,7 +61,6 @@ const HomePageUI = ({
           md={7}
           lg={8}
           sx={{
-            // flex: 2, // Let Grid sizing handle this
             display: "flex",
             flexDirection: "column",
             flex: 2,
@@ -76,32 +69,33 @@ const HomePageUI = ({
         >
           <Box
             sx={{
-              bgcolor: "background.paper",
+              bgcolor: "background.paper", // CORRECT: Uses the theme's paper color.
               borderRadius: 3,
-              boxShadow: "0px 5px 15px rgba(0,0,0,0.3)",
+              // --- REVISED: Aligned with the panelStyles from Layout.jsx ---
+              boxShadow: theme.shadows[5], // Using theme's shadow ramp.
+              border: `2px solid ${theme.palette.divider}`, // Using theme's divider color.
+              // --- End of revisions ---
               width: "100%",
               height: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              border: (theme) => `2px solid ${theme.palette.neutral[500]}`,
             }}
           >
-            {pageError &&
-              !theme.palette.mode && ( // Only show general page errors if FocusSetup doesn't show its own for the same thing
-                <Alert
-                  severity="error"
-                  sx={{
-                    mb: 2,
-                    position: "absolute",
-                    top: "10px",
-                    width: "calc(100% - 40px)" /* Adjust based on padding */,
-                  }}
-                >
-                  {pageError}
-                </Alert>
-              )}
+            {pageError && !theme.palette.mode && (
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 2,
+                  position: "absolute",
+                  top: "10px",
+                  width: "calc(100% - 40px)",
+                }}
+              >
+                {pageError}
+              </Alert>
+            )}
             <Timer
               key={selectedTaskId}
               pomodoroDuration={pomodoroDuration}

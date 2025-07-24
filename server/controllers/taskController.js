@@ -1,6 +1,6 @@
 //
 import Task from "../models/Task.js";
-import Project from "../models/Project.js"; // To verify project ownership
+import Category from "../models/Category.js"; // To verify project ownership
 import FocusSession from "../models/FocusSession.js"; // For cascading updates on delete
 
 // @desc    Create a new Task
@@ -11,8 +11,9 @@ export async function createTask(req, res) {
     const {
       name,
       description,
-      projectId, // Optional
+      categoryId, // Optional
       status,
+      color,
       dueDate,
       estimatedPomodoros,
     } = req.body;
@@ -24,12 +25,12 @@ export async function createTask(req, res) {
     }
 
     // TODO: revise the block of code below. Why would we need to check a project id? The user should only be able to see projects that belong to them anyway. Showing any other would be a bad UX. Perhaps it's a double check to make check the data integrity from the database?
-    // If a projectId is provided, we must verify it exists and belongs to the user.
-    if (projectId) {
-      const projectExists = await Project.findOne({ _id: projectId, userId });
+    // If a categoryIdis provided, we must verify it exists and belongs to the user.
+    if (categoryId) {
+      const projectExists = await Category.findOne({ _id: categoryId, userId });
       if (!projectExists) {
         return res.status(404).json({
-          message: "Project not found or you are not authorized.",
+          message: "Category not found or you are not authorized.",
         });
       }
     }
@@ -38,21 +39,21 @@ export async function createTask(req, res) {
     const newTask = new Task({
       userId,
       name,
-      projectId: projectId || null, // Assign projectId if provided, otherwise null
+      categoryId: categoryId || null, // Assign categoryIdif provided, otherwise null
       description,
       status,
       dueDate,
+      color,
       estimatedPomodoros,
     });
 
     const savedTask = await newTask.save();
 
-    // TODO: What exactly is this doing? Is this going into the Project schema?
+    // TODO: What exactly is this doing? Is this going into the Category schema?
     // Populate project info in the response
     const populatedTask = await Task.findById(savedTask._id).populate(
-      "projectId",
-      "name",
-      "color"
+      "categoryId",
+      "name color"
     );
 
     res.status(201).json({
@@ -74,28 +75,28 @@ export async function createTask(req, res) {
 
 // @desc    Get all Tasks for the authenticated user (optionally filtered by project)
 // @route   GET /api/tasks
-// @route   GET /api/projects/:projectId/tasks (Handled by projectController, but this can support query filtering)
+// @route   GET /api/projects/:categoryId/tasks (Handled by projectController, but this can support query filtering)
 // @access  Private
 export async function getTasksForUser(req, res) {
   try {
     const userId = req.user._id;
     // TODO: What is unassigned doing?
-    const { projectId, unassigned } = req.query;
+    const { categoryId, unassigned } = req.query;
     const queryFilters = { userId };
 
     // Filter by a specific project ID.
-    if (projectId) {
-      queryFilters.projectId = projectId;
+    if (categoryId) {
+      queryFilters.categoryId = categoryId;
     }
 
     // Add a filter to find tasks that do NOT have a project.
     // e.g., /api/tasks?unassigned=true
     if (unassigned === "true") {
-      queryFilters.projectId = null;
+      queryFilters.categoryId = null;
     }
 
     const tasks = await Task.find(queryFilters)
-      .populate("projectId", "name color") // Populate project details
+      .populate("categoryId", "name color") // Populate project details
       .sort({ createdAt: -1 }); // Sort by creation date, or dueDate, etc.
 
     res.status(200).json(tasks);
@@ -113,7 +114,7 @@ export async function getTaskById(req, res) {
     const task = await Task.findOne({
       _id: req.params.taskId,
       userId: req.user._id,
-    }).populate("projectId", "name color");
+    }).populate("categoryId", "name color");
 
     if (!task) {
       return res
@@ -151,29 +152,29 @@ export async function updateTask(req, res) {
 
     // --- HANDLE PROJECT ASSIGNMENT ---
     // This logic allows assigning, changing, or un-assigning a project.
-    if ("projectId" in updates) {
-      const newProjectId = updates.projectId;
+    if ("categoryId" in updates) {
+      const newCategoryId = updates.newCategoryId;
       // If the new ID is not null (i.e., we are assigning/changing a project)
-      if (newProjectId) {
-        const project = await Project.findOne({ _id: newProjectId, userId });
+      if (newCategoryId) {
+        const project = await Category.findOne({ _id: newCategoryId, userId });
         if (!project) {
           return res.status(403).json({
             message: "Cannot assign task to a project that is not yours.",
           });
         }
-        task.projectId = newProjectId;
+        task.categoryId = newCategoryId;
         // Also update all existing sessions for this task to reflect the new project.
         await FocusSession.updateMany(
           { taskId: task._id },
-          { $set: { projectId: newProjectId } }
+          { $set: { categoryId: newCategoryId } }
         );
       } else {
-        // If projectId is explicitly set to null, un-assign it.
-        task.projectId = null;
+        // If categoryIdis explicitly set to null, un-assign it.
+        task.categoryId = null;
         // Update historical sessions to also be un-assigned from the project.
         await FocusSession.updateMany(
           { taskId: task._id },
-          { $set: { projectId: null } }
+          { $set: { categoryId: null } }
         );
       }
     }
@@ -196,7 +197,7 @@ export async function updateTask(req, res) {
 
     const updatedTask = await task.save();
     const populatedTask = await Task.findById(updatedTask._id).populate(
-      "projectId",
+      "categoryId",
       "name color"
     );
 

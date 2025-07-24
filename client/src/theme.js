@@ -5,18 +5,21 @@ import { createTheme } from "@mui/material/styles";
 export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
-        // Dark Mode Palette - Infused with Flame Gradient (UNCHANGED)
+        // Dark Mode Palette - Infused with Flame Gradient
         neutral: {
-          100: "#f5df62",
-          200: "#ffd700",
-          300: "#ccac00",
-          400: "#a39a89",
-          500: "#3c362a",
-          600: "#1E0000",
-          700: "#0F0000",
-          800: "#050000",
-          900: "#000000",
+          100: "#F5F2F0", // Bone White (Main Text)
+          200: "#D1CBCB", // Light Ash (Secondary Text)
+          300: "#A09A9A", // Medium Ash (Subtle Borders)
+          400: "#7B7373", // Dark Ash (Dividers)
+          500: "#544C4C", // Warm Stone
+          600: "#2D2828", // Soot (Cards/Modals)
+          700: "#1C1818", // Charcoal (Main Paper Background)
+          800: "#120E0E", // Deep Charcoal (Default Page Background)
+          900: "#080404", // Dragon's Shadow (Near Black)
         },
+
+        // --- UNCHANGED PRIMARY PALETTE ---
+        // The fire gradient you like, from embers to flame.
         primary: {
           100: "#fff5e0",
           200: "#f5df62",
@@ -28,6 +31,9 @@ export const tokens = (mode) => ({
           800: "#660000",
           900: "#330000",
         },
+
+        // --- UNCHANGED SECONDARY PALETTE ---
+        // The earthy/rocky tones that complement the fire.
         secondary: {
           100: "#d9c8b8",
           200: "#c0a992",
@@ -39,84 +45,80 @@ export const tokens = (mode) => ({
           800: "#382818",
           900: "#24190e",
         },
+
+        // --- REVISED ACCENT PALETTE ---
+        // Focused on being a single, vibrant "Dragon's Gold" for key highlights.
         accent: {
-          100: "#fff8e1",
+          100: "#fff8e1", // Lighter Gold for hover/glow
           200: "#ffefb3",
           300: "#ffe580",
           400: "#f5df62",
-          500: "#ffd700",
-          600: "#e6ac00",
+          500: "#ffd700", // The MAIN Accent Gold
+          600: "#e6ac00", // Darker Gold for pressed states
           700: "#cc9700",
           800: "#b38200",
           900: "#996f00",
         },
-        error: { main: "#f44336" },
-        warning: { main: "#ffa726" },
-        info: { main: "#29b6f6" },
-        success: { main: "#66bb6a" },
+        error: { main: "#D73737" },
+        warning: { main: "#ff8c00" },
+        info: { main: "#61AFFE" },
+        success: { main: "#ffd700" },
       }
     : {
         // Light Mode Palette - "Vibrant Quetzal Mode"
+        // --- REVISED NEUTRAL PALETTE ---
+        // Inspired by misty stone and deep jungle shadows for a natural feel.
         neutral: {
-          100: "#fffcf2", // Radiant Light (Background Default)
-          200: "#f0f8f0", // Very Pale Green/Off-white (Paper Background - subtle green tint)
-          300: "#d0d8d0", // Light Stone Gray
-          400: "#b0b8b0", // Medium Stone Gray
-          500: "#909890", // Stone Gray
-          600: "#5c645f", // Darker Gray-Green (for less important text/borders)
-          700: "#2e294e", // Cosmic Indigo (Primary Text)
-          800: "#1f1c37", // Darker Indigo
-          900: "#100e20", // Very Dark Indigo/Near Black
+          100: "#FCFEFD", // Misty White (Page Background)
+          200: "#F0F4F3", // Pale Jade (Paper/Card Background)
+          300: "#E1E8E7", // Wet Stone
+          400: "#B7C1BF", // Stone Gray (Borders/Dividers)
+          500: "#8D9A98", // Damp Earth
+          600: "#62706E", // Shadowed Rock
+          700: "#434F4D", // Deep Jungle (Secondary Text)
+          800: "#2A3331", // Rich Loam
+          900: "#1B2120", // Obsidian-Green (Main Text)
         },
+        // --- UNCHANGED PRIMARY (Jungle Emerald) ---
         primary: {
-          // Jungle Emerald / Quetzal Green
-          100: "#e0f2e3", // Pale Emerald
-          200: "#c2e5c8", // Light Emerald
-          300: "#a3d8ad", // Soft Emerald
-          400: "#66bb6a", // Medium Emerald (MUI Green 400)
-          500: "#1e5128", // Jungle Emerald (Main Primary - from your gradient)
-          600: "#15421f", // Darker Jungle Emerald
-          700: "#0c3315", // Deep Jungle Emerald
-          800: "#05240c", // Very Deep Emerald
-          900: "#001503", // Darkest Emerald
+          100: "#e0f2e3",
+          200: "#c2e5c8",
+          300: "#a3d8ad",
+          400: "#66bb6a",
+          500: "#1e5128", // Main Jungle Green
+          600: "#15421f",
+          700: "#0c3315",
+          800: "#05240c",
+          900: "#001503",
         },
+        // --- UNCHANGED SECONDARY (Quetzal Turquoise) ---
         secondary: {
-          // Turquoise / Quetzal Feather Blue-Green
-          100: "#dff7f5", // Pale Turquoise
-          200: "#bff0ec", // Light Turquoise
-          300: "#9fe8e2", // Soft Turquoise
-          400: "#40c5b8", // Medium Turquoise (Derived from #00a896)
-          500: "#00a896", // Turquoise (Main Secondary - from your gradient)
-          600: "#008a7c", // Darker Turquoise
-          700: "#006c62", // Deep Turquoise
-          800: "#004e48", // Very Deep Turquoise
-          900: "#002f2e", // Darkest Turquoise
+          100: "#dff7f5",
+          200: "#bff0ec",
+          300: "#9fe8e2",
+          400: "#40c5b8",
+          500: "#00a896", // Main Turquoise
+          600: "#008a7c",
+          700: "#006c62",
+          800: "#004e48",
+          900: "#002f2e",
         },
+
+        // --- REVISED ACCENT (Coatl Red & Solar Gold) ---
+        // A new ramp centered on the bold red of Quetzalcoatl, with orange/gold as highlights.
         accent: {
-          // Solar Gold & Sacred Fire Orange
-          // Gold Ramp
-          gold100: "#fff9e0",
-          gold200: "#fff3c2",
-          gold300: "#ffeda3",
-          gold400: "#ffe785",
-          gold500: "#fff01f", // Solar Gold (Main Gold Accent - from your gradient)
-          gold600: "#e6d81b",
-          gold700: "#cca917",
-          gold800: "#b38b14",
-          gold900: "#996c10",
-          // Orange/Red Ramp
-          fire100: "#ffebe0",
-          fire200: "#ffd8c2",
-          fire300: "#ffc5a3",
-          fire400: "#ff9d66", // Lighter Sacred Fire (Derived from #ff6f00)
-          fire500: "#ff6f00", // Sacred Fire Orange (Main Fire Accent - from your gradient)
-          fire600: "#e65a00",
-          fire700: "#cc4600",
-          // Heart Red (can be a spot accent)
-          heartRed: "#d72638", // From your gradient
+          100: "#fff8e1", // Pale Gold (for glows)
+          200: "#ffc107", // Solar Gold
+          300: "#ff8f33", // Sacred Orange
+          400: "#e85d4a", // Scarlet (transition from red to orange)
+          500: "#d72638", // Coatl Red (The MAIN Accent Color)
+          600: "#c1222f", // Deep Red (for pressed states)
+          700: "#a91d29", // Blood Red
+          800: "#8b1822", // Sacrificial Red
+          900: "#681219", // Darkest Red
         },
         error: { main: "#d32f2f" }, // Standard dark red for errors
-        warning: { main: "#ff6f00" }, // Use Sacred Fire Orange for warnings
+        warning: { main: "#ff8f33" }, // Use Sacred Fire Orange for warnings
         info: { main: "#028090" }, // Use Quetzal Feather for info
         success: { main: "#1e5128" }, // Use Jungle Emerald for success
       }),
@@ -133,42 +135,59 @@ export const themeSettings = (mode) => {
         light: colors.primary[300],
         dark: colors.primary[700],
         contrastText:
-          mode === "light" ? colors.neutral[100] : colors.neutral[100], // Radiant light for text on dark green, and also on light green for pop
+          mode === "light" ? colors.neutral[100] : colors.neutral[900], // Light mode: White text on "Jungle Green". Dark mode: Dark text on "Dragon's Fire" orange.
       },
       secondary: {
         main: colors.secondary[500],
         light: colors.secondary[300],
         dark: colors.secondary[700],
+        // REVISED: contrastText logic for both themes.
         contrastText:
-          mode === "light" ? colors.neutral[900] : colors.neutral[100], // Dark indigo text on light turquoise, light text on dark turquoise
+          mode === "light" ? colors.neutral[900] : colors.neutral[100], // Light mode: Dark text on "Quetzal Turquoise". Dark mode: Light text on "Earthy Brown".
       },
       neutral: colors.neutral,
+      // REVISED: The accent object is now simplified and more powerful.
       accent: {
-        // Define main accents, others can be accessed via theme.palette.accent.goldXXX etc.
-        main: colors.accent.gold500, // Solar Gold as the primary accent
-        fire: colors.accent.fire500, // Sacred Fire Orange
-        heartRed: colors.accent.heartRed,
-        // You can add light/dark variants if needed, e.g.,
-        // mainLight: colors.accent.gold300,
-        // mainDark: colors.accent.gold700,
+        main: colors.accent[500], // Dark: "Dragon's Gold", Light: "Coatl Red"
+        light: colors.accent[300],
+        dark: colors.accent[700],
       },
       background: {
-        default: mode === "dark" ? colors.neutral[700] : colors.neutral[100], // Radiant Light for Quetzal default BG
-        paper: mode === "dark" ? colors.neutral[600] : colors.primary[200], // Pale Green/Off-white for Quetzal paper BG
+        // REVISED: Mapped to our new thematic background colors.
+        default: mode === "dark" ? colors.neutral[800] : colors.neutral[100], // Dark: "Deep Charcoal", Light: "Misty White"
+        paper: mode === "dark" ? colors.neutral[700] : colors.neutral[200], // Dark: "Charcoal", Light: "Pale Jade"
       },
       text: {
-        primary: mode === "dark" ? colors.neutral[100] : colors.neutral[700], // Cosmic Indigo for Quetzal primary text
-        secondary: mode === "dark" ? colors.neutral[200] : colors.neutral[600], // Darker Gray-Green for Quetzal secondary text
+        // REVISED: Mapped to our new thematic text colors for optimal contrast.
+        primary: mode === "dark" ? colors.neutral[100] : colors.neutral[900], // Dark: "Bone White", Light: "Obsidian-Green"
+        secondary: mode === "dark" ? colors.neutral[200] : colors.neutral[700], // Dark: "Light Ash", Light: "Deep Jungle"
         disabled: mode === "dark" ? colors.neutral[400] : colors.neutral[500],
-        // For text that needs to be an accent color (use sparingly)
-        accent: mode === "dark" ? colors.accent.gold500 : colors.accent.fire500,
+        accent: colors.accent[500], // Directly uses the main accent color for each mode.
       },
-      error: { main: colors.error.main, contrastText: colors.neutral[100] },
-      warning: { main: colors.warning.main, contrastText: colors.neutral[900] }, // Dark text on orange
-      info: { main: colors.info.main, contrastText: colors.neutral[100] },
-      success: { main: colors.success.main, contrastText: colors.neutral[100] },
+      // REVISED: Semantic colors now have mode-aware contrastText for consistency.
+      error: {
+        main: colors.error.main,
+        contrastText: "#fff", // White text is best for these reds in both modes.
+      },
+      warning: {
+        main: colors.warning.main,
+        contrastText: mode === "light" ? colors.neutral[900] : "#000", // Dark text on orange/gold warnings.
+      },
+      info: {
+        main: colors.info.main,
+        contrastText: "#fff", // White text works best for these blues.
+      },
+      success: {
+        main: colors.success.main,
+        // Dark mode success is gold (needs dark text), light mode success is dark green (needs light text).
+        contrastText:
+          mode === "dark" ? colors.neutral[900] : colors.neutral[100],
+      },
+      // REVISED: Divider color is now derived from the palette for thematic consistency.
       divider:
-        mode === "dark" ? "rgba(245, 223, 98, 0.2)" : "rgba(46, 41, 78, 0.15)", // Indigo-based divider for light
+        mode === "dark"
+          ? "rgba(245, 242, 240, 0.25)"
+          : "rgba(27, 33, 32, 0.15)", // Based on Bone White and Obsidian-Green
     },
     typography: {
       fontFamily: "'MedievalSharp', cursive",
@@ -186,6 +205,7 @@ export const themeSettings = (mode) => {
       },
     },
     components: {
+      // REVISED: Cleaned up button overrides to rely on the main palette contrastText.
       MuiButton: {
         styleOverrides: {
           root: {
@@ -193,30 +213,45 @@ export const themeSettings = (mode) => {
             borderRadius: "8px",
             textTransform: "none",
             fontWeight: 600,
-            // Add a subtle shadow to buttons for a more "gamified" feel
-            // boxShadow: mode === 'light' ? '0px 2px 4px rgba(46, 41, 78, 0.2)' : '0px 2px 4px rgba(0, 0, 0, 0.3)',
-          },
-          containedPrimary: {
-            color: colors.neutral[100], // Ensure contrast on primary buttons
-          },
-          containedSecondary: {
-            color: colors.neutral[100], // Ensure contrast on secondary buttons
           },
         },
       },
+      // UPDATED: AppBar and Paper overrides now point to our new background colors.
       MuiAppBar: {
         styleOverrides: {
           root: {
-            backgroundColor:
-              mode === "dark" ? colors.neutral[800] : colors.neutral[200],
+            backgroundColor: colors.neutral[700], // Uses "Charcoal" for dark and should be transparent/part of paper for light.
+            backgroundImage: "none", // Good practice to disable default gradients.
           },
         },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
-            backgroundColor: mode === "light" ? colors.neutral[200] : undefined,
+            // This ensures Paper components in light mode use our "Pale Jade" background.
+            backgroundColor:
+              mode === "light" ? colors.neutral[200] : colors.neutral[700], // Dark: "Charcoal"
+            backgroundImage: "none",
           },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            // Style for the default border
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: theme.palette.divider, // Use the subtle divider color for the default border
+            },
+            // Style for the border on hover
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: theme.palette.primary.light,
+            },
+            // Style for the border on focus - MUI handles this by default using palette.primary.main
+            // We don't even need to specify it unless we want to change it.
+            "& .MuiSelect-icon": {
+              color: theme.palette.secondary.light, // Thematic color for the dropdown arrow
+            },
+          }),
         },
       },
     },

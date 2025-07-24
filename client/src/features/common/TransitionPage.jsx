@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"; // Add useEffect
 import { useNavigate } from "react-router-dom";
 import scrollImage from "../../assets/images/ui/DragonFocusScroll.png";
-import "../../styles/transition.css";
 
 export default function TransitionPage() {
   const [fadeOut, setFadeOut] = useState(false);

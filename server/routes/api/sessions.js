@@ -1,3 +1,5 @@
+// server/routes/api/sessions.js
+
 import { Router } from "express";
 import {
   createSession,

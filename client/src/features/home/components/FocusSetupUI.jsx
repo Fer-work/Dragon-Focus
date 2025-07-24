@@ -18,18 +18,18 @@ import EditIcon from "@mui/icons-material/Edit";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const FocusSetupUI = ({
-  projects,
+  categories,
   tasks,
-  selectedProjectId,
+  selectedCategoryId,
   selectedTaskId,
-  selectedProjectName,
-  isLoadingProjects,
+  selectedCategoryName,
+  isLoadingCategories,
   isLoadingTasks,
   error,
-  onProjectChange,
+  onCategoryChange,
   onTaskChange,
-  onOpenCreateProjectModal,
-  onOpenEditProjectModal,
+  onOpenCreateCategoryModal,
+  onOpenEditCategoryModal,
   onOpenCreateTaskModal,
   onOpenEditTaskModal,
   onClearError,
@@ -39,23 +39,36 @@ const FocusSetupUI = ({
   // Find the selected task object to pass to the edit modal handler
   const selectedTaskObject = tasks.find((t) => t._id === selectedTaskId);
 
+  // REVISED: Reusable style for the unique edit icon hover effect
+  const editIconButtonStyles = {
+    color: "accent.main",
+    ml: 1,
+    "&:hover": {
+      // This creates a cool "inverted" effect
+      color:
+        theme.palette.mode === "dark"
+          ? theme.palette.common.black
+          : theme.palette.common.white,
+      backgroundColor: "accent.main",
+    },
+  };
+
   return (
     <>
-      {/* Use Fragment or a Box if you need a root wrapper with styles */}
-      {/* Inner Box for styling the "selection panel" */}
       <Box
         sx={{
           p: 2,
-          bgcolor: "background.paper",
-          borderRadius: 3,
-          boxShadow: "0px 5px 15px rgba(0,0,0,0.3)",
           width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
           gap: 2,
-          border: `2px solid ${theme.palette.neutral[500]}`, // Access theme via useTheme
+          // --- REVISED: Aligned with the panelStyles from Layout.jsx ---
+          bgcolor: "background.paper",
+          borderRadius: 3,
+          boxShadow: theme.shadows[5],
+          border: `2px solid ${theme.palette.divider}`,
         }}
       >
         <Typography
@@ -71,97 +84,69 @@ const FocusSetupUI = ({
           Select Focus Setup
         </Typography>
 
-        {error && ( // Display component-specific error
-          <Alert
-            severity="error"
-            sx={{ mb: 2, bgcolor: "error.dark", color: "white" }}
-            onClose={onClearError} // Allow dismissing the error
-          >
+        {error && (
+          // REVISED: Removed sx prop. The `severity` prop now correctly styles the alert
+          // using the error colors defined in our theme.
+          <Alert severity="error" sx={{ mb: 2 }} onClose={onClearError}>
             {error}
           </Alert>
         )}
 
-        {/* Project Selection */}
+        {/* Category Selection */}
         <Box my={2}>
           <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
             <FormControl
               fullWidth
               variant="outlined"
-              disabled={isLoadingProjects}
+              disabled={isLoadingCategories}
             >
               <InputLabel
-                id="project-select-label"
+                id="category-select-label"
                 sx={{ color: "text.secondary" }}
               >
-                Project (Optional)
+                Category (Optional)
               </InputLabel>
+              {/* REVISED: All complex border styling is removed. The theme handles it now! */}
               <Select
-                labelId="project-select-label"
-                value={selectedProjectId}
-                onChange={(e) => onProjectChange(e.target.value)}
-                label="Project (Optional)"
-                sx={{
-                  color: "text.primary",
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "neutral.500",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "primary.light",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "primary.main",
-                  },
-                  "& .MuiSelect-icon": { color: "primary.light" },
-                }}
+                labelId="category-select-label"
+                value={selectedCategoryId}
+                onChange={(e) => onCategoryChange(e.target.value)}
+                label="Category (Optional)"
+                sx={{ color: "text.primary" }} // Only need to set the text color
               >
                 <MenuItem value="">
-                  <em>Select a Project or None</em>
+                  <em>Select a Category or None</em>
                 </MenuItem>
-                {projects.map((project) => (
-                  <MenuItem key={project._id} value={project._id}>
-                    {project.name}
+                {categories.map((category) => (
+                  <MenuItem key={category._id} value={category._id}>
+                    {category.name}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            {selectedProjectId && (
+            {selectedCategoryId && (
               <IconButton
-                onClick={onOpenEditProjectModal}
+                onClick={onOpenEditCategoryModal}
                 size="medium"
-                sx={{
-                  color: "accent.main",
-                  ml: 1,
-                  "&:hover": {
-                    color: "primary.dark",
-                    bgcolor: "accent.main",
-                    opacity: 0.8,
-                  },
-                }}
-                aria-label="edit project"
+                sx={editIconButtonStyles}
+                aria-label="edit category"
               >
                 <EditIcon />
               </IconButton>
             )}
           </Box>
+          {/* REVISED: Redundant sx properties removed. `color="primary"` handles all styling. */}
           <Button
             variant="contained"
             color="primary"
-            onClick={onOpenCreateProjectModal}
+            onClick={onOpenCreateCategoryModal}
             startIcon={<AddCircleOutlineIcon />}
             fullWidth
-            sx={{
-              mb: 2,
-              bgcolor: "primary.main",
-              color: (theme) =>
-                theme.palette.mode === "dark"
-                  ? theme.palette.neutral[900]
-                  : theme.palette.common.white,
-              "&:hover": { bgcolor: "primary.dark" },
-            }}
+            sx={{ mb: 2 }}
           >
-            New Project
+            New Category
           </Button>
-          {isLoadingProjects && (
+          {isLoadingCategories && (
             <CircularProgress
               size={24}
               sx={{ display: "block", margin: "auto", color: "primary.light" }}
@@ -169,51 +154,38 @@ const FocusSetupUI = ({
           )}
         </Box>
 
-        <Divider sx={{ my: 1, borderColor: "neutral.500" }} />
+        {/* REVISED: Using the theme's divider color */}
+        <Divider sx={{ my: 1, borderColor: "divider" }} />
 
         {/* Task Selection */}
         <Box>
           <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-            <FormControl fullWidth variant="outlined" disabled={isLoadingTasks}>
+            {/* We can use the color="secondary" prop to hint that this is a secondary input */}
+            <FormControl
+              fullWidth
+              variant="outlined"
+              disabled={isLoadingTasks}
+              color="secondary"
+            >
               <InputLabel
                 id="task-select-label"
                 sx={{ color: "text.secondary" }}
               >
                 Task (Required)
               </InputLabel>
+              {/* REVISED: All complex border styling is removed. */}
               <Select
                 labelId="task-select-label"
                 value={selectedTaskId}
                 onChange={(e) => onTaskChange(e.target.value)}
                 label="Task (Required)"
-                sx={{
-                  color: "text.primary",
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "neutral.500",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "secondary.light",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "secondary.main",
-                  },
-                  "& .MuiSelect-icon": { color: "secondary.light" },
-                }}
+                sx={{ color: "text.primary" }}
               >
                 <MenuItem value="">
                   <em>Select a Task or None</em>
                 </MenuItem>
                 {tasks.map((task) => (
-                  <MenuItem
-                    key={task._id}
-                    value={task._id}
-                    sx={{
-                      color: (theme) =>
-                        theme.palette.mode === "dark"
-                          ? theme.palette.neutral[100]
-                          : theme.palette.neutral[900],
-                    }}
-                  >
+                  <MenuItem key={task._id} value={task._id}>
                     {task.name}
                   </MenuItem>
                 ))}
@@ -222,42 +194,32 @@ const FocusSetupUI = ({
             {selectedTaskId && selectedTaskObject && (
               <IconButton
                 onClick={() => onOpenEditTaskModal(selectedTaskObject)}
-                color="secondary"
                 size="medium"
-                sx={{
-                  color: "accent.main",
-                  ml: 1,
-                  "&:hover": {
-                    color: "primary.dark",
-                    bgcolor: "accent.main",
-                    opacity: 0.8,
-                  },
-                }}
+                sx={editIconButtonStyles}
                 aria-label="edit task"
               >
                 <EditIcon />
               </IconButton>
             )}
           </Box>
+          {/* REVISED: Removed complex/confusing sx prop. `color="secondary"` handles this cleanly. */}
+
           <Button
-            variant="outlined"
-            color="secondary"
+            variant="contained"
+            color="primary"
             onClick={onOpenCreateTaskModal}
             startIcon={<AddCircleOutlineIcon />}
             fullWidth
             disabled={isLoadingTasks}
-            sx={{
-              mb: 2,
-              bgcolor: !selectedProjectId ? "secondary.main" : "primary.main", // Check this logic
-              color: (theme) =>
-                theme.palette.mode === "dark"
-                  ? theme.palette.neutral[900]
-                  : theme.palette.common.white,
-              "&:hover": { bgcolor: "primary.dark" },
-            }}
+            sx={{ mb: 2 }}
           >
-            New Task for "{selectedProjectName}"
+            {`New task${
+              selectedCategoryName === "Unassigned"
+                ? ""
+                : `for ${selectedCategoryName}`
+            }`}
           </Button>
+
           {isLoadingTasks && (
             <CircularProgress
               size={24}

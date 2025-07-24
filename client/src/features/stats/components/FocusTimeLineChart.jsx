@@ -19,25 +19,26 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
   const barColor = theme.palette.primary.main;
   const textColor = theme.palette.text.secondary;
   const tooltipBackgroundColor = theme.palette.background.paper;
-  const tooltipBorderColor =
-    theme.palette.neutral?.[theme.palette.mode === "dark" ? 600 : 300] ||
-    theme.palette.divider;
+  // REVISED: Simplified to use the semantic divider color directly.
+  const borderColor = theme.palette.divider;
+
+  // REVISED: Created a reusable style object for placeholder Paper components
+  const placeholderStyles = {
+    p: 3,
+    textAlign: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 300,
+    bgcolor: "background.paper",
+    border: `1px solid ${borderColor}`,
+    borderRadius: 3, // Consistent with other panels
+    boxShadow: theme.shadows[3],
+  };
 
   if (isLoading) {
     return (
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: 300,
-          bgcolor: "background.paper",
-          border: `1px solid ${tooltipBorderColor}`,
-        }}
-      >
+      <Paper sx={placeholderStyles}>
         <Typography variant="h6" color="text.secondary">
           Loading chart data...
         </Typography>
@@ -47,19 +48,7 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
 
   if (!data || data.length === 0) {
     return (
-      <Paper
-        elevation={3}
-        sx={{
-          p: 3,
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: 300,
-          bgcolor: "background.paper",
-          border: `1px solid ${tooltipBorderColor}`,
-        }}
-      >
+      <Paper sx={placeholderStyles}>
         <Typography variant="h6" color="text.secondary">
           Not enough data to display {periodLabel || "timeline"} chart.
         </Typography>
@@ -67,7 +56,7 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
     );
   }
 
-  // Custom Tooltip for better styling
+  // Custom Tooltip component is well-styled.
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -76,17 +65,15 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
           sx={{
             padding: "10px",
             backgroundColor: tooltipBackgroundColor,
-            border: `1px solid ${tooltipBorderColor}`,
+            border: `1px solid ${borderColor}`, // Uses simplified variable
           }}
         >
-          <Typography
-            variant="subtitle2"
-            sx={{ color: textColor }}
-          >{`Day: ${label}`}</Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: barColor }}
-          >{`Focus: ${payload[0].value} min`}</Typography>
+          <Typography variant="subtitle2" sx={{ color: textColor }}>
+            {`Day: ${label}`}
+          </Typography>
+          <Typography variant="body2" sx={{ color: barColor }}>
+            {`Focus: ${payload[0].value} min`}
+          </Typography>
         </Paper>
       );
     }
@@ -95,26 +82,23 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
 
   return (
     <Paper
-      elevation={3}
+      elevation={0} // Using custom border/shadow instead
       sx={{
         p: { xs: 1, sm: 2, md: 3 },
-        height: { xs: 300, sm: 350, md: 400 }, // Responsive height
+        height: { xs: 300, sm: 350, md: 400 },
         bgcolor: "background.paper",
-        border: `1px solid ${tooltipBorderColor}`,
+        // REVISED: Made styling consistent with other panels
+        border: `1px solid ${borderColor}`,
         borderRadius: 3,
+        boxShadow: theme.shadows[3], // Using a subtle theme shadow
       }}
     >
       <ResponsiveContainer width="100%" height="100%">
+        {/* The BarChart itself is perfectly styled using theme variables. No changes needed. */}
         <BarChart
           data={data}
-          margin={{
-            top: 5,
-            right: 20, // Adjusted right margin for YAxis labels
-            left: 0, // Adjusted left margin
-            bottom: 5,
-          }}
-          barGap={5} // Gap between bars of the same group (if multiple bars)
-          barCategoryGap="20%" // Gap between categories (days)
+          margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+          barCategoryGap="20%"
         >
           <CartesianGrid
             strokeDasharray="3 3"
@@ -122,7 +106,7 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
             vertical={false}
           />
           <XAxis
-            dataKey="date" // Assumes your data objects have a 'date' property (e.g., 'Mon', 'Tue')
+            dataKey="date"
             stroke={textColor}
             tick={{ fontSize: 12, fill: textColor }}
             axisLine={{ stroke: textColor }}
@@ -145,15 +129,15 @@ const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
           />
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ fill: theme.palette.action.hover }} // Background color on hover over a bar area
+            cursor={{ fill: theme.palette.action.hover }}
           />
           <Legend wrapperStyle={{ color: textColor, paddingTop: "10px" }} />
           <Bar
-            dataKey="minutes" // Assumes your data objects have a 'minutes' property
+            dataKey="minutes"
             fill={barColor}
-            name="Focus Time" // Name for the legend
-            radius={[4, 4, 0, 0]} // Rounded top corners for bars
-            maxBarSize={50} // Max width of a bar
+            name="Focus Time"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={50}
           />
         </BarChart>
       </ResponsiveContainer>

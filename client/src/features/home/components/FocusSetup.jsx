@@ -3,66 +3,66 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import FocusSetupUI from "./FocusSetupUI";
-import ProjectFormModal from "../../projects/components/ProjectFormModal";
+import CategoryFormModal from "../../categories/components/CategoryFormModal";
 import TaskFormModal from "../../tasks/components/TaskFormModal";
 
 const FocusSetup = ({ user, onFocusTargetsChange }) => {
   // API Data State
-  const [projects, setProjects] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [tasks, setTasks] = useState([]);
   // Selection State
-  const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedTaskId, setSelectedTaskId] = useState("");
   // Modal State
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [projectToEdit, setProjectToEdit] = useState(null);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
   // Loading and Error State
-  const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
   const [error, setError] = useState(null); // Component-specific error
 
   // Inform HomePage when selections change
   useEffect(() => {
     if (onFocusTargetsChange) {
-      onFocusTargetsChange(selectedProjectId, selectedTaskId);
+      onFocusTargetsChange(selectedCategoryId, selectedTaskId);
     }
-  }, [selectedProjectId, selectedTaskId, onFocusTargetsChange]);
+  }, [selectedCategoryId, selectedTaskId, onFocusTargetsChange]);
 
   // --- Data Fetching ---
-  const fetchProjects = useCallback(async () => {
+  const fetchCategories = useCallback(async () => {
     if (!user) return;
-    setIsLoadingProjects(true);
+    setIsLoadingCategories(true);
     setError(null);
     try {
       const token = await user.getIdToken();
-      const response = await axios.get("/api/projects", {
+      const response = await axios.get("/api/categories", {
         headers: { authtoken: token },
       });
-      setProjects(response.data || []);
+      setCategories(response.data || []);
     } catch (err) {
-      console.error("Failed to fetch projects:", err);
-      setError(err.response?.data?.message || "Failed to load projects.");
-      setProjects([]);
+      console.error("Failed to fetch categories:", err);
+      setError(err.response?.data?.message || "Failed to load categories.");
+      setCategories([]);
     } finally {
-      setIsLoadingProjects(false);
+      setIsLoadingCategories(false);
     }
   }, [user]);
 
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    fetchCategories();
+  }, [fetchCategories]);
 
   const fetchTasks = useCallback(
-    async (projectId) => {
+    async (categoryId) => {
       if (!user) return;
       setIsLoadingTasks(true);
       setError(null);
 
-      // Dynamically set the endpoint based on whether a projectId is provided
-      const endpoint = projectId
-        ? `/api/projects/${projectId}/tasks`
+      // Dynamically set the endpoint based on whether a categoryId is provided
+      const endpoint = categoryId
+        ? `/api/categories/${categoryId}/tasks`
         : "/api/tasks";
 
       try {
@@ -75,7 +75,7 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
         console.error("Failed to fetch tasks:", err);
         setError(
           err.response?.data?.message ||
-            "Failed to load tasks for the selected project."
+            "Failed to load tasks for the selected category."
         );
         setTasks([]);
       } finally {
@@ -87,45 +87,47 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
 
   // --- 2. Adjust the useEffect that triggers fetching tasks ---
   useEffect(() => {
-    // This now correctly calls fetchTasks whether a project is selected or not.
+    // This now correctly calls fetchTasks whether a category is selected or not.
     // On initial mount, it will call fetchTasks(""), fetching all tasks.
-    // When a project is selected, it will call fetchTasks("someId"), fetching filtered tasks.
-    fetchTasks(selectedProjectId);
+    // When a category is selected, it will call fetchTasks("someId"), fetching filtered tasks.
+    fetchTasks(selectedCategoryId);
 
-    // If the project selection is cleared, also clear the task selection.
-    if (!selectedProjectId) {
+    // If the category selection is cleared, also clear the task selection.
+    if (!selectedCategoryId) {
       setSelectedTaskId("");
     }
-  }, [selectedProjectId, fetchTasks]);
+  }, [selectedCategoryId, fetchTasks]);
 
   // --- Modal Handlers ---
-  const handleOpenCreateProjectModal = () => {
-    setProjectToEdit(null);
-    setIsProjectModalOpen(true);
+  const handleOpenCreateCategoryModal = () => {
+    setCategoryToEdit(null);
+    setIsCategoryModalOpen(true);
   };
 
-  const handleOpenEditProjectModal = (project) => {
-    setProjectToEdit(project);
-    setIsProjectModalOpen(true);
+  const handleOpenEditCategoryModal = (category) => {
+    setCategoryToEdit(category);
+    setIsCategoryModalOpen(true);
   };
 
-  const handleProjectModalClose = () => {
-    setIsProjectModalOpen(false);
-    setProjectToEdit(null);
+  const handleCategoryModalClose = () => {
+    setIsCategoryModalOpen(false);
+    setCategoryToEdit(null);
   };
 
-  const handleProjectSave = (savedProject) => {
-    if (projectToEdit) {
-      setProjects((prevProjects) =>
-        prevProjects.map((p) => (p._id === savedProject._id ? savedProject : p))
+  const handleCategorySave = (savedCategory) => {
+    if (categoryToEdit) {
+      setCategories((prevCategories) =>
+        prevCategories.map((p) =>
+          p._id === savedCategory._id ? savedCategory : p
+        )
       );
     } else {
-      setProjects((prevProjects) => [...prevProjects, savedProject]);
+      setCategories((prevCategories) => [...prevCategories, savedCategory]);
     }
-    if (selectedProjectId === savedProject._id || !projectToEdit) {
-      setSelectedProjectId(savedProject._id); // Auto-select new/edited project
+    if (selectedCategoryId === savedCategory._id || !categoryToEdit) {
+      setSelectedCategoryId(savedCategory._id); // Auto-select new/edited category
     }
-    handleProjectModalClose();
+    handleCategoryModalClose();
   };
 
   const handleOpenCreateTaskModal = () => {
@@ -156,38 +158,38 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
   };
 
   // --- Render Logic ---
-  const selectedProjectObject = projects.find(
-    (p) => p._id === selectedProjectId
+  const selectedCategoryObject = categories.find(
+    (p) => p._id === selectedCategoryId
   );
 
   return (
     <>
       <FocusSetupUI
-        projects={projects}
+        categories={categories}
         tasks={tasks}
-        selectedProjectId={selectedProjectId}
+        selectedCategoryId={selectedCategoryId}
         selectedTaskId={selectedTaskId}
-        selectedProjectName={selectedProjectObject?.name || "Unassigned"}
-        isLoadingProjects={isLoadingProjects}
+        selectedCategoryName={selectedCategoryObject?.name || "Unassigned"}
+        isLoadingCategories={isLoadingCategories}
         isLoadingTasks={isLoadingTasks}
         error={error}
-        onProjectChange={setSelectedProjectId}
+        onCategoryChange={setSelectedCategoryId}
         onTaskChange={setSelectedTaskId}
-        onOpenCreateProjectModal={handleOpenCreateProjectModal}
+        onOpenCreateCategoryModal={handleOpenCreateCategoryModal}
         // Typo Fix: Corrected prop name
-        onOpenEditProjectModal={() =>
-          handleOpenEditProjectModal(selectedProjectObject)
+        onOpenEditCategoryModal={() =>
+          handleOpenEditCategoryModal(selectedCategoryObject)
         }
         onOpenCreateTaskModal={handleOpenCreateTaskModal}
         onOpenEditTaskModal={(task) => handleOpenEditTaskModal(task)}
         onClearError={() => setError(null)}
       />
 
-      <ProjectFormModal
-        open={isProjectModalOpen}
-        onClose={handleProjectModalClose}
-        onSave={handleProjectSave}
-        initialProjectData={projectToEdit}
+      <CategoryFormModal
+        open={isCategoryModalOpen}
+        onClose={handleCategoryModalClose}
+        onSave={handleCategorySave}
+        initialCategoryData={categoryToEdit}
       />
 
       <TaskFormModal
@@ -195,7 +197,7 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
         onClose={handleTaskModalClose}
         onSave={handleTaskSave}
         initialTaskData={taskToEdit}
-        projectId={selectedProjectId || null}
+        categoryId={selectedCategoryId || null}
       />
     </>
   );

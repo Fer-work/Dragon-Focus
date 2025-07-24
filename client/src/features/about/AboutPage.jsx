@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  useTheme, // Import useTheme
 } from "@mui/material";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories"; // Icon for scroll/lore
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment"; // Thematic
@@ -17,6 +18,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite"; // For support
 import ConstructionIcon from "@mui/icons-material/Construction"; // For current state
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents"; // For gamification
 import SchoolIcon from "@mui/icons-material/School"; // For learning
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 // Helper component for section titles to keep styling consistent
 const SectionTitle = ({ icon, title, color = "primary.main" }) => (
@@ -37,28 +39,28 @@ const SectionTitle = ({ icon, title, color = "primary.main" }) => (
 );
 
 export default function AboutPage() {
+  const theme = useTheme(); // Get the theme object
+
   return (
     <Box
       sx={{
         width: "100%",
         height: "100%",
-        // This Box can be transparent or use background.default,
-        // as the Paper below will define the main content surface.
+        p: { xs: 1, sm: 2 }, // Add some padding to frame the paper
       }}
     >
       <Paper
-        elevation={3} // Consistent with panel shadows
+        elevation={0} // Consistent with panel shadows
         sx={{
           p: { xs: 2, sm: 3, md: 4 },
-          bgcolor: "background.paper", // Crucial for the panel look
-          border: 1,
-          borderColor: "divider", // Thematic border
-          boxShadow: (theme) =>
-            theme.palette.mode === "dark"
-              ? `0px 0px 15px 0px ${theme.palette.primary.main}`
-              : `0px 0px 15px 0px ${theme.palette.secondary.main}`, // Thematic shadow
+          bgcolor: "background.paper",
+          border: `2px solid ${theme.palette.divider}`,
+          borderRadius: 3, // Consistent with other panels
+          boxShadow: `0px 8px 24px -4px ${theme.palette.accent.main}33`,
+          maxHeight: "100%", // Let the parent Box handle height constraints
+          height: "100%",
           color: "text.primary",
-          maxHeight: "calc(100vh - 120px)", // Adjust based on Topbar/other fixed elements
+          overflowY: "auto", // Ensure content inside the paper scrolls
         }}
       >
         <Typography
@@ -70,12 +72,8 @@ export default function AboutPage() {
             fontWeight: "bold",
             mb: 3,
             fontSize: { xs: "2.2rem", sm: "2.8rem", md: "3.2rem" },
-            textShadow: (theme) =>
-              `2px 2px 4px ${
-                theme.palette.mode === "dark"
-                  ? theme.palette.common.black
-                  : theme.palette.grey[500]
-              }`,
+            // REVISED: A cleaner text shadow using the divider color for a subtle, thematic effect
+            textShadow: `2px 2px 8px ${theme.palette.divider}`,
           }}
         >
           The Saga of Dragon Focus
@@ -101,9 +99,7 @@ export default function AboutPage() {
 
         {/* --- What is Dragon Focus? --- */}
         <SectionTitle
-          icon={
-            <AutoStoriesIcon sx={{ color: "accent.main" }} fontSize="large" />
-          }
+          icon={<AutoStoriesIcon color="accent" fontSize="large" />}
           title="Our Quest: The Genesis of Dragon Focus"
           color="accent.main"
         />
@@ -142,7 +138,7 @@ export default function AboutPage() {
             <ListItemIcon>
               <LocalFireDepartmentIcon color="primary" />
             </ListItemIcon>
-            <ListItemText primary="Project & Task Management: Organize your quests with clarity." />
+            <ListItemText primary="category & Task Management: Organize your quests with clarity." />
           </ListItem>
           <ListItem>
             <ListItemIcon>
@@ -197,7 +193,7 @@ export default function AboutPage() {
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <EmojiEventsIcon sx={{ color: "accent.main" }} />
+              <EmojiEventsIcon color="accent" />
             </ListItemIcon>
             <ListItemText
               primary="Character & Pet Progression:"
@@ -240,7 +236,7 @@ export default function AboutPage() {
         <List>
           <ListItem>
             <ListItemIcon>
-              <SchoolIcon sx={{ color: "secondary.main" }} />
+              <SchoolIcon color="info" />
             </ListItemIcon>
             <ListItemText
               primary="Integrated Learning Companion:"
@@ -249,7 +245,7 @@ export default function AboutPage() {
           </ListItem>
           <ListItem>
             <ListItemIcon>
-              <SchoolIcon sx={{ color: "secondary.main" }} />
+              <SchoolIcon color="info" />
             </ListItemIcon>
             <ListItemText
               primary="Your Focus Ally:"
@@ -273,12 +269,21 @@ export default function AboutPage() {
         </Typography>
         <List dense>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="The evolution of character unlocking and leveling." />
           </ListItem>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="The type of learning wisdom shared." />
           </ListItem>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="The creation of an experience that makes improving focus genuinely rewarding and fun." />
           </ListItem>
         </List>
@@ -301,15 +306,27 @@ export default function AboutPage() {
         </Typography>
         <List>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="Engage with the v0.8 Beta: Your feedback is the most precious ore!" />
           </ListItem>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="Report Bugs: Help us vanquish issues on our GitHub Issues page." />
           </ListItem>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="Spread the Word: Share Dragon Focus with fellow seekers of focus." />
           </ListItem>
           <ListItem>
+            <ListItemIcon>
+              <AutoAwesomeIcon sx={{ color: "accent.main" }} />
+            </ListItemIcon>
             <ListItemText primary="Developer Allies: Consider contributing to the project (see our GitHub guidelines)." />
           </ListItem>
         </List>
@@ -344,22 +361,20 @@ export default function AboutPage() {
           </Typography>
           <Button
             variant="contained"
-            color="success" // Or use 'primary' or 'secondary' based on theme
+            color="primary" // Or use 'primary' or 'secondary' based on theme
             size="large"
             href="YOUR_DONATION_LINK_HERE" // <-- REPLACE THIS
             target="_blank"
             rel="noopener noreferrer"
-            startIcon={<FavoriteIcon />}
+            startIcon={<FavoriteIcon color="secondary" />}
             sx={{
-              textTransform: "none", // Keeps the text as is
               fontSize: "1.1rem",
               px: 3,
               py: 1.5,
-              // Example of thematic button styling
-              // boxShadow: (theme) => `0px 0px 8px 0px ${theme.palette.success.main}`
+              fontStyle: "italic",
             }}
           >
-            Buy the Developer a Coffee (or Dragon Fruit!)
+            Buy the Developer a Coffee?
           </Button>
         </Box>
 
