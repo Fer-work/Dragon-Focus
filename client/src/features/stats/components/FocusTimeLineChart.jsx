@@ -14,6 +14,7 @@ import { Typography, Paper } from "@mui/material";
 
 const FocusTimelineChart = ({ data, isLoading, periodLabel }) => {
   const theme = useTheme();
+  console.log("Data: ", data);
 
   // Define colors from your theme for the chart
   const barColor = theme.palette.primary.main;

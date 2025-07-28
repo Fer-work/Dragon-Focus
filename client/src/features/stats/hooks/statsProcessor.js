@@ -1,103 +1,87 @@
 import {
-  isToday, // Checks if a date is today
-  parseISO, // Parses an ISO date string (like the one from your DB)
-  startOfWeek, // Gets the start of a week for a given date
-  endOfWeek, // Gets the end of a week
-  startOfMonth, // Gets the start of a month
-  endOfMonth, // Gets the end of a month
-  isWithinInterval, // Checks if a date is within a given interval
+  parseISO,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  isWithinInterval,
   format,
   startOfDay,
+  endOfDay,
 } from "date-fns";
 
 /**
- * Filters an array of session objects to include only those that occurred today.
- * @param {Array<Object>} sessions - An array of session objects. Each session must have a 'timestamp' property (ISO string).
- * @returns {Array<Object>} An array of sessions that occurred today.
+ * Filters sessions for today.
  */
 export const filterSessionsForToday = (sessions) => {
-  if (!Array.isArray(sessions)) {
-    console.error("filterSessionsForToday: Input is not an array.");
-    return [];
-  }
+  console.log("Sessions: ", sessions);
+  if (!Array.isArray(sessions)) return [];
+  const todayInterval = {
+    start: startOfDay(new Date()),
+    end: endOfDay(new Date()),
+  };
+
   return sessions.filter((session) => {
-    if (!session.timestamp) {
-      // console.warn("filterSessionsForToday: Session missing timestamp", session);
-      return false;
-    }
+    if (!session.timestamp) return false;
     try {
+      // No timezone conversion needed. Just parse the ISO string.
       const sessionDate = parseISO(session.timestamp);
-      return isToday(sessionDate);
+      return isWithinInterval(sessionDate, todayInterval);
     } catch (error) {
-      console.error(
-        "filterSessionsForToday: Error parsing session timestamp",
-        session.timestamp,
-        error
-      );
+      console.error("filterSessionsForToday: Error parsing timestamp", error);
       return false;
     }
   });
 };
 
 /**
- * Filters an array of session objects for the current week (e.g., Sunday to Saturday, or Monday to Sunday based on locale).
- * @param {Array<Object>} sessions - An array of session objects.
- * @param {Object} [options] - Options for date-fns startOfWeek/endOfWeek (e.g., { weekStartsOn: 1 } for Monday).
- * @returns {Array<Object>} An array of sessions that occurred this week.
+ * Filters sessions for the current week.
  */
 export const filterSessionsForThisWeek = (
   sessions,
   options = { weekStartsOn: 0 }
 ) => {
-  // 0 for Sunday, 1 for Monday
   if (!Array.isArray(sessions)) return [];
-  const today = new Date();
-  const weekStart = startOfWeek(today, options);
-  const weekEnd = endOfWeek(today, options);
+  const weekInterval = {
+    start: startOfWeek(new Date(), options),
+    end: endOfWeek(new Date(), options),
+  };
 
   return sessions.filter((session) => {
     if (!session.timestamp) return false;
     try {
       const sessionDate = parseISO(session.timestamp);
-      return isWithinInterval(sessionDate, { start: weekStart, end: weekEnd });
+      return isWithinInterval(sessionDate, weekInterval);
     } catch (error) {
       console.error(
-        "filterSessionsForThisWeek: Error parsing session timestamp",
-        session.timestamp,
+        "filterSessionsForThisWeek: Error parsing timestamp",
         error
       );
-
       return false;
     }
   });
 };
 
 /**
- * Filters an array of session objects for the current month.
- * @param {Array<Object>} sessions - An array of session objects.
- * @returns {Array<Object>} An array of sessions that occurred this month.
+ * Filters sessions for the current month.
  */
 export const filterSessionsForThisMonth = (sessions) => {
   if (!Array.isArray(sessions)) return [];
-  const today = new Date();
-  const monthStart = startOfMonth(today);
-  const monthEnd = endOfMonth(today);
+  const monthInterval = {
+    start: startOfMonth(new Date()),
+    end: endOfMonth(new Date()),
+  };
 
   return sessions.filter((session) => {
     if (!session.timestamp) return false;
     try {
       const sessionDate = parseISO(session.timestamp);
-      return isWithinInterval(sessionDate, {
-        start: monthStart,
-        end: monthEnd,
-      });
+      return isWithinInterval(sessionDate, monthInterval);
     } catch (error) {
       console.error(
-        "filterSessionsForThisMonth: Error parsing session timestamp",
-        session.timestamp,
+        "filterSessionsForThisMonth: Error parsing timestamp",
         error
       );
-
       return false;
     }
   });
@@ -136,39 +120,38 @@ export const countSessions = (sessions) => {
 };
 
 /**
- * Groups sessions by project and calculates total time spent per project.
- * Now includes an "Unassigned" category for tasks without a project.
+ * Groups sessions by category and calculates total time spent per category.
+ * Now includes an "Unassigned" category for tasks without a category.
  */
-export const aggregateTimeByProject = (sessions) => {
+export const aggregateTimeByCategory = (sessions) => {
   if (!Array.isArray(sessions)) return [];
-
-  const projectTimeMap = new Map();
+  const categoryTimeMap = new Map();
 
   sessions.forEach((session) => {
     if (typeof session.duration !== "number") return;
 
-    let projectName = "Unassigned";
-    let projectColor = "#8884d8"; // Default color for unassigned
+    let categoryName = "Unassigned";
+    let categoryColor = "#8884d8"; // Default color for unassigned
 
-    // Check if a valid project object exists
+    // Check if a valid category object exists
     if (
-      session.projectId &&
-      typeof session.projectId === "object" &&
-      session.projectId.name
+      session.categoryId &&
+      typeof session.categoryId === "object" &&
+      session.categoryId.name
     ) {
-      projectName = session.projectId.name;
-      projectColor = session.projectId.color || projectColor;
+      categoryName = session.categoryId.name;
+      categoryColor = session.categoryId.color || categoryColor;
     }
 
-    const currentTotal = projectTimeMap.get(projectName)?.value || 0;
-    projectTimeMap.set(projectName, {
+    const currentTotal = categoryTimeMap.get(categoryName)?.value || 0;
+    categoryTimeMap.set(categoryName, {
       value: currentTotal + session.duration,
-      color: projectColor,
+      color: categoryColor,
     });
   });
 
   // Convert map to array format suitable for Recharts (e.g., PieChart)
-  return Array.from(projectTimeMap, ([name, data]) => ({
+  return Array.from(categoryTimeMap, ([name, data]) => ({
     name,
     value: data.value,
     fill: data.color,

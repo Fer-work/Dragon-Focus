@@ -41,6 +41,8 @@ const StatsPageUI = ({
   const [currentTab, setCurrentTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {
+    console.log("selected Period: ", selectedPeriod);
+
     setCurrentTab(newValue);
   };
 
@@ -101,13 +103,13 @@ const StatsPageUI = ({
               <ToggleButton value="today" aria-label="today">
                 Today
               </ToggleButton>
-              <ToggleButton value="today" aria-label="today">
+              <ToggleButton value="week" aria-label="today">
                 Week
               </ToggleButton>
-              <ToggleButton value="today" aria-label="today">
+              <ToggleButton value="month" aria-label="today">
                 Month
               </ToggleButton>
-              <ToggleButton value="today" aria-label="today">
+              <ToggleButton value="all" aria-label="today">
                 All
               </ToggleButton>
             </ToggleButtonGroup>

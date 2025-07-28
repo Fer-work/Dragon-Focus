@@ -1,6 +1,7 @@
 // src/features/stats/StatsPage.jsx
-import { Box, Typography } from "@mui/material";
-import { useState, useEffect, useCallback } from "react";
+
+import { Box, Typography, CircularProgress } from "@mui/material";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import useUser from "../../globalHooks/useUser";
 import {
@@ -10,23 +11,20 @@ import {
   calculateTotalMinutes,
   countSessions,
   prepareTimelineData, // We'll use this later for charts
-  aggregateTimeByProject, // We'll use this later for charts
+  aggregateTimeByCategory, // We'll use this later for charts
 } from "./hooks/statsProcessor/"; // Ensure this path is correct
 import StatsPageUI from "./StatsPageUI";
 
 const StatsPage = () => {
   const { user } = useUser();
+
+  // Raw data and loading state
   const [allSessions, setAllSessions] = useState([]);
-  const [processedStats, setProcessedStats] = useState({
-    totalMinutes: 0,
-    sessionCount: 0,
-    timelineData: [],
-    projectData: [],
-  });
-  const [selectedPeriod, setSelectedPeriod] = useState("today");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPeriod, setSelectedPeriod] = useState("today");
 
+  // Data Fetching
   const fetchAllSessions = useCallback(async () => {
     if (!user) {
       setIsLoading(false);
@@ -40,7 +38,7 @@ const StatsPage = () => {
         headers: { authtoken: token },
       });
       setAllSessions(response.data || []);
-      console.log(response.data);
+      console.log("setAllSessions ", response.data);
     } catch (err) {
       console.error("Failed to fetch sessions:", err);
       setError(err.response?.data?.message || "Failed to load session data.");
@@ -54,48 +52,52 @@ const StatsPage = () => {
     fetchAllSessions();
   }, [fetchAllSessions]);
 
-  useEffect(() => {
-    if (allSessions.length > 0) {
-      let filteredSessions = [];
-      switch (selectedPeriod) {
-        case "today":
-          filteredSessions = filterSessionsForToday(allSessions);
-          break;
-        case "week":
-          filteredSessions = filterSessionsForThisWeek(allSessions);
-          break;
-        case "month":
-          filteredSessions = filterSessionsForThisMonth(allSessions);
-          break;
-        case "all":
-        default:
-          filteredSessions = allSessions;
-          break;
-      }
-      const totalMinutes = calculateTotalMinutes(filteredSessions);
-      const sessionCount = countSessions(filteredSessions);
-      const timelineData = prepareTimelineData(
-        filteredSessions,
-        selectedPeriod === "today" ? 24 : 7
-      ); // Example
-      const projectData = aggregateTimeByProject(filteredSessions);
+  // 2. Memoize the filtered sessions list. This recalculates only when allSessions or selectedPeriod changes.
+  const filteredSessions = useMemo(() => {
+    console.log("Selected period: ", selectedPeriod);
+    switch (selectedPeriod) {
+      case "today":
+        return filterSessionsForToday(allSessions);
+      case "week":
+        return filterSessionsForThisWeek(allSessions);
+      case "month":
+        return filterSessionsForThisMonth(allSessions);
+      case "all":
+      default:
+        return allSessions;
+    }
+  }, [allSessions, selectedPeriod]);
 
-      setProcessedStats({
-        totalMinutes,
-        sessionCount,
-        timelineData,
-        projectData,
-      });
-    } else {
-      // Reset stats if no sessions
-      setProcessedStats({
+  console.log("Filtered Sessions: ", filteredSessions);
+
+  // 3. Memoize the final stat calculations. This recalculates only when the filtered list changes.
+  const processedStats = useMemo(() => {
+    if (filteredSessions.length === 0) {
+      return {
         totalMinutes: 0,
         sessionCount: 0,
         timelineData: [],
         projectData: [],
-      });
+      };
     }
-  }, [allSessions, selectedPeriod]);
+    return {
+      totalMinutes: calculateTotalMinutes(filteredSessions),
+      sessionCount: countSessions(filteredSessions),
+      timelineData: prepareTimelineData(
+        filteredSessions,
+        selectedPeriod === "week"
+      ),
+      projectData: aggregateTimeByCategory(filteredSessions),
+    };
+  }, [filteredSessions, selectedPeriod]);
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!user) {
     return (
@@ -107,9 +109,10 @@ const StatsPage = () => {
     );
   }
 
+  console.log("selected Period: ", selectedPeriod);
+
   return (
     <StatsPageUI
-      isLoading={isLoading}
       error={error}
       stats={processedStats}
       selectedPeriod={selectedPeriod}
