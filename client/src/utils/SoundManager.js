@@ -1,18 +1,20 @@
 // src/utils/SoundManager.js
-import startSoundFile from "../assets/sounds/start.wav";
-import stopSoundFile from "../assets/sounds/stopSound.wav";
-import clickSoundFile from "../assets/sounds/click.wav";
+import startSoundFile from "../assets/sounds/ui/startSound.wav";
+import stopSoundFile from "../assets/sounds/ui/stopSound.wav";
+// import clickSoundFile from "../assets/sounds/ui/click.wav";
 
 // Preload essential sounds
 const sounds = {
   start: new Audio(startSoundFile),
   stop: new Audio(stopSoundFile),
-  click: new Audio(clickSoundFile),
+  // click: new Audio(clickSoundFile),
   // Add more sounds here as needed
   // e.g., success: new Audio(successSoundFile),
 };
 
 // Optional: Set default volumes or other properties
+sounds.start.volume = 0.4;
+sounds.stop.volume = 0.4;
 // sounds.click.volume = 0.5;
 
 /**

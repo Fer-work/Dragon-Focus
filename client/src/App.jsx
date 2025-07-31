@@ -1,9 +1,5 @@
 // src/App.jsx
 
-import {
-  TransitionProvider,
-  useTransition,
-} from "./globalHooks/TransitionContext";
 import { ColorModeContext, useMode } from "./theme.js";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -26,13 +22,6 @@ import AboutPage from "./features/about/AboutPage.jsx";
 import lightBackground from "./assets/images/backgrounds/lightBackground.png";
 import darkBackground from "./assets/images/backgrounds/darkBackground.png";
 
-// A helper component to render our overlay
-const GlobalTransition = () => {
-  const { isTransitioning } = useTransition();
-  // Render the TransitionPage as an overlay when isTransitioning is true
-  return isTransitioning ? <TransitionPage /> : null;
-};
-
 // Router Configuration
 const routes = [
   {
@@ -48,6 +37,7 @@ const routes = [
   },
   { path: "/login", element: <LoginPage /> },
   { path: "/create-account", element: <CreateAccountPage /> },
+  { path: "/transition", element: <TransitionPage /> },
 ];
 
 function App() {
@@ -59,26 +49,21 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SettingsProvider>
-          <TransitionProvider>
-            <Box
-              sx={{
-                minHeight: "100vh",
-                width: "100%",
-                backgroundImage: `url(${
-                  theme.palette.mode === "dark"
-                    ? darkBackground
-                    : lightBackground
-                })`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                transition: "background-image 0.5s ease-in-out",
-              }}
-            >
-              <GlobalTransition />
-              <RouterProvider router={router} />
-            </Box>
-          </TransitionProvider>
+          <Box
+            sx={{
+              minHeight: "100vh",
+              width: "100%",
+              backgroundImage: `url(${
+                theme.palette.mode === "dark" ? darkBackground : lightBackground
+              })`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              transition: "background-image 0.5s ease-in-out",
+            }}
+          >
+            <RouterProvider router={router} />
+          </Box>
         </SettingsProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>

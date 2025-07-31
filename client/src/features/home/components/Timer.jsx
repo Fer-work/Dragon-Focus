@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { SettingsContext } from "../../settings/hooks/SettingsContext";
 import TimerUI from "./TimerUI";
+import { playSound } from "../../../utils/SoundManager";
 
 export default function Timer({
   onTimerComplete,
@@ -40,11 +41,13 @@ export default function Timer({
   // This effect handles the actual countdown interval
   useEffect(() => {
     if (isRunning) {
+      playSound("start");
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
             setIsRunning(false);
+            playSound("stop");
             // Calculate the duration of the session that just finished
             const completedDuration =
               currentSession === "pomodoro"
@@ -71,8 +74,16 @@ export default function Timer({
   ]);
 
   // --- Handlers passed down to the UI ---
-  const toggleTimer = () => setIsRunning((prev) => !prev);
+  const toggleTimer = () => {
+    if (isRunning) {
+      playSound("stop");
+    }
+    setIsRunning((prev) => !prev);
+  };
   const resetTimer = () => {
+    if (isRunning) {
+      playSound("stop");
+    }
     setIsRunning(false);
     // Trigger the reset effect by re-setting the current session
     setCurrentSession((prev) => prev);

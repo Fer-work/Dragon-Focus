@@ -36,7 +36,7 @@ const Topbar = () => {
           setQuotes([]); // Ensure quotes is an array
           setCurrentQuote({
             text: "Focus on your breath, center your mind.",
-            author: "Quetzal Dragon", // Updated author
+            author: "Dragon Wisdom", // Updated author
           }); // Default fallback quote
         }
       })
@@ -44,7 +44,7 @@ const Topbar = () => {
         console.error("Error loading quotes.json:", err);
         setCurrentQuote({
           text: "The journey of a thousand miles begins with a single step.",
-          author: "Lao Tzu",
+          author: "Dragon Wisdom",
         }); // Fallback quote on error
       });
   }, []); // Empty dependency array means this runs once on mount
@@ -160,23 +160,7 @@ const Topbar = () => {
             lineHeight: 1.4,
           }}
         >
-          "{currentQuote.text}"
-          {currentQuote.author &&
-            currentQuote.author !== "Quetzal Dragon" && // Updated alias
-            currentQuote.author !== "Dragon Wisdom" && // Kept for older quotes
-            currentQuote.author !== "Lao Tzu" && // Example of specific external author
-            currentQuote.author !== "Bobby Knight (adapted)" &&
-            currentQuote.author !== "Cal Newport (adapted)" &&
-            currentQuote.author !== "Inspired by Jim Kwik" &&
-            currentQuote.author !== "Inspired by Learning How to Learn" &&
-            currentQuote.author !== "Inspired by Atomic Habits" &&
-            currentQuote.author !== "Inspired by The Power of Habit" &&
-            currentQuote.author !== "Inspired by Buddhist Principles" &&
-            currentQuote.author !== "Inspired by Anthropology/Philosophy" &&
-            currentQuote.author !== "Inspired by Gaming" &&
-            currentQuote.author !== "Uncle Iroh" && ( // Only show your alias or truly external authors
-              <em> - {currentQuote.author}</em>
-            )}
+          "{currentQuote.text}" ~{currentQuote.author}
         </Typography>
       )}
     </Box>

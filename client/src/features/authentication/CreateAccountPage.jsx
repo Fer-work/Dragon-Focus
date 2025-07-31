@@ -75,7 +75,7 @@ const CreateAccountPage = () => {
         );
       }
       // Navigate to home (root) page after successful account creation and backend sync
-      navigate("/");
+      navigate("/transition");
     } catch (err) {
       if (err.code === "auth/email-already-in-use") {
         setError("This email address is already in use. Please try another.");
