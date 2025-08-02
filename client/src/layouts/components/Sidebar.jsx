@@ -38,7 +38,7 @@ export default function Sidebar() {
     fontWeight: location.pathname === path ? "bold" : 600,
     color:
       location.pathname === path
-        ? theme.palette.primary.main
+        ? theme.palette.primary.dark
         : theme.palette.text.primary,
     backgroundColor:
       location.pathname === path
@@ -81,7 +81,7 @@ export default function Sidebar() {
       </Box>
 
       {/* This Divider is perfect, using the theme's divider color. */}
-      <Divider sx={{ my: 1, borderColor: "divider" }} />
+      <Divider sx={{ my: 1, borderColor: theme.palette.divider }} />
 
       {/* Navigation */}
       <Stack spacing={1.5} sx={{ mt: 2, px: 1, flexGrow: 1 }}>
@@ -150,7 +150,7 @@ export default function Sidebar() {
       {/* Footer */}
       {user && (
         <Box sx={{ px: 1, pb: 2, mt: "auto" }}>
-          <Divider sx={{ my: 1, borderColor: "divider" }} />
+          <Divider sx={{ my: 1, borderColor: theme.palette.divider }} />
           <Button
             variant="contained"
             color="secondary" // This handles everything!

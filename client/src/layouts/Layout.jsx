@@ -20,8 +20,8 @@ export default function Layout() {
     bgcolor: theme.palette.background.paper, // CORRECT: Already using the theme's paper color.
     borderRadius: 3,
     // --- Updated to match the "Volcanic" theme ---
-    border: `2px solid ${theme.palette.primary[800]}`,
-    boxShadow: `0px 0px 10px 2px ${theme.palette.secondary.main}`,
+    border: `3px solid ${theme.palette.primary.dark}`,
+    boxShadow: `0px 0px 10px 2px ${theme.palette.shadow.main}`,
   };
 
   return (
@@ -33,10 +33,9 @@ export default function Layout() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            minHeight: "100vh",
-            width: "100vw",
+            height: "100%",
+            width: "100%",
             py: { xs: 1, sm: 2, md: 3 },
-            // 3. Set the background image based on the current theme mode
           }}
         >
           {/* Box for App - This is clean, no changes needed */}
@@ -44,7 +43,7 @@ export default function Layout() {
             sx={{
               display: "flex",
               flexDirection: { xs: "column", md: "row" },
-              width: "90vw",
+              width: "95vw",
               height: { xs: "auto", md: "90vh" },
               gap: { xs: 2, sm: 3 },
             }}
@@ -52,6 +51,7 @@ export default function Layout() {
             {/* Box for Sidebar */}
             <Box
               sx={{
+                // TODO: make the sidebar a sandwhich dropdown on medium and smalle screens
                 width: { xs: "100%", md: "20%", lg: "18%" },
                 minWidth: { md: "280px" },
                 height: { xs: "auto", md: "100%" },
@@ -69,8 +69,8 @@ export default function Layout() {
             {/* Main Content Area (Topbar + Outlet) */}
             <Box
               sx={{
-                flexGrow: 1,
                 height: { xs: "auto", md: "100%" },
+                width: "100%",
                 display: "flex",
                 flexDirection: "column",
                 overflowY: "hidden",

@@ -132,9 +132,9 @@ export const themeSettings = (mode) => {
       mode: mode,
       primary: {
         ...colors.primary,
-        main: colors.primary[500],
-        light: colors.primary[300],
-        dark: colors.primary[700],
+        main: mode === "dark" ? colors.primary[500] : colors.secondary[500],
+        light: mode === "dark" ? colors.primary[300] : colors.primary[400],
+        dark: mode === "dark" ? colors.primary[700] : colors.accent[200],
         contrastText:
           mode === "light" ? colors.neutral[100] : colors.neutral[900], // Light mode: White text on "Jungle Green". Dark mode: Dark text on "Dragon's Fire" orange.
       },
@@ -150,6 +150,13 @@ export const themeSettings = (mode) => {
       neutral: {
         ...colors.neutral,
       },
+      shadow: {
+        main: mode === "dark" ? colors.primary[500] : colors.accent[800],
+        light: mode === "dark" ? colors.primary[300] : colors.neutral[900],
+        dark: mode === "dark" ? colors.primary[700] : colors.accent[200],
+        contrastText:
+          mode === "light" ? colors.neutral[100] : colors.neutral[900], // Light mode: White text on "Jungle Green". Dark mode: Dark text on "Dragon's Fire" orange.
+      },
       // REVISED: The accent object is now simplified and more powerful.
       accent: {
         ...colors.accent,
@@ -159,8 +166,8 @@ export const themeSettings = (mode) => {
       },
       background: {
         // REVISED: Mapped to our new thematic background colors.
-        default: mode === "dark" ? colors.neutral[800] : colors.neutral[100], // Dark: "Deep Charcoal", Light: "Misty White"
-        paper: mode === "dark" ? colors.neutral[700] : colors.secondary[200], // Dark: "Charcoal", Light: "Pale Jade"
+        default: mode === "dark" ? colors.neutral[800] : colors.neutral[600], // Dark: "Deep Charcoal", Light: "Misty White"
+        paper: mode === "dark" ? colors.neutral[600] : colors.neutral[500], // Dark: "Charcoal", Light: "Pale Jade"
       },
       text: {
         // REVISED: Mapped to our new thematic text colors for optimal contrast.
@@ -189,10 +196,7 @@ export const themeSettings = (mode) => {
           mode === "dark" ? colors.neutral[900] : colors.neutral[100],
       },
       // REVISED: Divider color is now derived from the palette for thematic consistency.
-      divider:
-        mode === "dark"
-          ? "rgba(245, 242, 240, 0.25)"
-          : "rgba(27, 33, 32, 0.15)", // Based on Bone White and Obsidian-Green
+      divider: colors.accent[500], // Based on Bone White and Obsidian-Green
     },
     typography: {
       fontFamily: "'MedievalSharp', cursive",

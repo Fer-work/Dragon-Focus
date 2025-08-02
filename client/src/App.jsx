@@ -51,7 +51,7 @@ function App() {
         <SettingsProvider>
           <Box
             sx={{
-              minHeight: "100vh",
+              minHeight: "100%",
               width: "100%",
               backgroundImage: `url(${
                 theme.palette.mode === "dark" ? darkBackground : lightBackground
@@ -59,7 +59,6 @@ function App() {
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
-              transition: "background-image 0.5s ease-in-out",
             }}
           >
             <RouterProvider router={router} />
