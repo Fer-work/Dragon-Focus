@@ -1,6 +1,6 @@
 // src/App.jsx
 
-import { ColorModeContext, useMode } from "./theme.js";
+import { ColorModeContext, useMode } from "./themes/themeManager.js";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -19,8 +19,7 @@ import TransitionPage from "./features/common/TransitionPage.jsx";
 import AboutPage from "./features/about/AboutPage.jsx";
 
 // Backgrounds
-import lightBackground from "./assets/images/backgrounds/lightBackground.png";
-import darkBackground from "./assets/images/backgrounds/darkBackground.png";
+// import lightBackground from "./assets/images/backgrounds/lightBackground.png";
 
 // Router Configuration
 const routes = [
@@ -53,9 +52,7 @@ function App() {
             sx={{
               minHeight: "100%",
               width: "100%",
-              backgroundImage: `url(${
-                theme.palette.mode === "dark" ? darkBackground : lightBackground
-              })`,
+              backgroundImage: `url(${theme.custom.backgroundImage})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",

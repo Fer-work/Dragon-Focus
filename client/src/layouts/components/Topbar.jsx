@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
 import useUser from "../../globalHooks/useUser"; // To get user info
-import { ColorModeContext } from "../../theme"; // To get the color mode toggle
+import { ColorModeContext } from "../../themes/themeManager.js"; // To get the color mode toggle
 
 // Optional: Icons for theme toggle
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -72,7 +72,7 @@ const Topbar = () => {
         }}
       >
         {/* Left Element: User Email or Spacer */}
-        <Box sx={{ flex: 1, textAlign: "left", pl: { xs: 1, sm: 2 } }}>
+        {/* <Box sx={{ flex: 1, textAlign: "left", pl: { xs: 1, sm: 2 } }}>
           {user ? (
             <Typography
               variant="body2"
@@ -94,7 +94,7 @@ const Topbar = () => {
           ) : (
             <Box sx={{ minWidth: { xs: "36px", sm: "48px" } }} />
           )}
-        </Box>
+        </Box> */}
 
         {/* Center Element: Title */}
         <Typography
@@ -117,7 +117,7 @@ const Topbar = () => {
         </Typography>
 
         {/* Right Element: Theme Toggle */}
-        <Box sx={{ flex: 1, textAlign: "right", pr: { xs: 1, sm: 2 } }}>
+        {/* <Box sx={{ flex: 1, textAlign: "right", pr: { xs: 1, sm: 2 } }}>
           <IconButton
             onClick={colorMode.toggleColorMode}
             color="inherit"
@@ -141,7 +141,7 @@ const Topbar = () => {
               />
             )}
           </IconButton>
-        </Box>
+        </Box> */}
       </Box>
 
       {/* Second Row: Motivational Quote */}

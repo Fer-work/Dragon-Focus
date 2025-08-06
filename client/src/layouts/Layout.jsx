@@ -21,7 +21,7 @@ export default function Layout() {
     borderRadius: 3,
     // --- Updated to match the "Volcanic" theme ---
     border: `3px solid ${theme.palette.primary.dark}`,
-    boxShadow: `0px 0px 10px 2px ${theme.palette.shadow.main}`,
+    boxShadow: `0px 0px 10px 2px ${theme.palette.primary.main}`,
   };
 
   return (
