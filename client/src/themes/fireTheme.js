@@ -155,6 +155,36 @@ export const flameTheme = createTheme({
           textTransform: "none",
           fontWeight: 600,
         },
+        containedPrimary: {
+          "&:hover": {
+            // Example: Make the hover state a brighter, more fiery orange
+            backgroundColor: fireTokens.primary[700], // Or any color you choose
+          },
+        },
+        // Add a new rule for outlined primary buttons
+        outlinedPrimary: {
+          borderColor: fireTokens.primary.light, // Starts with a brighter orange border
+          color: fireTokens.primary.light,
+          "&:hover": {
+            borderColor: fireTokens.accent.main, // Border glows gold on hover
+            backgroundColor: "rgba(255, 215, 0, 0.1)", // A faint gold background glow
+          },
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          // This rule targets primary ToggleButtons when they have the .Mui-selected class
+          "&.Mui-selected": {
+            backgroundColor: fireTokens.primary.dark, // A deep ember red
+            color: fireTokens.accent.main, // Bright gold text
+            // Ensure the hover state on a selected button is also thematic
+            "&:hover": {
+              backgroundColor: fireTokens.primary[900], // Even darker red on hover
+            },
+          },
+        },
       },
     },
     // UPDATED: AppBar and Paper overrides now point to our new background fireTokens.
@@ -169,8 +199,6 @@ export const flameTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          // This ensures Paper components in light mode use our "Pale Jade" background.
-          backgroundColor: fireTokens.neutral[700], // Fire: "Charcoal"
           backgroundImage: "none",
         },
       },

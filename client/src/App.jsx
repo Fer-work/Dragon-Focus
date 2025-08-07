@@ -17,6 +17,7 @@ import LoginPage from "./features/authentication/LoginPage.jsx";
 import CreateAccountPage from "./features/authentication/CreateAccountPage.jsx";
 import TransitionPage from "./features/common/TransitionPage.jsx";
 import AboutPage from "./features/about/AboutPage.jsx";
+import DragonLibraryPage from "./features/about/DragonLibraryPage.jsx";
 
 // Backgrounds
 // import lightBackground from "./assets/images/backgrounds/lightBackground.png";
@@ -32,6 +33,7 @@ const routes = [
       { path: "/about", element: <AboutPage /> },
       { path: "/stats", element: <StatsPage /> },
       { path: "/settings", element: <SettingsPage /> },
+      { path: "/dragonlibrary", element: <DragonLibraryPage /> },
     ],
   },
   { path: "/login", element: <LoginPage /> },

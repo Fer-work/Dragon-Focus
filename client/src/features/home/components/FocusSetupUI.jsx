@@ -40,18 +40,6 @@ const FocusSetupUI = ({
   const selectedTaskObject = tasks.find((t) => t._id === selectedTaskId);
 
   // REVISED: Reusable style for the unique edit icon hover effect
-  const editIconButtonStyles = {
-    color: "accent.main",
-    ml: 1,
-    "&:hover": {
-      // This creates a cool "inverted" effect
-      color:
-        theme.palette.mode === "dark"
-          ? theme.palette.common.black
-          : theme.palette.common.white,
-      backgroundColor: "accent.main",
-    },
-  };
 
   return (
     <Box
@@ -60,17 +48,11 @@ const FocusSetupUI = ({
         height: "100%",
         display: "flex",
         flexDirection: "column",
+        alignContent: "space-evenly",
+        alignItems: "center",
+        justifyContent: "space-between",
         p: { xs: 2, sm: 3 }, // Keep the padding for internal content.
         gap: 2, // Keep the gap for spacing between elements.
-        overflowY: "auto", // Allow this panel's content to scroll if it's too tall.
-
-        // --- THE FLAME EFFECT (INNER BORDER) ---
-        // This is the second, brighter border that sits inside the outer red border.
-        // It creates the orange layer of our fire gradient.
-        border: `2px solid ${theme.palette.secondary.main}`, // Using #ff8c00 orange
-
-        // We use a slightly smaller border radius to nest it perfectly inside the parent panel.
-        borderRadius: 2,
       }}
     >
       <Typography
@@ -95,8 +77,15 @@ const FocusSetupUI = ({
       )}
 
       {/* Category Selection */}
-
-      <Box sx={{ my: 1 }}>
+      <Box
+        sx={{
+          my: 1,
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          marginY: "auto",
+        }}
+      >
         <FormControl
           fullWidth
           variant="outlined"
@@ -128,10 +117,12 @@ const FocusSetupUI = ({
         </FormControl>
         {selectedCategoryId && (
           <IconButton
+            variant="contained"
+            color="primary"
             onClick={onOpenEditCategoryModal}
             size="medium"
-            sx={editIconButtonStyles}
             aria-label="edit category"
+            sx={{ m: 1 }}
           >
             <EditIcon />
           </IconButton>
@@ -151,7 +142,11 @@ const FocusSetupUI = ({
       {isLoadingCategories && (
         <CircularProgress
           size={24}
-          sx={{ display: "block", margin: "auto", color: "primary.light" }}
+          sx={{
+            display: "block",
+            margin: "auto",
+            color: theme.palette.primary.light,
+          }}
         />
       )}
 
@@ -159,7 +154,15 @@ const FocusSetupUI = ({
       <Divider sx={{ borderColor: "divider" }} />
 
       {/* Task Selection */}
-      <Box sx={{ mt: 1 }}>
+      <Box
+        sx={{
+          mt: 1,
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          marginY: "auto",
+        }}
+      >
         {/* We can use the color="secondary" prop to hint that this is a secondary input */}
         <FormControl
           fullWidth
@@ -190,9 +193,11 @@ const FocusSetupUI = ({
         </FormControl>
         {selectedTaskId && selectedTaskObject && (
           <IconButton
+            variant="contained"
+            color="primary"
             onClick={() => onOpenEditTaskModal(selectedTaskObject)}
+            sx={{ m: 1 }}
             size="medium"
-            sx={editIconButtonStyles}
             aria-label="edit task"
           >
             <EditIcon />
@@ -210,7 +215,7 @@ const FocusSetupUI = ({
         disabled={isLoadingTasks}
         sx={{ mb: 2 }}
       >
-        {`New task${
+        {`New task ${
           selectedCategoryName === "Unassigned"
             ? ""
             : `for ${selectedCategoryName}`
@@ -224,7 +229,7 @@ const FocusSetupUI = ({
             display: "block",
             margin: "auto",
             mt: 1,
-            color: "secondary.dark",
+            color: theme.palette.secondary.dark,
           }}
         />
       )}

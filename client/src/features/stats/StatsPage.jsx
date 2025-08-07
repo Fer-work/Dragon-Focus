@@ -3,7 +3,7 @@ import { differenceInDays } from "date-fns";
 
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import axios, { all } from "axios";
+import axios from "axios";
 import useUser from "../../globalHooks/useUser";
 import {
   filterSessionsForToday,
@@ -15,17 +15,6 @@ import {
   aggregateTimeByCategory, // We'll use this later for charts
 } from "./hooks/statsProcessor/"; // Ensure this path is correct
 import StatsPageUI from "./StatsPageUI";
-
-// A small helper function to calculate the days for the 'all' period
-const getDaysInPeriod = (sessions) => {
-  if (sessions.length < 2) return 1;
-  const sortedSessions = [...sessions].sort(
-    (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-  );
-  const firstDay = new Date(sortedSessions[0].timestamp);
-  const lastDay = new Date(sortedSessions[sortedSessions.length - 1].timestamp);
-  return differenceInDays(lastDay, firstDay) + 1;
-};
 
 const StatsPage = () => {
   const { user } = useUser();
@@ -80,8 +69,6 @@ const StatsPage = () => {
     }
   }, [allSessions, selectedPeriod]);
 
-  console.log("Filtered Sessions: ", filteredSessions);
-
   // 3. Memoize the final stat calculations. This recalculates only when the filtered list changes.
   const processedStats = useMemo(() => {
     if (filteredSessions.length === 0) {
@@ -89,34 +76,15 @@ const StatsPage = () => {
         totalMinutes: 0,
         sessionCount: 0,
         timelineData: [],
-        projectData: [],
+        categoryData: [],
       };
-    }
-
-    // --- Key Fix: Make the numberOfDays dynamic ---
-    let numberOfDays;
-    switch (selectedPeriod) {
-      case "today":
-        numberOfDays = 1;
-        break;
-      case "week":
-        numberOfDays = 7;
-        break;
-      case "month":
-        numberOfDays = 30;
-        break;
-      case "all":
-        numberOfDays = getDaysInPeriod(filteredSessions);
-        break;
-      default:
-        numberOfDays = 7;
     }
 
     return {
       totalMinutes: calculateTotalMinutes(filteredSessions),
       sessionCount: countSessions(filteredSessions),
-      timelineData: prepareTimelineData(filteredSessions, numberOfDays),
-      projectData: aggregateTimeByCategory(filteredSessions),
+      timelineData: prepareTimelineData(filteredSessions, selectedPeriod),
+      categoryData: aggregateTimeByCategory(filteredSessions),
     };
   }, [filteredSessions, selectedPeriod]);
 

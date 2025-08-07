@@ -28,18 +28,13 @@ const TimerUI = ({
   return (
     <Box
       sx={{
-        // REMOVED: width and height. This component is now sized by its parent Grid cell.
-        // KEPT: These styles are perfect for arranging the content *inside* the timer.
+        width: "100%",
+        maxHeight: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "space-around",
         p: { xs: 2, sm: 3 },
-        // --- ADDED: The consistent "Flame Effect" Inner Border ---
-        border: `2px solid ${theme.palette.primary.main}`, // The orange border
-        borderRadius: 2, // The slightly smaller radius
-        width: "100%",
-        maxHeight: "100%",
       }}
     >
       {/* REVISED: Using ToggleButtonGroup for cleaner, semantic session selection */}
@@ -57,6 +52,7 @@ const TimerUI = ({
         sx={{ mb: 3 }}
         disabled={isRunning || isTimerDisabled}
         color="primary" // This color will be applied to the selected button
+        variant="contained"
       >
         <ToggleButton value="pomodoro" aria-label="pomodoro session">
           <TimerIcon sx={{ mr: 1 }} />
@@ -80,35 +76,23 @@ const TimerUI = ({
           alignItems: "center",
           width: { xs: "240px", sm: "300px", md: "360px" }, // Slightly adjusted for potentially larger digits
           height: { xs: "240px", sm: "300px", md: "360px" },
-          bgcolor:
-            theme.palette.mode === "dark"
-              ? theme.palette.neutral[900] // Very Dark (almost black)
-              : theme.palette.neutral[100], // Very Light Jade/Stone White
-          border: `4px solid ${theme.palette.primary.main}`, // Green for light, Orange for dark
+          bgcolor: theme.palette.neutral[800],
+          border: `4px solid ${theme.palette.accent.main}`, // Green for light, Orange for dark
           borderRadius: "50%",
-          boxShadow:
-            theme.palette.mode === "dark"
-              ? `0 0 20px ${theme.palette.primary.light}, 0 0 30px ${theme.palette.accent.main} inset` // Dark mode glow
-              : `0 0 20px ${theme.palette.primary.light}, 0 0 30px ${theme.palette.primary.light} inset`, // Light mode glow (green based)
+          boxShadow: `0 0 15px ${theme.palette.primary.main}, 0 0 15px ${theme.palette.primary.dark} inset`,
           my: 2,
           position: "relative",
         }}
       >
         <Typography
           variant="h1"
-          component="div"
+          component="h1"
           sx={{
             fontFamily: "'Segment7', 'MedievalSharp', cursive",
             fontSize: { xs: "3.5rem", sm: "5rem", md: "6.5rem" }, // Adjusted for container
-            color:
-              theme.palette.mode === "dark"
-                ? theme.palette.accent.main // Gold for Dark Mode
-                : theme.palette.primary.dark, // Dark Green for Light Mode
+            color: theme.palette.accent.main, // Gold for Dark
             lineHeight: 1,
-            textShadow:
-              theme.palette.mode === "dark"
-                ? `0 0 10px ${theme.palette.accent.light}` // Gold glow
-                : `0 0 8px ${theme.palette.primary.light}`, // Subtle Green glow
+            textShadow: theme.palette.accent.light,
           }}
         >
           {timeLeft}
@@ -119,11 +103,11 @@ const TimerUI = ({
       <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 } }}>
         <Button
           variant="contained"
+          color={isRunning ? "primary" : "warning"}
           onClick={onToggle}
           startIcon={isRunning ? <PauseIcon /> : <PlayArrowIcon />}
           disabled={isTimerDisabled && !isRunning}
           // REVISED: Using the semantic color prop. The theme handles the rest!
-          color={isRunning ? "warning" : "success"}
           sx={{
             px: { xs: 2, sm: 4 },
             py: { xs: 1, sm: 1.5 },

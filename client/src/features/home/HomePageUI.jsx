@@ -23,7 +23,7 @@ const HomePageUI = ({
       sx={{
         width: "100%",
         height: "100%",
-        p: { xs: 1, sm: 2, md: 3 },
+        p: { xs: 1, sm: 2 },
         color: "text.primary",
       }}
     >
@@ -36,11 +36,10 @@ const HomePageUI = ({
             lg: 4, // On large screens and up, takes up 4/12 columns
           }}
           sx={{
-            // --- THEMATIC PANEL STYLES ---
             bgcolor: "background.paper",
             borderRadius: 3,
-            border: `2px solid ${theme.palette.primary[800]}`,
-            boxShadow: `0px 0px 10px 2px ${theme.palette.accent.main}`,
+            border: `2px solid ${theme.palette.primary.main}`,
+            boxShadow: `0px 0px 5px 2px ${theme.palette.accent.main}`,
             maxHeight: "100%",
           }}
         >
@@ -55,12 +54,10 @@ const HomePageUI = ({
             lg: 8,
           }}
           sx={{
-            position: "relative",
-            // Styles moved here from the inner Box
             bgcolor: "background.paper",
             borderRadius: 3,
-            border: `2px solid ${theme.palette.primary[800]}`,
-            boxShadow: `0px 0px 10px 2px ${theme.palette.accent.main}`,
+            border: `2px solid ${theme.palette.primary.main}`,
+            boxShadow: `0px 0px 5px 2px ${theme.palette.accent.main}`,
             maxHeight: "100%",
           }}
         >

@@ -11,7 +11,12 @@ import {
   useTheme,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import { BarChart, Article } from "@mui/icons-material";
+import {
+  BarChart,
+  Article,
+  BookOnlineRounded,
+  BookRounded,
+} from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -29,26 +34,12 @@ export default function Sidebar() {
   };
 
   // This function is very well-written and uses theme tokens correctly. No changes needed.
-  const navButtonStyles = (path) => ({
-    justifyContent: "flex-start",
-    textAlign: "left",
-    padding: "10px 16px",
-    borderRadius: "8px",
-    textTransform: "none",
-    fontWeight: location.pathname === path ? "bold" : 600,
-    color:
-      location.pathname === path
-        ? theme.palette.primary.dark
-        : theme.palette.text.primary,
-    backgroundColor:
-      location.pathname === path
-        ? theme.palette.action.selected
-        : "transparent",
-    "&:hover": {
-      color: theme.palette.primary.light,
-      backgroundColor: theme.palette.action.hover,
-    },
-  });
+  // const navButtonStyles = () => ({
+  //   justifyContent: "flex-start",
+  //   textAlign: "left",
+  //   padding: "10px 16px",
+  //   textTransform: "none",
+  // });
 
   return (
     <Box
@@ -64,10 +55,11 @@ export default function Sidebar() {
       <Box>
         <Typography
           variant="h3"
+          component="h3"
           align="center"
           gutterBottom
           sx={{
-            color: "primary.main",
+            color: theme.palette.primary.light,
             fontWeight: "bold",
             pt: 2,
             pb: 1,
@@ -76,7 +68,7 @@ export default function Sidebar() {
             // fontFamily: "'MedievalSharp', cursive",
           }}
         >
-          Dragon Focus
+          🔥 Dragon Focus 🔥
         </Typography>
       </Box>
 
@@ -86,18 +78,30 @@ export default function Sidebar() {
       {/* Navigation */}
       <Stack spacing={1.5} sx={{ mt: 2, px: 1, flexGrow: 1 }}>
         <Button
+          variant="text"
+          color="primary"
           component={Link}
           to="/"
           startIcon={<HomeIcon />}
-          sx={navButtonStyles("/")}
+          sx={{
+            justifyContent: "start",
+            textAlign: "left",
+            p: "16px",
+          }}
         >
           Home
         </Button>
         <Button
+          variant="text"
+          color="primary"
           component={Link}
           to="/about"
           startIcon={<Article />}
-          sx={navButtonStyles("/about")}
+          sx={{
+            justifyContent: "start",
+            textAlign: "left",
+            p: "16px",
+          }}
         >
           About
         </Button>
@@ -109,26 +113,52 @@ export default function Sidebar() {
         ) : user ? (
           <>
             <Button
+              variant="text"
+              color="primary"
               component={Link}
               to="/stats"
               startIcon={<BarChart />}
-              sx={navButtonStyles("/stats")}
+              sx={{
+                justifyContent: "start",
+                textAlign: "left",
+                p: "16px",
+              }}
             >
               Stats
             </Button>
             <Button
+              variant="text"
+              color="primary"
               component={Link}
               to="/settings"
               startIcon={<SettingsIcon />}
-              sx={navButtonStyles("/settings")}
+              sx={{
+                justifyContent: "start",
+                textAlign: "left",
+                p: "16px",
+              }}
             >
               Settings
+            </Button>
+            <Button
+              variant="text"
+              color="primary"
+              component={Link}
+              to="/dragonlibrary"
+              startIcon={<BookRounded />}
+              sx={{
+                justifyContent: "start",
+                textAlign: "left",
+                p: "16px",
+              }}
+            >
+              Sources
             </Button>
           </>
         ) : (
           <Button
             variant="contained"
-            color="primary" // This handles everything!
+            color="primary"
             startIcon={<LoginIcon />}
             onClick={() => navigate("/login")}
             sx={{

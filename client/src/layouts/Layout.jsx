@@ -82,11 +82,7 @@ export default function Layout() {
               <Box
                 sx={{
                   p: { xs: 1.5, sm: 2 },
-                  // REVISED: Using theme.palette.divider for the internal border.
-                  // It's cleaner and more consistent. I've used 1px as is common
-                  // for dividers, but you can change it back to 2px if you prefer.
-                  borderBottom: `1px solid ${theme.palette.divider}`,
-                  mb: 2,
+                  borderBottom: `1px solid ${theme.palette.secondary.main}`,
                 }}
               >
                 <Topbar />
@@ -99,7 +95,7 @@ export default function Layout() {
                   display: "flex", // <-- Turns this Box into a flex container for its children.
                   flexDirection: "column", // <-- Ensures its children (like HomePageUI) stack normally.
                   overflowY: "auto", // Keep this for scrolling.
-                  bgcolor: theme.palette.primary.dark,
+                  bgcolor: theme.palette.primary[800],
                 }}
               >
                 <Outlet />

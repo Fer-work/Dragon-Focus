@@ -8,13 +8,21 @@ import {
   format,
   startOfDay,
   endOfDay,
+  startOfHour,
+  getHours,
+  getMonth,
+  getYear,
+  eachDayOfInterval,
+  eachMonthOfInterval,
+  startOfYear,
+  endOfYear,
 } from "date-fns";
 
 /**
  * Filters sessions for today.
  */
 export const filterSessionsForToday = (sessions) => {
-  console.log("Sessions: ", sessions);
+  console.log("Sessions from filterSessionsForToday(): ", sessions);
   if (!Array.isArray(sessions)) return [];
   const todayInterval = {
     start: startOfDay(new Date()),
@@ -161,46 +169,92 @@ export const aggregateTimeByCategory = (sessions) => {
 /**
  * Prepares data for a timeline chart in a more performant way.
  */
-export const prepareTimelineData = (sessions, numberOfDays = 7) => {
-  if (!Array.isArray(sessions)) return [];
+export const prepareTimelineData = (sessions, period) => {
+  if (!Array.isArray(sessions) || sessions.length === 0) return [];
 
-  // 1. First, create a map of total minutes per day from the sessions.
-  // This is much faster as we only loop through the sessions array ONCE.
+  const now = new Date();
   const dailyMinutesMap = new Map();
+
+  // Pre-process all sessions into a map for efficient lookups
   sessions.forEach((session) => {
     if (!session.timestamp || typeof session.duration !== "number") return;
     try {
-      const dayKey = format(
-        startOfDay(parseISO(session.timestamp)),
-        "yyyy-MM-dd"
-      );
+      const date = parseISO(session.timestamp);
+      console.log(`Date from the prepareTimeLineData function: ${date} `, date);
+      const dayKey = format(startOfDay(date), "yyyy-MM-dd");
       const currentMinutes = dailyMinutesMap.get(dayKey) || 0;
       dailyMinutesMap.set(dayKey, currentMinutes + session.duration);
     } catch (error) {
       console.error(
-        "prepareTimelineData: Error parsing session timestamp",
-        session.timestamp,
+        "Error parsing session timestamp in prepareTimelineData",
         error
       );
     }
   });
 
-  // 2. Now, build the timeline for the last N days.
-  const timelineData = [];
-  const today = startOfDay(new Date());
+  switch (period) {
+    case "today": {
+      const hourlyMap = new Map();
+      const todaySessions = filterSessionsForToday(sessions);
+      todaySessions.forEach((session) => {
+        const hour = getHours(parseISO(session.timestamp));
+        hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + session.duration);
+      });
+      return Array.from({ length: 24 }, (_, i) => ({
+        date: format(startOfHour(new Date(now.setHours(i))), "ha"),
+        minutes: hourlyMap.get(i) || 0,
+      }));
+    }
+    case "week": {
+      const weekInterval = { start: startOfWeek(now), end: endOfWeek(now) };
+      const days = eachDayOfInterval(weekInterval);
+      return days.map((day) => {
+        const dayKey = format(day, "yyyy-MM-dd");
+        return {
+          date: format(day, "EEE"),
+          minutes: dailyMinutesMap.get(dayKey) || 0,
+        };
+      });
+    }
+    case "month": {
+      const monthInterval = { start: startOfMonth(now), end: endOfMonth(now) };
+      const days = eachDayOfInterval(monthInterval);
+      return days.map((day) => {
+        const dayKey = format(day, "yyyy-MM-dd");
+        return {
+          date: format(day, "d"), // 1, 2, 3, etc.
+          minutes: dailyMinutesMap.get(dayKey) || 0,
+        };
+      });
+    }
+    case "all": {
+      const monthlyMap = new Map();
+      sessions.forEach((session) => {
+        const date = parseISO(session.timestamp);
+        const monthKey = format(startOfMonth(date), "yyyy-MM");
+        monthlyMap.set(
+          monthKey,
+          (monthlyMap.get(monthKey) || 0) + session.duration
+        );
+      });
 
-  for (let i = numberOfDays - 1; i >= 0; i--) {
-    const targetDate = new Date(today);
-    targetDate.setDate(today.getDate() - i);
+      const firstSessionDate = parseISO(sessions[0].timestamp);
+      const yearInterval = {
+        start: startOfYear(firstSessionDate),
+        end: endOfYear(now),
+      };
+      const months = eachMonthOfInterval(yearInterval);
 
-    const dayKey = format(targetDate, "yyyy-MM-dd");
-    const totalMinutesForDate = dailyMinutesMap.get(dayKey) || 0;
+      return months.map((month) => {
+        const monthKey = format(month, "yyyy-MM");
+        return {
+          date: format(month, "MMM"),
+          minutes: monthlyMap.get(monthKey) || 0,
+        };
+      });
+    }
 
-    timelineData.push({
-      // Use date-fns format for consistent output (e.g., 'Mon', 'Tue')
-      date: format(targetDate, "EEE"),
-      minutes: totalMinutesForDate,
-    });
+    default:
+      return [];
   }
-  return timelineData;
 };

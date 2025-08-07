@@ -98,39 +98,28 @@ const SettingsPage = () => {
   };
 
   return (
-    <Container
-      component="main"
-      maxWidth="sm" // Controls the max width of the settings form
+    <Box
       sx={{
-        mt: { xs: 2, sm: 4 }, // Margin top
-        mb: 4, // Margin bottom
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        width: "100%",
+        height: "100%",
+        p: { xs: 1, sm: 2 },
+        color: "text.primary",
       }}
     >
       <Paper
         elevation={0}
         sx={{
+          flex: 1,
           p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
           width: "100%",
+          height: "100%",
           bgcolor: "background.paper",
           borderRadius: 3,
           // REVISED: Using theme tokens for a consistent look.
-          border: `1px solid ${theme.palette.divider}`,
-          boxShadow: theme.shadows[6],
+          border: `2px solid ${theme.palette.primary.main}`,
+          boxShadow: `0px 0px 5px 2px ${theme.palette.accent.main}`,
         }}
       >
-        <Typography
-          component="h1"
-          variant="h3" // Thematic font will apply
-          color="primary.main"
-          align="center"
-          sx={{ fontWeight: "bold", mb: 3 }}
-        >
-          ⚙️ Timer Settings ⚙️
-        </Typography>
-
         {feedback.text && (
           <Alert
             severity={feedback.type || "info"}
@@ -143,7 +132,13 @@ const SettingsPage = () => {
         <Box
           component="form"
           onSubmit={handleSaveSettings}
-          sx={{ width: "100%" }}
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
         >
           <Grid container spacing={2}>
             {" "}
@@ -229,7 +224,7 @@ const SettingsPage = () => {
           </Button>
         </Box>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

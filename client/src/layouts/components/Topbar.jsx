@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Box, Typography, IconButton, useTheme } from "@mui/material";
 import useUser from "../../globalHooks/useUser"; // To get user info
 import { ColorModeContext } from "../../themes/themeManager.js"; // To get the color mode toggle
+import { useLocation } from "react-router-dom";
 
 // Optional: Icons for theme toggle
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -10,10 +11,37 @@ import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 const Topbar = () => {
   const { user } = useUser(); // Get the authenticated user
   const theme = useTheme();
+  const location = useLocation();
   const colorMode = useContext(ColorModeContext);
 
   const [quotes, setQuotes] = useState([]); // Store all quotes
   const [currentQuote, setCurrentQuote] = useState(null); // Store the single quote to display
+
+  // Function to get the title based on the current path
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case "/":
+        // "Forge" is a strong, action-oriented word. The fire adds to the theme.
+        return "🔥 The Focus Forge 🔥";
+      case "/stats":
+        // Frames the user's stats not as data, but as a record of their achievements.
+        return "📜 Scroll of Achievements 📜";
+      case "/settings":
+        // Makes settings feel like a valuable, personal collection of tools and themes.
+        return "⚙️ Dragon's Settings ⚙️";
+      case "/about":
+        // Presents the story of the app as an epic tale.
+        return "🐲 The Dragon's Saga 🐲";
+      case "/dragonlibrary":
+        // Enhances the already great title with a classic library/wisdom emoji.
+        return "📚 The Dragon's Library �";
+      default:
+        // A safe and solid fallback.
+        return "Dragon Focus";
+    }
+  };
+
+  const pageTitle = getPageTitle();
 
   // Fetch quotes on component mount
   useEffect(() => {
@@ -54,11 +82,9 @@ const Topbar = () => {
     <Box
       sx={{
         width: "100%",
-        py: 1, // Vertical padding for the entire Topbar
         display: "flex",
         flexDirection: "column",
         alignItems: "center", // Center items horizontally in the column
-        // bgcolor will be inherited from Layout.jsx's Topbar container
       }}
     >
       {/* First Row: User Email | Title | Theme Toggle */}
@@ -102,17 +128,18 @@ const Topbar = () => {
           component="h1"
           sx={{
             // For Quetzal Mode (light), use primary green for title
-            color:
-              theme.palette.mode === "dark" ? "accent.main" : "primary.main",
+            color: theme.palette.accent.main,
             fontWeight: "bold",
             textAlign: "center",
-            flexGrow: 1,
+            width: "100%",
+            mb: 3,
             mx: { xs: 0.5, sm: 1 },
-            fontSize: { xs: "1.75rem", sm: "2.25rem", md: "2.75rem" },
+            fontSize: { xs: "2.2rem", sm: "2.8rem", md: "3.2rem" },
+            textShadow: `2px 2px 4px ${theme.palette.primary.main}`,
             lineHeight: 1.2,
           }}
         >
-          🔥 Dragon Focus 🔥
+          {pageTitle}
           {/* Consider Quetzal-themed emojis for light mode if desired */}
         </Typography>
 
