@@ -81,6 +81,7 @@ export default function DragonLibraryPage() {
         width: "100%",
         height: "100%",
         p: { xs: 1, sm: 2 },
+        color: "text.primary",
       }}
     >
       <Paper
@@ -88,9 +89,9 @@ export default function DragonLibraryPage() {
         sx={{
           p: { xs: 2, sm: 3, md: 4 },
           bgcolor: "background.paper",
-          border: `2px solid ${theme.palette.divider}`,
           borderRadius: 3,
-          boxShadow: `0px 8px 24px -4px ${theme.palette.accent.main}33`,
+          border: `2px solid ${theme.palette.primary.main}`,
+          boxShadow: `0px 0px 5px 2px ${theme.palette.accent.main}`,
           height: "100%",
           overflowY: "auto",
         }}

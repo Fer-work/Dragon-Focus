@@ -55,7 +55,7 @@ export default function Sidebar() {
       <Box>
         <Typography
           variant="h3"
-          component="h3"
+          component="h1" // Using h1 for the main page title is great for SEO
           align="center"
           gutterBottom
           sx={{
@@ -63,12 +63,37 @@ export default function Sidebar() {
             fontWeight: "bold",
             pt: 2,
             pb: 1,
-            // REVISED: The fontFamily is already set globally in the theme's
-            // typography settings, so this override is redundant.
-            // fontFamily: "'MedievalSharp', cursive",
+            // We use flexbox on the title itself to easily align the text and the tag
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexWrap: "wrap", // Allows the tag to wrap on very small screens
+            gap: theme.spacing(1.5), // Adds a thematic gap between the title and the tag
           }}
         >
           🔥 Dragon Focus 🔥
+          {/* This Box creates the styled "tag" */}
+          <Box
+            component="span" // Render as a span but with all the styling power of a Box
+            sx={{
+              fontSize: "0.9rem", // Smaller font size for the tag
+              fontWeight: "normal", // Less bold than the main title
+              // A thematic color for attention. 'warning' or 'info' are good choices.
+              backgroundColor: theme.palette.warning.main,
+              // This helper ensures the text color has good contrast with the background
+              color: theme.palette.getContrastText(theme.palette.warning.main),
+              borderRadius: "6px", // Rounded corners for the tag look
+              px: 1.5, // Horizontal padding
+              py: 0.5, // Vertical padding
+              textTransform: "uppercase", // A common style for tags
+              letterSpacing: "0.5px",
+              // Ensures the tag aligns nicely with the title text
+              display: "inline-block",
+              verticalAlign: "middle",
+            }}
+          >
+            v0.8 Beta
+          </Box>
         </Typography>
       </Box>
 
@@ -105,6 +130,20 @@ export default function Sidebar() {
         >
           About
         </Button>
+        <Button
+          variant="text"
+          color="primary"
+          component={Link}
+          to="/dragonlibrary"
+          startIcon={<BookRounded />}
+          sx={{
+            justifyContent: "start",
+            textAlign: "left",
+            p: "16px",
+          }}
+        >
+          Sources
+        </Button>
 
         {isLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
@@ -139,20 +178,6 @@ export default function Sidebar() {
               }}
             >
               Settings
-            </Button>
-            <Button
-              variant="text"
-              color="primary"
-              component={Link}
-              to="/dragonlibrary"
-              startIcon={<BookRounded />}
-              sx={{
-                justifyContent: "start",
-                textAlign: "left",
-                p: "16px",
-              }}
-            >
-              Sources
             </Button>
           </>
         ) : (

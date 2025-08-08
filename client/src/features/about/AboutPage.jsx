@@ -157,13 +157,13 @@ export default function AboutPage() {
             component="h3"
             sx={{ color: "primary.main", fontWeight: "bold", mb: 2 }}
           >
-            Enjoying the Journey? Help Us Soar!
+            Enjoying the Journey? Help Us Soar.
           </Typography>
           <Button
             variant="contained"
             color="primary"
             size="large"
-            href="YOUR_DONATION_LINK_HERE" // <-- REPLACE THIS
+            href="https://buymeacoffee.com/dragonfocus"
             target="_blank"
             rel="noopener noreferrer"
             startIcon={<FavoriteIcon />}
