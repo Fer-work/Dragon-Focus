@@ -1,3 +1,5 @@
+// client/src/features/about/DragonLibraryPage.jsx
+import { Link as RouterLink } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -17,6 +19,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import SchoolIcon from "@mui/icons-material/School";
 import TimerIcon from "@mui/icons-material/Timer";
 import PsychologyIcon from "@mui/icons-material/Psychology";
+import NotFoundPage from "../common/NotFoundPage";
 
 // Helper component for section titles
 const SectionTitle = ({ icon, title, color = "primary.main" }) => (
@@ -58,6 +61,8 @@ const ResourceCard = ({ title, author, description, link }) => {
       </CardContent>
       <CardActions>
         <Button
+          component={RouterLink} // Use the RouterLink component
+          to={link} // Pass the string URL to the 'to' prop
           size="small"
           href={link} // <-- YOUR AFFILIATE LINK GOES HERE
           target="_blank"
@@ -173,19 +178,19 @@ export default function DragonLibraryPage() {
           title="Limitless"
           author="Jim Kwik"
           description="A foundational guide to meta-learning. Kwik breaks down the science of learning how to learn, improving memory, and reading faster."
-          link="YOUR_AFFILIATE_LINK_HERE"
+          link="/broken"
         />
         <ResourceCard
           title="Learning How to Learn (Coursera)"
           author="Dr. Barbara Oakley & Dr. Terrence Sejnowski"
           description="The most popular online course in the world. It provides practical, neuroscience-based techniques for tackling difficult subjects."
-          link="YOUR_AFFILIATE_LINK_HERE"
+          link="#broken"
         />
         <ResourceCard
           title="Atomic Habits"
           author="James Clear"
           description="An essential read for understanding how to build good habits and break bad ones. Perfect for making your focus practice stick."
-          link="YOUR_AFFILIATE_LINK_HERE"
+          link="#"
         />
       </Paper>
     </Box>

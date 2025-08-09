@@ -39,6 +39,8 @@ const routes = [
   { path: "/login", element: <LoginPage /> },
   { path: "/create-account", element: <CreateAccountPage /> },
   { path: "/transition", element: <TransitionPage /> },
+  // This is the global catch-all for any path that doesn't match the ones above
+  { path: "*", element: <NotFoundPage /> },
 ];
 
 function App() {
