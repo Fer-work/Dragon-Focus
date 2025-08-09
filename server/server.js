@@ -39,11 +39,6 @@ if (process.env.NODE_ENV === "production") {
     "dist"
   );
   app.use(express.static(clientBuildPath));
-
-  // For any route not handled by the API, send the index.html from the client build
-  app.get("/{*any}", (req, res) => {
-    res.sendFile(path.resolve(clientBuildPath, "index.html"));
-  });
 }
 
 app.use(routes); // This is your main router from routes/index.js
