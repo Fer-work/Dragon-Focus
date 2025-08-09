@@ -1,3 +1,5 @@
+// server/utils/authMiddleware.js
+
 import admin from "firebase-admin";
 import User from "../models/User.js"; // Path to your User model
 
