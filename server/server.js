@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(clientBuildPath));
 
   // For any route not handled by the API, send the index.html from the client build
-  app.get("*", (req, res) => {
+  app.get("/{*any}", (req, res) => {
     res.sendFile(path.resolve(clientBuildPath, "index.html"));
   });
 }
