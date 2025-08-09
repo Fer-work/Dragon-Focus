@@ -6,6 +6,7 @@ import admin from "firebase-admin";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import cors from "cors";
 
 import { connectToDatabase } from "./config/connection.js";
 import routes from "./routes/index.js";
@@ -25,6 +26,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors({ origin: process.env.CLIENT_URL }));
 
 // In production, the frontend is a separate service.
 // In development, you might want this for testing a full build locally.
