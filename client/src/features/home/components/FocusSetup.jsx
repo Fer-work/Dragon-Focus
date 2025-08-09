@@ -1,7 +1,7 @@
 // src/features/home/components/FocusSetup.jsx
 
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import FocusSetupUI from "./FocusSetupUI";
 import CategoryFormModal from "../../categories/components/CategoryFormModal";
 import TaskFormModal from "../../tasks/components/TaskFormModal";
@@ -36,10 +36,7 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     setIsLoadingCategories(true);
     setError(null);
     try {
-      const token = await user.getIdToken();
-      const response = await axios.get("/api/categories", {
-        headers: { authtoken: token },
-      });
+      const response = await apiClient.get("/categories");
       setCategories(response.data || []);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
@@ -62,14 +59,11 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
 
       // Dynamically set the endpoint based on whether a categoryId is provided
       const endpoint = categoryId
-        ? `/api/categories/${categoryId}/tasks`
-        : "/api/tasks";
+        ? `/categories/${categoryId}/tasks`
+        : "/tasks";
 
       try {
-        const token = await user.getIdToken();
-        const response = await axios.get(endpoint, {
-          headers: { authtoken: token },
-        });
+        const response = await apiClient.get(endpoint);
         setTasks(response.data || []);
       } catch (err) {
         console.error("Failed to fetch tasks:", err);

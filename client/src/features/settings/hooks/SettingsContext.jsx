@@ -7,7 +7,7 @@ import {
   useCallback,
   useContext,
 } from "react";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import useUser from "../../../globalHooks/useUser";
 
 const defaultSettings = {
@@ -41,10 +41,7 @@ export const SettingsProvider = ({ children }) => {
         return;
       }
       try {
-        const token = await user.getIdToken();
-        const response = await axios.get("/api/users/me", {
-          headers: { authtoken: token },
-        });
+        const response = await apiClient.get("/users/me");
         if (response.data && response.data.preferences) {
           const prefs = response.data.preferences;
 
@@ -83,10 +80,7 @@ export const SettingsProvider = ({ children }) => {
 
       try {
         // 1. Save the new settings to the database
-        const token = await user.getIdToken();
-        await axios.put("/api/users/me", newSettings, {
-          headers: { authtoken: token },
-        });
+        await apiClient.put("/users/me", newSettings);
 
         // 2. On success, update the local state by merging the new settings
         setSettings((currentSettings) => ({

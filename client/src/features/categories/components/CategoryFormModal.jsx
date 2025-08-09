@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import {
   Modal,
   Box,
@@ -89,23 +89,17 @@ const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
       return;
     }
 
-    const token = await user.getIdToken();
-    const headers = { authtoken: token };
-
     const categoryData = formState;
 
     try {
       let response;
       if (isEditMode) {
-        response = await axios.put(
-          `/api/categories/${initialCategoryData._id}`,
-          categoryData,
-          { headers }
+        response = await apiClient.put(
+          `/categories/${initialCategoryData._id}`,
+          categoryData
         );
       } else {
-        response = await axios.post("/api/categories", categoryData, {
-          headers,
-        });
+        response = await apiClient.post("/categories", categoryData);
       }
       onSave(response.data.category || response.data);
       handleClose();

@@ -1,9 +1,8 @@
 // src/features/stats/StatsPage.jsx
-import { differenceInDays } from "date-fns";
 
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import axios from "axios";
+import apiClient from "../../api/apiClient";
 import useUser from "../../globalHooks/useUser";
 import {
   filterSessionsForToday,
@@ -34,10 +33,7 @@ const StatsPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const token = await user.getIdToken();
-      const response = await axios.get("/api/sessions", {
-        headers: { authtoken: token },
-      });
+      const response = await apiClient.get("/api/sessions");
       setAllSessions(response.data || []);
       console.log("setAllSessions ", response.data);
     } catch (err) {

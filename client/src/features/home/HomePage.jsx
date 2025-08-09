@@ -1,6 +1,6 @@
 // src/features/home/HomePage.jsx
 import { useState, useCallback, useContext } from "react";
-import axios from "axios";
+import apiClient from "../../api/apiClient";
 import useUser from "../../globalHooks/useUser";
 import HomePageUI from "./HomePageUI";
 import { SettingsContext } from "../settings/hooks/SettingsContext";
@@ -31,7 +31,6 @@ const HomePage = () => {
     setPageError(null);
 
     try {
-      const token = await user.getIdToken();
       const sessionData = {
         duration: durationInSeconds / 60,
         categoryId: currentSelectedProjectId || null,
@@ -39,9 +38,7 @@ const HomePage = () => {
         timestamp: new Date().toISOString(),
       };
 
-      await axios.post("/api/sessions", sessionData, {
-        headers: { authtoken: token },
-      });
+      await apiClient.post("/sessions", sessionData);
       alert("Session stored successfully!");
     } catch (err) {
       console.error("Failed to save session:", err);

@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth"; // Added updateProfile
-import axios from "axios"; // To sync user with your backend
+import apiClient from "../../api/apiClient.js";
 
 // TODO: Ask why useUser import is not needed.
 
@@ -64,15 +64,10 @@ const CreateAccountPage = () => {
 
       // After successful Firebase account creation, sync with your backend's /api/users. This ensures a user document is created in your MongoDB
       if (firebaseUser) {
-        const token = await firebaseUser.getIdToken();
-        await axios.post(
-          "/api/users",
-          {
-            email: firebaseUser.email,
-            username: username || firebaseUser.displayName, // Send username if collected
-          },
-          { headers: { authtoken: token } }
-        );
+        await apiClient.post("/users", {
+          email: firebaseUser.email,
+          username: username || firebaseUser.displayName, // Send username if collected
+        });
       }
       // Navigate to home (root) page after successful account creation and backend sync
       navigate("/transition");

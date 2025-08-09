@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import {
   Modal,
   Box,
@@ -128,13 +128,12 @@ const TaskFormModal = ({
     try {
       let response;
       if (isEditMode) {
-        response = await axios.put(
-          `/api/tasks/${initialTaskData._id}`,
-          taskData,
-          { headers }
+        response = await apiClient.put(
+          `/tasks/${initialTaskData._id}`,
+          taskData
         );
       } else {
-        response = await axios.post("/api/tasks", taskData, { headers });
+        response = await apiClient.post("/tasks", taskData, { headers });
       }
       onSave(response.data.task || response.data);
       handleClose();
