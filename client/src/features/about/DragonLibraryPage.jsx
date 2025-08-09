@@ -64,7 +64,6 @@ const ResourceCard = ({ title, author, description, link }) => {
           component={RouterLink} // Use the RouterLink component
           to={link} // Pass the string URL to the 'to' prop
           size="small"
-          href={link} // <-- YOUR AFFILIATE LINK GOES HERE
           target="_blank"
           rel="noopener noreferrer"
           variant="contained"
