@@ -11,6 +11,6 @@ const router = Router();
 router.use("/users", userRoutes);
 router.use("/tasks", taskRoutes);
 router.use("/sessions", sessionRoutes);
-router.use("/categories", categoryRoutes);
+// router.use("/categories", categoryRoutes);
 
 export default router;
