@@ -63,6 +63,15 @@ const CreateAccountForm = ({
         >
           Create Account
         </Typography>
+        <Typography
+          component="p"
+          variant="p"
+          color="text.secondary"
+          sx={{ mb: 3 }}
+        >
+          "By signing up, you acknowledge this is a Beta version and data may be
+          subject to change or reset before the official v1.0 launch."
+        </Typography>
 
         {error && (
           <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
