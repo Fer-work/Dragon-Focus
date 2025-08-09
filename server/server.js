@@ -12,31 +12,13 @@ import routes from "./routes/index.js";
 
 dotenv.config();
 
-// --- SMART, ENVIRONMENT-AWARE INITIALIZATION ---
-if (process.env.NODE_ENV === "production") {
-  // === PRODUCTION LOGIC (on Render) ===
-  console.log("Running in production mode");
+// --- NEW UNIVERSAL INITIALIZATION ---
+// This code now works perfectly for BOTH local dev and production on Render
+const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
 
-  // Initialize Firebase from the environment variable
-  const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-} else {
-  // === DEVELOPMENT LOGIC (on your local machine) ===
-  console.log("Running in development mode");
-
-  // Get the path to credentials.json for local development
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const credentialsPath = path.join(__dirname, "credentials.json");
-
-  // Initialize Firebase by reading the local file
-  const serviceAccount = JSON.parse(fs.readFileSync(credentialsPath));
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -66,21 +48,21 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(routes); // This is your main router from routes/index.js
 
-// connectToDatabase()
-//   .then(() => {
-//     app.listen(PORT, () => {
-//       console.log(
-//         `Dragon Focus API Server listening on http://localhost:${PORT}`
-//       );
-//     });
-//   })
-//   .catch((err) => {
-//     console.log(`Failed to connect to database. Err: ${err}`);
-//   });
+connectToDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(
+        `Dragon Focus API Server listening on http://localhost:${PORT}`
+      );
+    });
+  })
+  .catch((err) => {
+    console.log(`Failed to connect to database. Err: ${err}`);
+  });
 
 // Add a simple listener so the server has something to do
-app.listen(PORT, () => {
-  console.log(
-    `DEBUG MODE: Server listening on port ${PORT} WITHOUT database connection.`
-  );
-});
+// app.listen(PORT, () => {
+//   console.log(
+//     `DEBUG MODE: Server listening on port ${PORT} WITHOUT database connection.`
+//   );
+// });
