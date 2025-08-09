@@ -1,4 +1,4 @@
-import FocusSession from "../models/FocusSession.js";
+import FocusSession from "../models/focusSession.js";
 import Task from "../models/Task.js"; // For default task logic
 
 // @desc    Create a new Focus Session

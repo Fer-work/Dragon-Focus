@@ -1,7 +1,7 @@
 //
 import Task from "../models/Task.js";
 import Category from "../models/Category.js"; // To verify project ownership
-import FocusSession from "../models/FocusSession.js"; // For cascading updates on delete
+import FocusSession from "../models/focusSession.js"; // For cascading updates on delete
 
 // @desc    Create a new Task
 // @route   POST /api/tasks
