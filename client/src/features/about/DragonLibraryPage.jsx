@@ -62,9 +62,8 @@ const ResourceCard = ({ title, author, description, link }) => {
       <CardActions>
         <Button
           component={RouterLink} // Use the RouterLink component
-          to={link} // Pass the string URL to the 'to' prop
+          to={NotFoundPage} // Pass the string URL to the 'to' prop
           size="small"
-          target="_blank"
           rel="noopener noreferrer"
           variant="contained"
           color="primary"
