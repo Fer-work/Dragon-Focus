@@ -33,7 +33,7 @@ const StatsPage = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiClient.get("/api/sessions");
+      const response = await apiClient.get("/sessions");
       setAllSessions(response.data || []);
       console.log("setAllSessions ", response.data);
     } catch (err) {
