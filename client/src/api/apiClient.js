@@ -6,7 +6,7 @@ import { auth } from "../firebase-config.js"; // Adjust this path to your fireba
 // Create a new Axios instance with a custom configuration
 const apiClient = axios.create({
   // Set the baseURL to the API endpoint you configured in Render's environment variables
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
 });
 
 // VERY IMPORTANT: Use an interceptor to automatically add the auth token to every request
