@@ -41,6 +41,9 @@ const SectionTitle = ({ icon, title, color = "primary.main" }) => (
 
 // Reusable card for displaying a resource
 const ResourceCard = ({ title, author, description, link }) => {
+  // Determine if the link is external (starts with http) or internal
+  const isExternal = link.startsWith("http");
+
   return (
     <Card
       variant="outlined"
@@ -61,8 +64,14 @@ const ResourceCard = ({ title, author, description, link }) => {
       </CardContent>
       <CardActions>
         <Button
-          component={RouterLink} // Use the RouterLink component
-          to={<NotFoundPage />} // Pass the string URL to the 'to' prop
+          // --- Key Fix ---
+          // Use a regular <a> tag for external links
+          // and the React Router <Link> for internal links.
+          component={isExternal ? "a" : RouterLink}
+          href={isExternal ? link : undefined} // `href` for <a> tags
+          to={!isExternal ? link : undefined} // `to` for <RouterLink>
+          target={isExternal ? "_blank" : undefined} // Open external links in a new tab
+          // --- End of Fix ---
           size="small"
           rel="noopener noreferrer"
           variant="contained"
@@ -176,19 +185,19 @@ export default function DragonLibraryPage() {
           title="Limitless"
           author="Jim Kwik"
           description="A foundational guide to meta-learning. Kwik breaks down the science of learning how to learn, improving memory, and reading faster."
-          link="/broken"
+          link="https://www.amazon.com/s?k=Limitless+Jim+Kwik"
         />
         <ResourceCard
           title="Learning How to Learn (Coursera)"
           author="Dr. Barbara Oakley & Dr. Terrence Sejnowski"
           description="The most popular online course in the world. It provides practical, neuroscience-based techniques for tackling difficult subjects."
-          link="#broken"
+          link="https://www.coursera.org/learn/learning-how-to-learn"
         />
         <ResourceCard
           title="Atomic Habits"
           author="James Clear"
           description="An essential read for understanding how to build good habits and break bad ones. Perfect for making your focus practice stick."
-          link="#"
+          link="https://www.amazon.com/s?k=Atomic+Habits+James+Clear"
         />
       </Paper>
     </Box>

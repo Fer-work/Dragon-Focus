@@ -11,12 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import {
-  BarChart,
-  Article,
-  BookOnlineRounded,
-  BookRounded,
-} from "@mui/icons-material";
+import { BarChart, Article, BookSharp } from "@mui/icons-material";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -135,7 +130,7 @@ export default function Sidebar() {
           color="primary"
           component={Link}
           to="/dragonlibrary"
-          startIcon={<BookRounded />}
+          startIcon={<BookSharp />}
           sx={{
             justifyContent: "start",
             textAlign: "left",
