@@ -9,7 +9,6 @@ const sounds = {
   stop: new Audio(stopSoundFile),
   // click: new Audio(clickSoundFile),
   // Add more sounds here as needed
-  // e.g., success: new Audio(successSoundFile),
 };
 
 // Optional: Set default volumes or other properties

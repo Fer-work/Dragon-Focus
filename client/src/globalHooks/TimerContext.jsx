@@ -1,7 +1,7 @@
 // src/contexts/TimerContext.jsx
 import { createContext, useState, useEffect, useRef, useContext } from "react";
 import { SettingsContext } from "../features/settings/hooks/SettingsContext";
-import { playSound } from "../utils/soundManager";
+import { playSound } from "../utils/SoundManager.js";
 
 export const TimerContext = createContext();
 
