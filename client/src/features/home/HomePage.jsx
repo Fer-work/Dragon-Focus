@@ -57,18 +57,11 @@ const HomePage = () => {
 
   return (
     <HomePageUI
-      // Pass all the necessary data and functions down to the UI component
       user={user}
       onFocusTargetsChange={handleFocusTargetsChange}
       onTimerComplete={handleTimerComplete}
-      // These are needed by the children, passed through HomePageUI
       selectedTaskId={currentSelectedTaskId}
-      // Other props needed for display
       pageError={pageError}
-      pomodoroDuration={settings.pomodoroDuration}
-      shortBreak={settings.shortBreakDuration}
-      longBreak={settings.longBreakDuration}
-      longBreakInterval={settings.longBreakInterval}
     />
   );
 };

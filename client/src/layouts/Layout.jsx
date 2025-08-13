@@ -4,6 +4,7 @@ import Topbar from "./components/Topbar";
 import { Box, Fade, useTheme } from "@mui/material";
 import { SettingsProvider } from "../features/settings/hooks/SettingsContext";
 import { useState, useEffect } from "react";
+import { TimerProvider } from "../globalHooks/TimerContext";
 
 export default function Layout() {
   const [loaded, setLoaded] = useState(false);
@@ -98,7 +99,9 @@ export default function Layout() {
                   bgcolor: theme.palette.primary[800],
                 }}
               >
-                <Outlet />
+                <TimerProvider>
+                  <Outlet />
+                </TimerProvider>
               </Box>
             </Box>
           </Box>

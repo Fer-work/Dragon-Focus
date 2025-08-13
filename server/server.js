@@ -24,7 +24,15 @@ admin.initializeApp({
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: process.env.CLIENT_URL }));
+// --- THE CORS FIX ---
+// Create a whitelist of allowed origins
+const allowedOrigins = [
+  process.env.CLIENT_URL, // Your deployed frontend
+  process.env.DEV_CLIENT_URL, // Your local development frontend
+];
+
+// Configure CORS to use the whitelist
+app.use(cors({ origin: allowedOrigins }));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
