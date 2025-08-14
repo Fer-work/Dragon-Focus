@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Key Fix: Import the SettingsProvider
 import { SettingsProvider } from "./features/settings/hooks/SettingsContext";
+import { NotificationProvider } from "./globalHooks/NotificationContext.jsx";
 
 // Pages
 import HomePage from "./features/home/HomePage.jsx";
@@ -18,6 +19,7 @@ import CreateAccountPage from "./features/authentication/CreateAccountPage.jsx";
 import TransitionPage from "./features/common/TransitionPage.jsx";
 import AboutPage from "./features/about/AboutPage.jsx";
 import DragonLibraryPage from "./features/about/DragonLibraryPage.jsx";
+import GlobalNotification from "./features/common/GlobalNotification";
 
 // Backgrounds
 // import lightBackground from "./assets/images/backgrounds/lightBackground.png";
@@ -52,18 +54,21 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <SettingsProvider>
-          <Box
-            sx={{
-              minHeight: "100%",
-              width: "100%",
-              backgroundImage: `url(${theme.custom.backgroundImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-            <RouterProvider router={router} />
-          </Box>
+          <NotificationProvider>
+            <Box
+              sx={{
+                minHeight: "100vh",
+                width: "100%",
+                backgroundImage: `url(${theme.custom.backgroundImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            >
+              <RouterProvider router={router} />
+              <GlobalNotification />
+            </Box>
+          </NotificationProvider>
         </SettingsProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>

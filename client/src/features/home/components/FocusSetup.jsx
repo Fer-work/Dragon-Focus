@@ -6,7 +6,13 @@ import FocusSetupUI from "./FocusSetupUI";
 import CategoryFormModal from "../../categories/components/CategoryFormModal";
 import TaskFormModal from "../../tasks/components/TaskFormModal";
 
+// 1. --- Import the new notification hook ---
+import { useNotification } from "../../../globalHooks/NotificationContext";
+
 const FocusSetup = ({ user, onFocusTargetsChange }) => {
+  // 2. --- Get the showNotification function from the context ---
+  const { showNotification } = useNotification();
+
   // API Data State
   const [categories, setCategories] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -21,7 +27,6 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
   // Loading and Error State
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
-  const [error, setError] = useState(null); // Component-specific error
 
   // Inform HomePage when selections change
   useEffect(() => {
@@ -34,18 +39,19 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
   const fetchCategories = useCallback(async () => {
     if (!user) return;
     setIsLoadingCategories(true);
-    setError(null);
     try {
       const response = await apiClient.get("/categories");
       setCategories(response.data || []);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
-      setError(err.response?.data?.message || "Failed to load categories.");
+      showNotification(
+        err.response?.data?.message || "Failed to load categories."
+      );
       setCategories([]);
     } finally {
       setIsLoadingCategories(false);
     }
-  }, [user]);
+  }, [user, showNotification]);
 
   useEffect(() => {
     fetchCategories();
@@ -55,7 +61,6 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     async (categoryId) => {
       if (!user) return;
       setIsLoadingTasks(true);
-      setError(null);
 
       // Dynamically set the endpoint based on whether a categoryId is provided
       const endpoint = categoryId
@@ -67,7 +72,7 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
         setTasks(response.data || []);
       } catch (err) {
         console.error("Failed to fetch tasks:", err);
-        setError(
+        showNotification(
           err.response?.data?.message ||
             "Failed to load tasks for the selected category."
         );
@@ -76,7 +81,7 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
         setIsLoadingTasks(false);
       }
     },
-    [user]
+    [user, showNotification]
   );
 
   // --- 2. Adjust the useEffect that triggers fetching tasks ---
@@ -122,6 +127,7 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
       setSelectedCategoryId(savedCategory._id); // Auto-select new/edited category
     }
     handleCategoryModalClose();
+    showNotification(`Category "${savedCategory.name}" saved!`, "success");
   };
 
   const handleOpenCreateTaskModal = () => {
@@ -149,6 +155,8 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     }
     setSelectedTaskId(savedTask._id); // Auto-select new/edited task
     handleTaskModalClose();
+    // Show a success message!
+    showNotification(`Task "${savedTask.name}" saved!`, "success");
   };
 
   // --- Render Logic ---
@@ -166,7 +174,6 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
         selectedCategoryName={selectedCategoryObject?.name || "Unassigned"}
         isLoadingCategories={isLoadingCategories}
         isLoadingTasks={isLoadingTasks}
-        error={error}
         onCategoryChange={setSelectedCategoryId}
         onTaskChange={setSelectedTaskId}
         onOpenCreateCategoryModal={handleOpenCreateCategoryModal}
@@ -176,7 +183,6 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
         }
         onOpenCreateTaskModal={handleOpenCreateTaskModal}
         onOpenEditTaskModal={(task) => handleOpenEditTaskModal(task)}
-        onClearError={() => setError(null)}
       />
 
       <CategoryFormModal
