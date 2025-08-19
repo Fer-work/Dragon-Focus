@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     username: {
       // Optional: if you want users to have a display name separate from email
       type: String,
+      required: [true, "Username is required."],
       trim: true,
       sparse: true, // Allows multiple nulls, but if a value exists, it must be unique
       unique: true, // If you want usernames to be unique

@@ -9,7 +9,6 @@ import {
   Box,
   Typography,
   CircularProgress,
-  Alert,
   IconButton,
   Divider,
   useTheme,
@@ -67,14 +66,6 @@ const FocusSetupUI = ({
       >
         Select Focus Setup
       </Typography>
-
-      {error && (
-        // REVISED: Removed sx prop. The `severity` prop now correctly styles the alert
-        // using the error colors defined in our theme.
-        <Alert severity="error" sx={{ mb: 2 }} onClose={onClearError}>
-          {error}
-        </Alert>
-      )}
 
       {/* Category Selection */}
       <Box

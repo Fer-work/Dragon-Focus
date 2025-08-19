@@ -5,8 +5,6 @@ import apiClient from "../../../api/apiClient";
 import FocusSetupUI from "./FocusSetupUI";
 import CategoryFormModal from "../../categories/components/CategoryFormModal";
 import TaskFormModal from "../../tasks/components/TaskFormModal";
-
-// 1. --- Import the new notification hook ---
 import { useNotification } from "../../../globalHooks/NotificationContext";
 
 const FocusSetup = ({ user, onFocusTargetsChange }) => {
@@ -15,7 +13,8 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
 
   // API Data State
   const [categories, setCategories] = useState([]);
-  const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]); // Holds all tasks fetched initially
+  const [filteredTasks, setFilteredTasks] = useState([]); // Holds tasks for the dropdown
   // Selection State
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedTaskId, setSelectedTaskId] = useState("");
@@ -24,9 +23,68 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
   const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
-  // Loading and Error State
-  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
-  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
+  // A single loading state for the initial data fetch
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSlowLoad, setIsSlowLoad] = useState(false);
+
+  // --- "Waking Up" Message Logic ---
+  useEffect(() => {
+    const slowLoadTimer = setTimeout(() => {
+      if (isLoading) {
+        showNotification(
+          "One moment, waking up the Dragon Server...",
+          "info",
+          10000
+        );
+        setIsSlowLoad(true);
+      }
+    }, 3000); // 3-second delay
+    return () => clearTimeout(slowLoadTimer);
+  }, [isLoading, showNotification]);
+
+  // --- Unified Data Fetching with Promise.all ---
+  const fetchData = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+    setIsSlowLoad(false);
+
+    try {
+      // Run requests for categories and all tasks in parallel
+      const [categoriesResponse, tasksResponse] = await Promise.all([
+        apiClient.get("/categories"),
+        apiClient.get("/tasks"), // Fetches all tasks for the user
+      ]);
+
+      setCategories(categoriesResponse.data || []);
+      setAllTasks(tasksResponse.data || []);
+      setFilteredTasks(tasksResponse.data || []); // Initially, the dropdown shows all tasks
+    } catch (err) {
+      console.error("Failed to fetch initial data:", err);
+      showNotification("Failed to load your categories and tasks.", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, showNotification]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // --- Local Task Filtering (No Network Request) ---
+  useEffect(() => {
+    if (selectedCategoryId) {
+      // If a category is selected, filter the already-loaded tasks
+      const newFilteredTasks = allTasks.filter(
+        (task) => task.categoryId === selectedCategoryId
+      );
+      setFilteredTasks(newFilteredTasks);
+    } else {
+      // If no category is selected, show all tasks
+      setFilteredTasks(allTasks);
+    }
+    // Always reset the selected task when the category changes
+    setSelectedTaskId("");
+  }, [selectedCategoryId, allTasks]);
 
   // Inform HomePage when selections change
   useEffect(() => {
@@ -35,69 +93,16 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     }
   }, [selectedCategoryId, selectedTaskId, onFocusTargetsChange]);
 
-  // --- Data Fetching ---
-  const fetchCategories = useCallback(async () => {
-    if (!user) return;
-    setIsLoadingCategories(true);
-    try {
-      const response = await apiClient.get("/categories");
-      setCategories(response.data || []);
-    } catch (err) {
-      console.error("Failed to fetch categories:", err);
-      showNotification(
-        err.response?.data?.message || "Failed to load categories."
-      );
-      setCategories([]);
-    } finally {
-      setIsLoadingCategories(false);
-    }
-  }, [user, showNotification]);
+  // --- Categories Modal Handlers ---
+  const handleCategorySave = (savedCategory) => {
+    // This logic is now much cleaner because we just need to re-fetch everything
+    // to ensure data consistency after a save.
+    fetchData();
+    setSelectedCategoryId(savedCategory._id);
+    handleCategoryModalClose();
+    showNotification(`Category "${savedCategory.name}" saved!`, "success");
+  };
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
-
-  const fetchTasks = useCallback(
-    async (categoryId) => {
-      if (!user) return;
-      setIsLoadingTasks(true);
-
-      // Dynamically set the endpoint based on whether a categoryId is provided
-      const endpoint = categoryId
-        ? `/categories/${categoryId}/tasks`
-        : "/tasks";
-
-      try {
-        const response = await apiClient.get(endpoint);
-        setTasks(response.data || []);
-      } catch (err) {
-        console.error("Failed to fetch tasks:", err);
-        showNotification(
-          err.response?.data?.message ||
-            "Failed to load tasks for the selected category."
-        );
-        setTasks([]);
-      } finally {
-        setIsLoadingTasks(false);
-      }
-    },
-    [user, showNotification]
-  );
-
-  // --- 2. Adjust the useEffect that triggers fetching tasks ---
-  useEffect(() => {
-    // This now correctly calls fetchTasks whether a category is selected or not.
-    // On initial mount, it will call fetchTasks(""), fetching all tasks.
-    // When a category is selected, it will call fetchTasks("someId"), fetching filtered tasks.
-    fetchTasks(selectedCategoryId);
-
-    // If the category selection is cleared, also clear the task selection.
-    if (!selectedCategoryId) {
-      setSelectedTaskId("");
-    }
-  }, [selectedCategoryId, fetchTasks]);
-
-  // --- Modal Handlers ---
   const handleOpenCreateCategoryModal = () => {
     setCategoryToEdit(null);
     setIsCategoryModalOpen(true);
@@ -113,21 +118,12 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     setCategoryToEdit(null);
   };
 
-  const handleCategorySave = (savedCategory) => {
-    if (categoryToEdit) {
-      setCategories((prevCategories) =>
-        prevCategories.map((p) =>
-          p._id === savedCategory._id ? savedCategory : p
-        )
-      );
-    } else {
-      setCategories((prevCategories) => [...prevCategories, savedCategory]);
-    }
-    if (selectedCategoryId === savedCategory._id || !categoryToEdit) {
-      setSelectedCategoryId(savedCategory._id); // Auto-select new/edited category
-    }
-    handleCategoryModalClose();
-    showNotification(`Category "${savedCategory.name}" saved!`, "success");
+  // --- Task Modal Handlers ---
+  const handleTaskSave = (savedTask) => {
+    fetchData(); // Re-fetch to get the latest list
+    setSelectedTaskId(savedTask._id);
+    handleTaskModalClose();
+    showNotification(`Task "${savedTask.name}" saved!`, "success");
   };
 
   const handleOpenCreateTaskModal = () => {
@@ -145,20 +141,6 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     setTaskToEdit(null);
   };
 
-  const handleTaskSave = (savedTask) => {
-    if (taskToEdit) {
-      setTasks((prevTasks) =>
-        prevTasks.map((t) => (t._id === savedTask._id ? savedTask : t))
-      );
-    } else {
-      setTasks((prevTasks) => [...prevTasks, savedTask]);
-    }
-    setSelectedTaskId(savedTask._id); // Auto-select new/edited task
-    handleTaskModalClose();
-    // Show a success message!
-    showNotification(`Task "${savedTask.name}" saved!`, "success");
-  };
-
   // --- Render Logic ---
   const selectedCategoryObject = categories.find(
     (p) => p._id === selectedCategoryId
@@ -168,12 +150,11 @@ const FocusSetup = ({ user, onFocusTargetsChange }) => {
     <>
       <FocusSetupUI
         categories={categories}
-        tasks={tasks}
+        tasks={filteredTasks}
         selectedCategoryId={selectedCategoryId}
         selectedTaskId={selectedTaskId}
         selectedCategoryName={selectedCategoryObject?.name || "Unassigned"}
-        isLoadingCategories={isLoadingCategories}
-        isLoadingTasks={isLoadingTasks}
+        isLoading={isLoading}
         onCategoryChange={setSelectedCategoryId}
         onTaskChange={setSelectedTaskId}
         onOpenCreateCategoryModal={handleOpenCreateCategoryModal}

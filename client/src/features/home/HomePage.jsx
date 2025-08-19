@@ -5,8 +5,10 @@ import useUser from "../../globalHooks/useUser";
 import HomePageUI from "./HomePageUI";
 import { SettingsContext } from "../settings/hooks/SettingsContext";
 import { CircularProgress } from "@mui/material";
+import { useNotification } from "../../globalHooks/NotificationContext";
 
 const HomePage = () => {
+  const { showNotification } = useNotification();
   const { user } = useUser();
   const { settings, isSettingsLoading } = useContext(SettingsContext);
 
@@ -25,7 +27,8 @@ const HomePage = () => {
   // --- Handler for when the Timer completes ---
   const handleTimerComplete = async (durationInSeconds) => {
     if (!user || !currentSelectedTaskId) {
-      setPageError("You must select a task to save a session.");
+      showNotification("Failed to log in. Please try again later.");
+
       return;
     }
     setPageError(null);
@@ -42,8 +45,9 @@ const HomePage = () => {
       alert("Session stored successfully!");
     } catch (err) {
       console.error("Failed to save session:", err);
-      setPageError(
-        err.response?.data?.message || "Failed to save your session."
+      showNotification(
+        err.response?.data?.message || "Failed to save your session.",
+        "error"
       );
     }
   };
@@ -61,7 +65,6 @@ const HomePage = () => {
       onFocusTargetsChange={handleFocusTargetsChange}
       onTimerComplete={handleTimerComplete}
       selectedTaskId={currentSelectedTaskId}
-      pageError={pageError}
     />
   );
 };

@@ -33,13 +33,7 @@ function TabPanel(props) {
   );
 }
 
-const StatsPageUI = ({
-  isLoading,
-  error,
-  stats,
-  selectedPeriod,
-  onPeriodChange,
-}) => {
+const StatsPageUI = ({ isLoading, stats, selectedPeriod, onPeriodChange }) => {
   const theme = useTheme();
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -91,12 +85,6 @@ const StatsPageUI = ({
       >
         📈 Your Focus Stats 📉
       </Typography> */}
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <ToggleButtonGroup
           value={selectedPeriod}

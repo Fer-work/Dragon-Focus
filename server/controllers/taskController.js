@@ -7,39 +7,44 @@ import FocusSession from "../models/focusSession.js"; // For cascading updates o
 // @route   POST /api/tasks
 // @access  Private
 export async function createTask(req, res) {
+  // 1. Authorization Check
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const {
       name,
       description,
-      categoryId, // Optional
+      categoryId,
       status,
       color,
       dueDate,
       estimatedPomodoros,
     } = req.body;
-
-    const userId = req.user._id; // From authMiddleware
+    const userId = req.user._id;
 
     if (!name) {
       return res.status(400).json({ message: "Task name is required." });
     }
 
-    // TODO: revise the block of code below. Why would we need to check a project id? The user should only be able to see projects that belong to them anyway. Showing any other would be a bad UX. Perhaps it's a double check to make check the data integrity from the database?
-    // If a categoryIdis provided, we must verify it exists and belongs to the user.
+    // If a categoryId is provided, verify it exists and belongs to the user for data integrity.
     if (categoryId) {
-      const projectExists = await Category.findOne({ _id: categoryId, userId });
-      if (!projectExists) {
-        return res.status(404).json({
-          message: "Category not found or you are not authorized.",
-        });
+      const categoryExists = await Category.findOne({
+        _id: categoryId,
+        userId,
+      });
+      if (!categoryExists) {
+        return res
+          .status(404)
+          .json({ message: "Category not found or you are not authorized." });
       }
     }
 
-    // --- CREATION ---
     const newTask = new Task({
       userId,
       name,
-      categoryId: categoryId || null, // Assign categoryIdif provided, otherwise null
+      categoryId: categoryId || null,
       description,
       status,
       dueDate,
@@ -48,9 +53,6 @@ export async function createTask(req, res) {
     });
 
     const savedTask = await newTask.save();
-
-    // TODO: What exactly is this doing? Is this going into the Category schema?
-    // Populate project info in the response
     const populatedTask = await Task.findById(savedTask._id).populate(
       "categoryId",
       "name color"
@@ -78,20 +80,19 @@ export async function createTask(req, res) {
 // @route   GET /api/projects/:categoryId/tasks (Handled by projectController, but this can support query filtering)
 // @access  Private
 export async function getTasksForUser(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
-    // TODO: What is unassigned doing?
     const { categoryId, unassigned } = req.query;
     const queryFilters = { userId };
 
     // Filter by a specific project ID.
     if (categoryId) {
       queryFilters.categoryId = categoryId;
-    }
-
-    // Add a filter to find tasks that do NOT have a project.
-    // e.g., /api/tasks?unassigned=true
-    if (unassigned === "true") {
+    } else if (unassigned === "true") {
       queryFilters.categoryId = null;
     }
 
@@ -110,6 +111,10 @@ export async function getTasksForUser(req, res) {
 // @route   GET /api/tasks/:taskId
 // @access  Private
 export async function getTaskById(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const task = await Task.findOne({
       _id: req.params.taskId,
@@ -136,6 +141,10 @@ export async function getTaskById(req, res) {
 // @route   PUT /api/tasks/:taskId
 // @access  Private
 export async function updateTask(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
     const taskId = req.params.taskId;
@@ -150,16 +159,15 @@ export async function updateTask(req, res) {
         .json({ message: "Task not found or not authorized." });
     }
 
-    // --- HANDLE PROJECT ASSIGNMENT ---
-    // This logic allows assigning, changing, or un-assigning a project.
+    // Handle category assignment changes
     if ("categoryId" in updates) {
-      const newCategoryId = updates.newCategoryId;
+      const newCategoryId = updates.categoryId;
       // If the new ID is not null (i.e., we are assigning/changing a project)
       if (newCategoryId) {
-        const project = await Category.findOne({ _id: newCategoryId, userId });
-        if (!project) {
+        const category = await Category.findOne({ _id: newCategoryId, userId });
+        if (!category) {
           return res.status(403).json({
-            message: "Cannot assign task to a project that is not yours.",
+            message: "Cannot assign task to a category that is not yours.",
           });
         }
         task.categoryId = newCategoryId;
@@ -179,7 +187,7 @@ export async function updateTask(req, res) {
       }
     }
 
-    // --- UPDATE OTHER FIELDS ---
+    // Update other allowed fields
     const allowedUpdates = [
       "name",
       "description",
@@ -187,8 +195,8 @@ export async function updateTask(req, res) {
       "dueDate",
       "estimatedPomodoros",
       "actualPomodoros",
+      "color",
     ];
-
     for (const key of allowedUpdates) {
       if (key in updates) {
         task[key] = updates[key];
@@ -222,9 +230,13 @@ export async function updateTask(req, res) {
 // @route   DELETE /api/tasks/:taskId
 // @access  Private
 export async function deleteTask(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
+    const { taskId } = req.params;
     const userId = req.user._id;
-    const taskId = req.params.taskId;
 
     // Ensure the task belongs to the user before deleting
     const task = await Task.findOneAndDelete({ _id: taskId, userId });

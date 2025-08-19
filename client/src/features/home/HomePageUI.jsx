@@ -1,5 +1,5 @@
 // src/home/HomePageUI.jsx
-import { Box, Grid, Alert, useTheme } from "@mui/material";
+import { Box, Grid, useTheme } from "@mui/material";
 
 import Timer from "./components/Timer";
 import FocusSetup from "./components/FocusSetup";
@@ -9,7 +9,6 @@ const HomePageUI = ({
   onFocusTargetsChange,
   onTimerComplete,
   selectedTaskId,
-  pageError,
   pomodoroDuration,
   shortBreak,
   longBreak,
@@ -61,19 +60,6 @@ const HomePageUI = ({
             maxHeight: "100%",
           }}
         >
-          {pageError && !theme.palette.mode && (
-            <Alert
-              severity="error"
-              sx={{
-                mb: 2,
-                position: "absolute",
-                top: "10px",
-                width: "auto",
-              }}
-            >
-              {pageError}
-            </Alert>
-          )}
           <Timer
             key={selectedTaskId}
             pomodoroDuration={pomodoroDuration}

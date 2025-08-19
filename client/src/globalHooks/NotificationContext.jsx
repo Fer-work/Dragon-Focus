@@ -23,7 +23,7 @@ export const NotificationProvider = ({ children }) => {
 
   // Function that any component can call to show a message
   const showNotification = useCallback(
-    (message, type = "info", duration = 7000) => {
+    (message, type = "info", duration = 6000) => {
       // If a notification is already showing, clear its timeout
       if (timeoutId) {
         clearTimeout(timeoutId);
