@@ -12,7 +12,6 @@ import {
   Select,
   MenuItem,
   Grid,
-  Alert,
   useTheme, // Import useTheme to access the theme in our style object
 } from "@mui/material";
 
@@ -181,12 +180,6 @@ const TaskFormModal = ({
         >
           {isEditMode ? "Edit Task" : "Create New Task"}
         </Typography>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <Grid container spacing={2}>
           <Grid item xs={12}>

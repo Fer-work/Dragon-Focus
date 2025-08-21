@@ -13,15 +13,16 @@ import {
   prepareTimelineData, // We'll use this later for charts
   aggregateTimeByCategory, // We'll use this later for charts
 } from "./hooks/statsProcessor/"; // Ensure this path is correct
+import { useNotification } from "../../globalHooks/NotificationContext";
 import StatsPageUI from "./StatsPageUI";
 
 const StatsPage = () => {
+  const { showNotification } = useNotification();
   const { user } = useUser();
 
   // Raw data and loading state
   const [allSessions, setAllSessions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState("today");
 
   // Data Fetching
@@ -31,19 +32,21 @@ const StatsPage = () => {
       return;
     }
     setIsLoading(true);
-    setError(null);
     try {
       const response = await apiClient.get("/sessions");
       setAllSessions(response.data || []);
       console.log("setAllSessions ", response.data);
     } catch (err) {
       console.error("Failed to fetch sessions:", err);
-      setError(err.response?.data?.message || "Failed to load session data.");
+      showNotification(
+        err.response?.data?.message || "Failed to load session data.",
+        "error"
+      );
       setAllSessions([]);
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, showNotification]);
 
   useEffect(() => {
     fetchAllSessions();
@@ -106,7 +109,6 @@ const StatsPage = () => {
 
   return (
     <StatsPageUI
-      error={error}
       stats={processedStats}
       selectedPeriod={selectedPeriod}
       onPeriodChange={setSelectedPeriod}

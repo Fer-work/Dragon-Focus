@@ -5,7 +5,6 @@ import {
   TextField,
   Button,
   Paper,
-  Alert,
   CircularProgress,
   Link as MuiLink,
   useTheme,
@@ -72,12 +71,6 @@ const CreateAccountForm = ({
           "By signing up, you acknowledge this is a Beta version and data may be
           subject to change or reset before the official v1.0 launch."
         </Typography>
-
-        {error && (
-          <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
           {/* REVISED: All sx props have been removed from the TextFields. */}

@@ -8,6 +8,11 @@ import FocusSession from "../models/focusSession.js"; // Needed for handling ses
 // @route   POST /api/categories
 // @access  Private
 export async function createCategory(req, res) {
+  // 1. Authorization Check
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const { name, description, color, status } = req.body;
     const userId = req.user._id; // From authMiddleware
@@ -47,6 +52,11 @@ export async function createCategory(req, res) {
 // @route   GET /api/categories
 // @access  Private
 export async function getCategoriesForUser(req, res) {
+  // 1. Authorization Check
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
     const categories = await Category.find({ userId }).sort({ createdAt: -1 }); // Sort by newest first
@@ -62,6 +72,11 @@ export async function getCategoriesForUser(req, res) {
 // @route   GET /api/categories/:categoryId
 // @access  Private
 export async function getCategoryById(req, res) {
+  // 1. Authorization Check
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
     const categoryId = req.params.categoryId;
@@ -88,6 +103,11 @@ export async function getCategoryById(req, res) {
 // @route   PUT /api/categories/:categoryId
 // @access  Private
 export async function updateCategory(req, res) {
+  // 1. Authorization Check
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
     const categoryId = req.params.categoryId;
@@ -133,6 +153,11 @@ export async function updateCategory(req, res) {
 // @route   DELETE /api/categories/:categoryId
 // @access  Private
 export async function deleteCategory(req, res) {
+  // 1. Authorization Check
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
     const categoryId = req.params.categoryId;
@@ -171,6 +196,10 @@ export async function deleteCategory(req, res) {
 // @route   GET /api/categories/:categoryId/tasks
 // @access  Private
 export async function getTasksForCategory(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found in database." });
+  }
+
   try {
     const userId = req.user._id;
     const categoryId = req.params.categoryId;

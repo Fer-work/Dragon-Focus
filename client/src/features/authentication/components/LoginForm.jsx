@@ -5,20 +5,13 @@ import {
   TextField,
   Button,
   Paper,
-  Alert,
   CircularProgress,
   Link as MuiLink,
   useTheme,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
-const LoginForm = ({
-  formValues,
-  onFormChange,
-  onSubmit,
-  isLoading,
-  error,
-}) => {
+const LoginForm = ({ formValues, onFormChange, onSubmit, isLoading }) => {
   const theme = useTheme();
 
   return (
@@ -63,12 +56,6 @@ const LoginForm = ({
         >
           Log In
         </Typography>
-
-        {error && (
-          <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <Box component="form" onSubmit={onSubmit} sx={{ width: "100%" }}>
           {/* REVISED: Removed sx prop. The theme handles all styling. */}

@@ -7,13 +7,14 @@ import {
   Button,
   Paper,
   Grid,
-  Alert, // For feedback messages
   useTheme,
   CircularProgress,
 } from "@mui/material";
 import { SettingsContext } from "./hooks/SettingsContext";
+import { useNotification } from "../../globalHooks/NotificationContext";
 
 const SettingsPage = () => {
+  const { showNotification } = useNotification();
   // Key Fix 1: Correctly destructure the context value
   const { settings, updateSettings, isSettingsLoading } =
     useContext(SettingsContext);
@@ -21,7 +22,6 @@ const SettingsPage = () => {
 
   // Refactor: Use a single state object for the form
   const [formState, setFormState] = useState(settings);
-  const [feedback, setFeedback] = useState({ type: "", text: "" });
   const [isSaving, setIsSaving] = useState(false);
 
   // This useEffect correctly syncs the form when the global settings are loaded
@@ -39,7 +39,6 @@ const SettingsPage = () => {
   // Key Fix 2: Make the save handler async and check the result
   const handleSaveSettings = async (event) => {
     event.preventDefault();
-    setFeedback({ type: "", text: "" });
     setIsSaving(true);
 
     const newSettings = {
@@ -51,10 +50,7 @@ const SettingsPage = () => {
 
     // Check for valid numbers
     if (Object.values(newSettings).some((val) => isNaN(val) || val <= 0)) {
-      setFeedback({
-        type: "error",
-        text: "All values must be positive numbers.",
-      });
+      showNotification("All values must be positive numbers.", "error");
       setIsSaving(false);
       return;
     }
@@ -62,16 +58,14 @@ const SettingsPage = () => {
     const result = await updateSettings(newSettings);
 
     if (result.success) {
-      setFeedback({ type: "success", text: "Settings saved successfully!" });
+      // Use the global notification for success messages
+      showNotification("Settings saved successfully!", "success");
     } else {
-      setFeedback({
-        type: "error",
-        text: result.error || "Failed to save settings.",
-      });
+      // Use the global notification for API errors
+      showNotification(result.error || "Failed to save settings.", "error");
     }
 
     setIsSaving(false);
-    setTimeout(() => setFeedback({ type: "", text: "" }), 4000);
   };
 
   // While the initial settings are loading, show a spinner
@@ -120,15 +114,6 @@ const SettingsPage = () => {
           boxShadow: `0px 0px 5px 2px ${theme.palette.accent.main}`,
         }}
       >
-        {feedback.text && (
-          <Alert
-            severity={feedback.type || "info"}
-            sx={{ width: "100%", mb: 2 }}
-          >
-            {feedback.text}
-          </Alert>
-        )}
-
         <Box
           component="form"
           onSubmit={handleSaveSettings}

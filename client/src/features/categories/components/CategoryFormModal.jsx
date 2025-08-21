@@ -12,10 +12,10 @@ import {
   Select,
   MenuItem,
   Grid,
-  Alert, // For displaying errors
   useTheme, // Import useTheme
 } from "@mui/material";
 import useUser from "../../../globalHooks/useUser"; // To get the auth token
+import { useNotification } from "../../../globalHooks/NotificationContext";
 
 // REVISED: Using a function to create a theme-aware style object.
 const createModalStyle = (theme) => ({
@@ -35,6 +35,7 @@ const createModalStyle = (theme) => ({
 });
 
 const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
+  const { showNotification } = useNotification();
   const { user } = useUser(); // For getting the auth token
   const theme = useTheme();
   const isEditMode = Boolean(initialCategoryData);
@@ -50,7 +51,6 @@ const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
 
   // API call state
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   // Pre-fill form if in edit mode
   useEffect(() => {
@@ -80,11 +80,10 @@ const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(null); // Clear previous errors
     setIsLoading(true);
 
     if (!user) {
-      setError("You must be logged in to save a category.");
+      showNotification("You must be logged in to save a category.", "error");
       setIsLoading(false);
       return;
     }
@@ -114,9 +113,9 @@ const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
         err.response?.data?.errors &&
         Array.isArray(err.response.data.errors)
       ) {
-        setError(err.response.data.errors.join(", "));
+        showNotification(`${err.response.data.errors.join(", ")}`, "error");
       } else {
-        setError(errorMessage);
+        showNotification(errorMessage, "error");
       }
     } finally {
       setIsLoading(false);
@@ -124,7 +123,6 @@ const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
   };
 
   const handleClose = () => {
-    setError(null); // Clear errors when closing
     // Don't reset form fields here if user might want to reopen and continue
     onClose();
   };
@@ -151,12 +149,6 @@ const CategoryFormModal = ({ open, onClose, onSave, initialCategoryData }) => {
         >
           {isEditMode ? "Edit Category" : "Create New Category"}
         </Typography>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
 
         <Grid container spacing={2}>
           <Grid item xs={12}>

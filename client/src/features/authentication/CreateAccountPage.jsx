@@ -6,19 +6,17 @@ import {
   updateProfile,
 } from "firebase/auth"; // Added updateProfile
 import apiClient from "../../api/apiClient.js";
-
-// TODO: Ask why useUser import is not needed.
-
+import { useNotification } from "../../globalHooks/NotificationContext.jsx";
 import CreateAccountForm from "./components/CreateAccountForm";
 
 const CreateAccountPage = () => {
+  const { showNotification } = useNotification();
   const [formValues, setformValues] = useState({
     email: "",
     password: "",
     confirmPassword: "",
     username: "",
   });
-  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -33,21 +31,30 @@ const CreateAccountPage = () => {
 
   const handleCreateAccount = async (event) => {
     event.preventDefault();
-    setError(null);
 
     const { email, password, confirmPassword, username } = formValues;
 
-    // Validation: Check that all fields are filled out and that passwords match
-    if (!email || !password || !confirmPassword) {
-      setError("Please fill in all fields.");
+    // --- 1. Frontend Validation ---
+    if (!email || !password || !confirmPassword || !username) {
+      showNotification("Please fill in all fields.", "error");
+      return;
+    }
+    if (username.length < 3) {
+      showNotification("Username must be at least 3 characters long.", "error");
+      return;
+    }
+    if (password.length < 8) {
+      showNotification("Password must be at least 8 characters long.", "error");
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match. Please try again.");
+      showNotification("Passwords do not match. Please try again.", "error");
       return;
     }
 
     setIsLoading(true);
+    showNotification("Creating your account...", "info", 2500);
+
     try {
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(
@@ -57,31 +64,30 @@ const CreateAccountPage = () => {
       );
       const firebaseUser = userCredential.user;
 
-      if (username) {
-        // TODO: Ask about displayName/username
-        await updateProfile(firebaseUser, { displayName: username });
-      }
+      await updateProfile(firebaseUser, { displayName: username });
 
-      // After successful Firebase account creation, sync with your backend's /api/users. This ensures a user document is created in your MongoDB
-      if (firebaseUser) {
-        await apiClient.post("/users", {
-          email: firebaseUser.email,
-          username: username || firebaseUser.displayName, // Send username if collected
-        });
-      }
-      // Navigate to home (root) page after successful account creation and backend sync
+      // After successful Firebase creation, sync with your backend
+      await apiClient.post("/users", {
+        email: firebaseUser.email,
+        username: username,
+      });
+
       navigate("/transition");
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        setError("This email address is already in use. Please try another.");
-      } else if (err.code === "auth/weak-password") {
-        setError(
-          "Password is too weak. Please choose a stronger password (at least 6 characters)."
+      // --- 2. Handle Backend Errors ---
+      if (err.response && err.response.status === 409) {
+        // This is the specific "Username or Email taken" error from our backend
+        showNotification(err.response.data.message, "error");
+      } else if (err.code === "auth/email-already-in-use") {
+        showNotification(
+          "This email is already registered with Firebase.",
+          "error"
         );
-      } else if (err.code === "auth/invalid-email") {
-        setError("Please enter a valid email address.");
       } else {
-        setError("Failed to create account. Please try again later.");
+        showNotification(
+          "Failed to create account. Please try again.",
+          "error"
+        );
       }
       console.error("Create account error:", err);
     } finally {
@@ -95,7 +101,6 @@ const CreateAccountPage = () => {
       onFormChange={handleFormChange}
       onSubmit={handleCreateAccount}
       isLoading={isLoading}
-      error={error}
     />
   );
 };
