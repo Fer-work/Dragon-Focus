@@ -35,7 +35,7 @@ const StatsPage = () => {
     try {
       const response = await apiClient.get("/sessions");
       setAllSessions(response.data || []);
-      console.log("setAllSessions ", response.data);
+      // console.log("setAllSessions ", response.data);
     } catch (err) {
       console.error("Failed to fetch sessions:", err);
       showNotification(
@@ -54,7 +54,7 @@ const StatsPage = () => {
 
   // 2. Memoize the filtered sessions list. This recalculates only when allSessions or selectedPeriod changes.
   const filteredSessions = useMemo(() => {
-    console.log("Selected period: ", selectedPeriod);
+    // console.log("Selected period: ", selectedPeriod);
     switch (selectedPeriod) {
       case "today":
         return filterSessionsForToday(allSessions);
@@ -105,7 +105,7 @@ const StatsPage = () => {
     );
   }
 
-  console.log("selected Period: ", selectedPeriod);
+  // console.log("selected Period: ", selectedPeriod);
 
   return (
     <StatsPageUI
