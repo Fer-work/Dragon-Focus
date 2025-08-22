@@ -2,7 +2,7 @@
 
 import Category from "../models/Category.js";
 import Task from "../models/Task.js"; // Needed for deleting tasks when a Category is deleted
-import FocusSession from "../models/focusSession.js"; // Needed for handling sessions when a Category is deleted
+import FocusSession from "../models/FocusSession.js"; // Needed for handling sessions when a Category is deleted
 
 // @desc    Create a new Category
 // @route   POST /api/categories
