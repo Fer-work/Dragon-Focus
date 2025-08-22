@@ -87,7 +87,7 @@ export default function Sidebar() {
               verticalAlign: "middle",
             }}
           >
-            v0.8 Beta
+            v0.8.2 Beta
           </Box>
         </Typography>
       </Box>
